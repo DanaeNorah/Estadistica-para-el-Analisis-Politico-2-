@@ -1,0 +1,239 @@
+"Country","co","unit","pop_urb","rate_urb","freeMundo","freeEco","freePress","rankGDP","GDP","Date","rankDemo","Score","Electoral","FunctioÂ.ning","PoliticalparticiÂ.pation","Politicalculture","Civilliberties","Regimetype","Region"
+"Afghanistan",9.067,6,26,3.37,"not free","mostly unfree","difficult situation",209,2000,2017,141,2.85,3.42,0.64,3.89,2.5,3.82,"Authoritarian","Asia & Australasia"
+"Albania",4.5,6,62.1,1.69,"partly free","moderately free","noticeable problems",125,12500,2017,79,5.89,7,5.36,4.44,5,7.65,"Hybrid regime","Eastern Europe"
+"Algeria",135.9,6,73.7,2.46,"not free","repressed","difficult situation",109,15200,2017,113,4.01,3.08,2.86,5,5,4.12,"Hybrid regime","Middle East & North Africa"
+"American Samoa",361100,0,87.2,0.07,NA,NA,NA,134,11200,2016,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"Andorra",NA,NA,87.9,-0.31,"free",NA,"satisfactory situation",32,49900,2015,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"Angola",20.95,6,66.8,4.32,"not free","mostly unfree","noticeable problems",160,6800,2017,119,3.72,2.25,2.86,5.56,5,2.94,"Authoritarian","Sub-Saharan Africa"
+"Anguilla",NA,NA,100,0.9,NA,NA,NA,130,12200,2008,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"Antigua and Barbuda",740300,0,24.4,0.55,"free",NA,"satisfactory situation",78,26400,2017,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"Argentina",203.7,6,92.1,1.07,"free","mostly unfree","noticeable problems",88,20900,2017,48,7.02,9.17,5.36,6.11,6.25,8.24,"Flawed democracy","Latin America"
+"Armenia",5.501,6,63.3,0.22,"partly free","mostly free","noticeable problems",142,9500,2017,86,5.54,7.5,5.36,6.11,3.13,5.59,"Hybrid regime","Eastern Europe"
+"Aruba",1.266,6,43.7,0.67,NA,NA,NA,51,37500,2017,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"Australia",439.1,6,86.2,1.43,"free","free","satisfactory situation",29,50400,2017,9,9.09,10,8.93,7.78,8.75,10,"Full democracy","Asia & Australasia"
+"Austria",63.93,6,58.7,0.59,"free","mostly free","satisfactory situation",31,50000,2017,16,8.29,9.58,7.86,8.33,6.88,8.82,"Full democracy","Western Europe"
+"Azerbaijan",35.6,6,56.4,1.58,"not free","moderately free","very serious situation",101,17500,2017,146,2.75,0.5,3.21,2.78,3.75,3.53,"Authoritarian","Eastern Europe"
+"Bahamas",3.089,6,83.2,1.13,"free","moderately free",NA,62,32400,2017,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"Bahrain",37.98,6,89.5,4.38,"not free","moderately free","very serious situation",33,49000,2017,149,2.55,0.83,2.71,2.78,4.38,2.06,"Authoritarian","Middle East & North Africa"
+"Bangladesh",79.97,6,38.2,3.17,"partly free","mostly unfree","difficult situation",176,4200,2017,80,5.88,7.83,6.07,6.11,4.38,5,"Hybrid regime","Asia & Australasia"
+"Barbados",1.76,6,31.2,0.2,"free","moderately free",NA,95,18600,2017,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"Belarus",56.07,6,79.5,0.44,"not free","moderately free","difficult situation",94,18900,2017,150,2.48,0.92,2,2.78,4.38,2.35,"Authoritarian","Eastern Europe"
+"Belgium",134.7,6,98.1,0.62,"free","moderately free","good situation",35,46600,2017,33,7.64,9.58,8.21,5,6.88,8.53,"Flawed democracy","Western Europe"
+"Belize",556700,0,46,2.32,"free","mostly unfree","noticeable problems",149,8300,2017,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"Benin",5.664,6,48.4,3.89,"partly free","mostly unfree","difficult situation",201,2300,2017,97,5.09,4.67,5.71,4.44,5.63,5,"Hybrid regime","Sub-Saharan Africa"
+"Bermuda",793700,0,100,-0.44,NA,NA,NA,6,99400,2016,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"Bhutan",604900,0,42.3,2.98,"partly free","moderately free","noticeable problems",145,9000,2017,91,5.3,8.75,6.79,2.78,4.38,3.82,"Hybrid regime","Asia & Australasia"
+"Bolivia",17.66,6,70.1,1.97,"partly free","repressed","difficult situation",154,7600,2017,104,4.84,4.75,3.93,5,3.75,6.76,"Hybrid regime","Latin America"
+"Bosnia and Herzegovina",22.07,6,49,0.55,"partly free","moderately free","noticeable problems",122,12800,2017,102,4.86,6.17,2.93,5.56,3.75,5.88,"Hybrid regime","Eastern Europe"
+"Botswana",6.235,6,70.9,2.87,"free","moderately free","satisfactory situation",102,17000,2017,29,7.81,9.17,7.14,6.11,7.5,9.12,"Flawed democracy","Sub-Saharan Africa"
+"Brazil",513.8,6,87.1,1.05,"free","mostly unfree","noticeable problems",108,15600,2017,52,6.86,9.58,5.36,6.11,5,8.24,"Flawed democracy","Latin America"
+"British Virgin Islands",183300,0,48.5,2.42,NA,NA,NA,59,34200,2017,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"Brunei",10.04,6,78.3,1.66,"not free","moderately free","difficult situation",9,78900,2017,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"Bulgaria",46.31,6,75.7,-0.22,"free","mostly free","difficult situation",87,21800,2017,47,7.03,9.17,6.43,7.22,4.38,7.94,"Flawed democracy","Eastern Europe"
+"Burkina Faso",3.421,6,30.6,4.99,"partly free","mostly unfree","satisfactory situation",211,1900,2017,112,4.04,3.92,2.71,4.44,5,4.12,"Hybrid regime","Sub-Saharan Africa"
+"Burma",27.01,6,31.1,1.74,"not free","mostly unfree","difficult situation",163,6300,2017,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"Burundi",217000,0,13.7,5.68,"not free","repressed","very serious situation",227,700,2017,154,2.15,0,0.07,3.33,5,2.35,"Authoritarian","Sub-Saharan Africa"
+"Cambodia",10.55,6,24.2,3.25,"not free","mostly unfree","difficult situation",177,4000,2017,124,3.53,0.83,4.64,3.33,5.63,3.24,"Authoritarian","Asia & Australasia"
+"Cameroon",7.672,6,57.6,3.63,"not free","mostly unfree","difficult situation",182,3700,2017,141,2.85,1.67,2.5,3.33,4.38,2.35,"Authoritarian","Sub-Saharan Africa"
+"Canada",640.6,6,81.6,0.97,"free","mostly free","satisfactory situation",34,48400,2017,7,9.22,9.58,9.64,7.78,9.38,9.71,"Full democracy","North America"
+"Cape Verde",867800,0,66.7,1.97,"free","moderately free","satisfactory situation",157,7000,2017,30,7.78,9.17,7.36,6.67,6.88,8.82,"Flawed democracy","Sub-Saharan Africa"
+"Cayman Islands",643800,0,100,1.27,NA,NA,NA,41,43800,2004,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"Central African Republic",413800,0,42.2,2.52,"not free","mostly unfree","difficult situation",228,700,2017,165,1.32,1.25,0,1.11,1.88,2.35,"Authoritarian","Sub-Saharan Africa"
+"Chad",342200,0,23.5,3.88,"not free","mostly unfree","difficult situation",202,2300,2017,163,1.61,0,0,1.67,3.75,2.65,"Authoritarian","Sub-Saharan Africa"
+"Chile",88.23,6,87.7,0.87,"free","mostly free","noticeable problems",82,24600,2017,21,8.08,9.58,8.57,5,8.13,9.12,"Full democracy","Latin America"
+"China",11.67,9,61.4,2.42,"not free","mostly unfree","very serious situation",96,18200,2018,153,2.26,0,4.29,3.33,2.5,1.18,"Authoritarian","Asia & Australasia"
+"Colombia",95.59,6,81.4,1.22,"partly free","moderately free","difficult situation",116,14400,2017,45,7.13,9.17,6.79,5.56,5.63,8.53,"Flawed democracy","Latin America"
+"Comoros",193600,0,29.4,2.87,"partly free","mostly unfree","noticeable problems",216,1600,2017,131,3.15,2.08,2.21,3.89,3.75,3.82,"Authoritarian","Sub-Saharan Africa"
+"Congo, Democratic Republic of the",3.146,6,45.6,4.53,"not free","repressed","difficult situation",226,800,2017,166,1.13,0,0,1.67,3.13,0.88,"Authoritarian","Sub-Saharan Africa"
+"Congo, Republic of the",5.239,6,67.8,3.28,"not free","repressed","difficult situation",161,6800,2017,134,3.11,2.17,2.5,3.89,3.75,3.24,"Authoritarian","Sub-Saharan Africa"
+"Cook Islands",88810,0,75.5,0.37,NA,NA,NA,106,16700,2016,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"Costa Rica",7.653,6,80.8,1.5,"free","moderately free","good situation",105,16900,2017,19,8.13,9.58,7.5,6.67,7.5,9.41,"Full democracy","Latin America"
+"Cote d'Ivoire",11.54,6,51.7,3.38,"partly free","mostly unfree","noticeable problems",179,3900,2017,111,4.05,4.33,2.86,3.33,5.63,4.12,"Hybrid regime","Sub-Saharan Africa"
+"Croatia",17.96,6,57.6,-0.08,"free","moderately free","noticeable problems",81,24700,2017,59,6.57,9.17,6.07,5.56,5,7.06,"Flawed democracy","Eastern Europe"
+"Cuba",26.94,6,77.2,0.14,"not free","repressed","very serious situation",128,12300,2016,143,2.84,0,3.57,3.33,4.38,2.94,"Authoritarian","Latin America"
+"Curacao",NA,NA,89.1,0.62,NA,NA,NA,112,15000,2004,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"Cyprus",7.72,6,66.8,0.75,"free","mostly free","satisfactory situation",53,37200,2017,34,7.59,9.17,6.43,6.67,6.88,8.82,"Flawed democracy","Western Europe"
+"Czech Republic",NA,NA,NA,NA,"free","mostly free","satisfactory situation",NA,NA,NA,32,7.69,9.58,6.79,6.67,6.88,8.53,"Flawed democracy","Eastern Europe"
+"Czechia",115.8,6,74.1,0.21,NA,NA,NA,57,35500,2017,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"Denmark",37.45,6,88.1,0.51,"free","mostly free","good situation",30,50100,2017,7,9.22,10,9.29,8.33,9.38,9.12,"Full democracy","Western Europe"
+"Djibouti",950200,0,78.1,1.67,"not free","mostly unfree","very serious situation",185,3600,2017,144,2.77,0.42,1.29,3.89,5.63,2.65,"Authoritarian","Sub-Saharan Africa"
+"Dominica",199600,0,71.1,0.94,"free","moderately free","satisfactory situation",136,11000,2017,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"Dominican Republic",23.79,6,82.5,2.06,"partly free","moderately free","noticeable problems",103,17000,2017,60,6.54,9.17,5.36,6.11,5,7.06,"Flawed democracy","Latin America"
+"East Timor",NA,NA,NA,NA,"free","repressed","noticeable problems",NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"Ecuador",37.54,6,64.2,1.66,"partly free","mostly unfree","noticeable problems",132,11500,2017,67,6.33,8.75,5.36,6.11,4.38,7.06,"Flawed democracy","Latin America"
+"Egypt",232.7,6,42.8,1.86,"not free","mostly unfree","very serious situation",124,12700,2017,137,3.06,2.67,3.21,3.33,3.75,2.35,"Authoritarian","Middle East & North Africa"
+"El Salvador",7.331,6,73.4,1.57,"partly free","moderately free","noticeable problems",152,8000,2017,71,6.15,9.17,4.64,6.11,3.75,7.06,"Flawed democracy","Latin America"
+"Equatorial Guinea",3.062,6,73.1,4.28,"not free","repressed","very serious situation",52,37400,2017,161,1.92,0,0.43,3.33,4.38,1.47,"Authoritarian","Sub-Saharan Africa"
+"Eritrea",597100,0,41.3,3.86,"not free","repressed","very serious situation",217,1600,2017,152,2.37,0,2.14,1.67,6.88,1.18,"Authoritarian","Sub-Saharan Africa"
+"Estonia",5.306,6,69.2,0.01,"free","mostly free","good situation",64,31700,2017,27,7.9,9.58,7.86,6.67,6.88,8.53,"Flawed democracy","Eastern Europe"
+"Eswatini",1.14,6,24.2,2.46,"not free","mostly unfree","difficult situation",139,10100,2017,132,3.14,0.92,2.86,2.78,5.63,3.53,"Authoritarian","Sub-Saharan Africa"
+"Ethiopia",12.18,6,21.7,4.63,"not free","mostly unfree","noticeable problems",204,2200,2017,125,3.44,0.42,3.57,5.56,5,2.65,"Authoritarian","Sub-Saharan Africa"
+"Falkland Islands (Islas Malvinas)",44070,0,78.5,0.76,NA,NA,NA,12,70800,2015,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"Faroe Islands",739300,0,42.4,0.74,NA,NA,NA,45,40000,2014,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"Fiji",2.369,6,57.2,1.62,"partly free","moderately free","noticeable problems",140,9800,2017,81,5.85,6.58,5.36,6.11,5.63,5.59,"Hybrid regime","Asia & Australasia"
+"Finland",46.01,6,85.5,0.42,"free","mostly free","good situation",38,44500,2017,5,9.25,10,8.93,8.89,8.75,9.71,"Full democracy","Western Europe"
+"France",341.2,6,81,0.72,"free","moderately free","satisfactory situation",40,44100,2017,20,8.12,9.58,7.86,7.78,6.88,8.53,"Full democracy","Western Europe"
+"French Polynesia",1.03,6,62,1.01,NA,NA,NA,104,17000,2015,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"Gabon",4.293,6,90.1,2.61,"not free","mostly unfree","difficult situation",98,18100,2017,121,3.61,2.58,2.21,4.44,5,3.82,"Authoritarian","Sub-Saharan Africa"
+"Gambia",607300,0,62.6,4.07,"partly free","mostly unfree","noticeable problems",197,2600,2017,107,4.33,4,4.29,3.33,5.63,4.41,"Hybrid regime","Sub-Saharan Africa"
+"Gaza Strip",NA,NA,76.7,3,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"Georgia",9.912,6,59.5,0.42,"partly free","mostly free","noticeable problems",138,10700,2017,89,5.42,7.83,3.21,6.11,4.38,5.59,"Hybrid regime","Eastern Europe"
+"Germany",847.6,6,77.5,0.27,"free","mostly free","good situation",27,50800,2017,13,8.68,9.58,8.57,8.33,7.5,9.41,"Full democracy","Western Europe"
+"Ghana",13.67,6,57.3,3.34,"free","mostly unfree","satisfactory situation",172,4700,2017,55,6.63,8.33,5.71,6.67,6.25,6.18,"Flawed democracy","Sub-Saharan Africa"
+"Gibraltar",13.34,6,100,0.45,NA,NA,NA,18,61700,2014,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"Greece",69.37,6,79.7,0.22,"free","mostly unfree","noticeable problems",75,27800,2017,39,7.43,9.58,4.86,6.67,7.5,8.53,"Flawed democracy","Western Europe"
+"Greenland",613800,0,87.3,0.42,NA,NA,NA,44,41800,2015,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"Grenada",283600,0,36.5,0.76,"free",NA,"satisfactory situation",110,15100,2017,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"Guam",2.214,6,94.9,0.92,NA,NA,NA,56,35600,2016,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"Guatemala",17.15,6,51.8,2.68,"partly free","moderately free","difficult situation",150,8200,2017,93,5.26,6.92,4.64,3.89,4.38,6.47,"Hybrid regime","Latin America"
+"Guernsey",NA,NA,31,0.46,NA,NA,NA,24,52500,2014,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"Guinea",2.794,6,36.5,3.54,"partly free","mostly unfree","noticeable problems",205,2200,2017,132,3.14,3.5,0.43,4.44,4.38,2.94,"Authoritarian","Sub-Saharan Africa"
+"Guinea-Bissau",397900,0,44.2,3.41,"partly free","mostly unfree","noticeable problems",212,1900,2017,148,2.63,4.92,0,2.78,3.13,2.35,"Authoritarian","Sub-Saharan Africa"
+"Guyana",2.131,6,26.8,0.83,"free","mostly unfree","noticeable problems",151,8100,2017,71,6.15,6.92,5.36,6.11,5,7.35,"Flawed democracy","Latin America"
+"Haiti",3.595,6,57.1,2.9,"partly free","mostly unfree","noticeable problems",213,1800,2017,105,4.57,4.75,2.07,3.89,6.25,5.88,"Hybrid regime","Latin America"
+"Holy See (Vatican City)",NA,NA,100,-0.05,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"Honduras",9.436,6,58.4,2.75,"partly free","moderately free","difficult situation",170,5600,2017,89,5.42,7.83,4.29,4.44,4.38,6.18,"Hybrid regime","Latin America"
+"Hong Kong",102.5,6,100,0.82,"partly free","free","noticeable problems",16,64500,2018,75,6.02,3.58,4.36,6.11,7.5,8.53,"Flawed democracy","Asia & Australasia"
+"Hungary",51.28,6,71.9,0.07,"partly free","moderately free","noticeable problems",68,29600,2017,55,6.63,8.75,6.07,5,6.25,7.06,"Flawed democracy","Eastern Europe"
+"Iceland",3.228,6,93.9,0.81,"free","mostly free","satisfactory situation",25,52200,2017,2,9.58,10,9.29,8.89,10,9.71,"Full democracy","Western Europe"
+"India",2.383,9,34.9,2.37,"free","mostly unfree","difficult situation",156,7200,2017,51,6.9,8.67,6.79,6.67,5.63,6.76,"Flawed democracy","Asia & Australasia"
+"Indonesia",540.7,6,56.6,2.27,"partly free","moderately free","difficult situation",127,12400,2017,64,6.48,7.92,7.14,6.11,5.63,5.59,"Flawed democracy","Asia & Australasia"
+"Iran",638.3,6,75.9,1.71,"not free","repressed","very serious situation",89,20100,2017,151,2.38,0,2.86,4.44,3.13,1.47,"Authoritarian","Middle East & North Africa"
+"Iraq",117.9,6,70.9,3.06,"not free",NA,"very serious situation",107,16700,2017,118,3.74,5.25,0,6.67,5,1.76,"Authoritarian","Middle East & North Africa"
+"Ireland",36.91,6,63.7,1.14,"free","free","good situation",10,73200,2017,6,9.24,10,7.86,8.33,10,10,"Full democracy","Western Europe"
+"Isle of Man",NA,NA,52.9,0.89,NA,NA,NA,8,84600,2014,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"Israel",73.82,6,92.6,1.64,"free","mostly free","noticeable problems",55,36400,2017,28,7.86,9.17,7.86,8.89,7.5,5.88,"Flawed democracy","Middle East & North Africa"
+"Italy",351,6,71,0.29,"free","moderately free","satisfactory situation",50,38200,2017,35,7.52,9.58,6.07,7.78,6.25,7.94,"Flawed democracy","Western Europe"
+"Jamaica",8.9,6,56.3,0.82,"free","moderately free","good situation",143,9200,2017,50,6.96,8.75,7.14,4.44,6.25,8.24,"Flawed democracy","Latin America"
+"Japan",1.268,9,91.8,-0.14,"free","mostly free","noticeable problems",42,42900,2017,24,7.99,8.75,8.21,6.67,7.5,8.82,"Flawed democracy","Asia & Australasia"
+"Jersey",450000,0,31,0.46,NA,NA,NA,21,56600,2016,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"Jordan",27.39,6,91.4,2.43,"partly free","moderately free","difficult situation",144,9200,2017,114,3.93,3.58,4.29,3.89,4.38,3.53,"Authoritarian","Middle East & North Africa"
+"Kazakhstan",304.6,6,57.7,1.29,"not free","moderately free","difficult situation",79,26300,2017,139,2.94,0.5,2.14,4.44,4.38,3.24,"Authoritarian","Eastern Europe"
+"Kenya",17.98,6,28,4.23,"partly free","mostly unfree","noticeable problems",187,3500,2017,94,5.18,3.5,5.71,6.67,5.63,4.41,"Hybrid regime","Sub-Saharan Africa"
+"Kiribati",58850,0,55.6,3.19,"free","repressed",NA,210,2000,2017,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"Korea, North",27.83,6,62.4,0.82,"not free","repressed","very serious situation",214,1700,2015,167,1.08,0,2.5,1.67,1.25,0,"Authoritarian","Asia & Australasia"
+"Korea, South",778.4,6,81.4,0.3,"free","mostly free","satisfactory situation",46,39500,2017,23,8,9.17,7.86,7.22,7.5,8.24,"Flawed democracy","Asia & Australasia"
+"Kosovo",10.05,6,NA,NA,"partly free","moderately free","noticeable problems",137,10900,2017,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"Kuwait",106.5,6,100,1.78,"partly free","moderately free","noticeable problems",15,65800,2017,114,3.93,3.58,4.29,3.89,4.38,3.53,"Authoritarian","Middle East & North Africa"
+"Kyrgyzstan",10.02,6,36.9,2.03,"partly free","moderately free","noticeable problems",183,3700,2017,101,4.89,6.08,2.93,6.67,3.75,5,"Hybrid regime","Eastern Europe"
+"Laos",10.42,6,36.3,3.28,"not free","mostly unfree","very serious situation",155,7400,2017,155,2.14,0,2.86,1.67,5,1.18,"Authoritarian","Asia & Australasia"
+"Latvia",8.632,6,68.3,-0.93,"free","mostly free","satisfactory situation",76,27700,2017,38,7.49,9.58,6.07,6.11,6.88,8.82,"Flawed democracy","Eastern Europe"
+"Lebanon",23.36,6,88.9,0.75,"partly free","mostly unfree","noticeable problems",91,19600,2017,106,4.36,3.92,1.5,6.67,5,4.71,"Hybrid regime","Middle East & North Africa"
+"Lesotho",711100,0,29,2.83,"partly free","mostly unfree","noticeable problems",190,3300,2017,60,6.54,9.17,4.5,6.67,5.63,6.76,"Flawed democracy","Sub-Saharan Africa"
+"Liberia",1.163,6,52.1,3.41,"partly free","repressed","noticeable problems",221,1300,2017,88,5.45,7.42,3.07,5.56,5.63,5.59,"Hybrid regime","Sub-Saharan Africa"
+"Libya",46.48,6,80.7,1.68,"not free",NA,"very serious situation",141,9600,2017,156,2.02,0,0,2.78,4.38,2.94,"Authoritarian","Middle East & North Africa"
+"Liechtenstein",NA,NA,14.4,0.81,"free",NA,"satisfactory situation",1,139100,2009,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"Lithuania",13.49,6,68,-0.31,"free","mostly free","satisfactory situation",63,32400,2017,36,7.5,9.58,6.43,6.11,6.25,9.12,"Flawed democracy","Eastern Europe"
+"Luxembourg",10.72,6,91.5,1.55,"free","mostly free","satisfactory situation",5,105100,2017,12,8.81,10,8.93,6.67,8.75,9.71,"Full democracy","Western Europe"
+"Macau",2.563,6,100,1.63,NA,"mostly free",NA,3,122000,2018,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"Macedonia",NA,NA,NA,NA,NA,NA,NA,113,14900,2017,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"Madagascar",4.021,6,38.5,4.48,"partly free","moderately free","noticeable problems",218,1600,2017,85,5.64,7.92,3.57,6.11,5.63,5,"Hybrid regime","Sub-Saharan Africa"
+"Malawi",1.082,6,17.4,4.19,"partly free","mostly unfree","noticeable problems",223,1200,2017,87,5.5,6.08,4.29,5,6.25,5.88,"Hybrid regime","Sub-Saharan Africa"
+"Malaysia",226.8,6,77.2,2.13,"partly free","mostly free","noticeable problems",71,29100,2017,43,7.16,9.17,7.86,6.67,6.25,5.88,"Flawed democracy","Asia & Australasia"
+"Maldives",1.648,6,40.7,2.93,"partly free","mostly unfree","noticeable problems",93,19200,2017,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"Mali",3.388,6,43.9,4.86,"partly free","mostly unfree","noticeable problems",206,2200,2017,100,4.92,6.42,3.07,3.89,5.63,5.59,"Hybrid regime","Sub-Saharan Africa"
+"Malta",8.141,6,94.7,0.38,"free","moderately free","noticeable problems",43,41900,2017,26,7.95,9.17,7.5,6.11,8.13,8.82,"Flawed democracy","Western Europe"
+"Marshall Islands",293700,0,77.8,0.61,"free",NA,NA,186,3600,2017,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"Mauritania",2.615,6,55.3,4.28,"partly free","mostly unfree","noticeable problems",173,4500,2017,116,3.92,3.5,3.57,5,3.13,4.41,"Authoritarian","Sub-Saharan Africa"
+"Mauritius",6.429,6,40.8,0.11,"free","mostly free","noticeable problems",86,22300,2017,18,8.22,9.17,8.21,5.56,8.75,9.41,"Full democracy","Sub-Saharan Africa"
+"Mexico",454.1,6,80.7,1.59,"partly free","moderately free","difficult situation",90,19900,2017,73,6.09,7.83,6.07,7.22,3.13,6.18,"Flawed democracy","Latin America"
+"Micronesia, Federated States of",105,0,22.9,1.05,"free","mostly unfree",NA,189,3400,2017,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"Moldova",7.653,6,42.8,-0.07,"partly free","moderately free","noticeable problems",162,6700,2017,83,5.75,6.58,4.64,6.11,4.38,7.06,"Hybrid regime","Eastern Europe"
+"Monaco",NA,NA,100,0.51,"free",NA,NA,4,115700,2015,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"Mongolia",19.86,6,68.7,1.63,"free","mostly unfree","noticeable problems",118,13700,2018,62,6.5,9.17,5.71,5.56,5,7.06,"Flawed democracy","Asia & Australasia"
+"Montenegro",2.287,6,67.5,0.54,"partly free","moderately free","noticeable problems",100,17800,2017,84,5.65,5.67,5.36,6.11,4.38,6.76,"Hybrid regime","Eastern Europe"
+"Montserrat",57180,0,9.1,0.64,NA,NA,NA,60,34000,2011,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"Morocco",55.4,6,63.5,2.14,"partly free","moderately free","difficult situation",147,8600,2017,96,5.1,5.25,4.64,5.56,5.63,4.41,"Hybrid regime","Middle East & North Africa"
+"Mozambique",11.12,6,37.1,4.35,"partly free","mostly unfree","noticeable problems",222,1300,2017,120,3.65,2.58,2.14,5,5,3.53,"Authoritarian","Sub-Saharan Africa"
+"Myanmar",NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,122,3.55,3.08,3.93,2.78,5.63,2.35,"Authoritarian","Asia & Australasia"
+"Namibia",3.958,6,52,4.2,"free","moderately free","satisfactory situation",135,11200,2017,65,6.43,6.58,5.36,6.67,5.63,7.94,"Flawed democracy","Sub-Saharan Africa"
+"Nauru",76540,0,100,-0.06,"free",NA,NA,129,12300,2017,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"Nepal",8.396,6,20.6,3.15,"partly free","mostly unfree","difficult situation",195,2700,2017,92,5.28,4.83,5.36,5,5.63,5.59,"Hybrid regime","Asia & Australasia"
+"Netherlands",250.2,6,92.2,0.74,"free","mostly free","good situation",23,53900,2017,11,9.01,9.58,9.29,8.33,8.75,9.12,"Full democracy","Western Europe"
+"New Caledonia",6.165,6,71.5,1.89,NA,NA,NA,66,31100,2015,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"New Zealand",37.75,6,86.7,1.01,"free","free","good situation",48,39000,2017,4,9.26,10,9.29,8.89,8.13,10,"Full democracy","Asia & Australasia"
+"Nicaragua",5.405,6,59,1.45,"not free","mostly unfree","difficult situation",165,5900,2017,122,3.55,1.25,2.86,3.89,5.63,4.12,"Authoritarian","Latin America"
+"Niger",2.534,6,16.6,4.27,"partly free","mostly unfree","noticeable problems",224,1200,2017,127,3.29,2.92,1.14,3.33,4.38,4.71,"Authoritarian","Sub-Saharan Africa"
+"Nigeria",104,6,52,4.23,"partly free","mostly unfree","difficult situation",166,5900,2017,109,4.12,5.17,3.93,3.33,3.75,4.41,"Hybrid regime","Sub-Saharan Africa"
+"Niue",7252,0,46.2,1.69,NA,NA,NA,168,5800,2003,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"North Macedonia",7.459,6,58.5,0.45,"partly free","moderately free","noticeable problems",NA,NA,NA,77,5.97,7,5.36,6.67,3.75,7.06,"Hybrid regime","Eastern Europe"
+"Northern Mariana Islands",NA,NA,91.8,0.29,NA,NA,NA,84,24500,2016,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"Norway",39.8,6,83,1.4,"free","mostly free","good situation",11,72100,2017,1,9.87,10,9.64,10,10,9.71,"Full democracy","Western Europe"
+"Oman",68.94,6,86.3,5.25,"not free","moderately free","difficult situation",37,46000,2017,137,3.06,0.08,3.93,2.78,4.38,4.12,"Authoritarian","Middle East & North Africa"
+"Pakistan",179.5,6,37.2,2.53,"partly free","mostly unfree","difficult situation",171,5400,2017,108,4.25,6.08,5.71,2.22,2.5,4.71,"Hybrid regime","Asia & Australasia"
+"Palau",NA,NA,81,1.77,"free",NA,NA,115,14700,2017,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"Palestine",NA,NA,NA,NA,"not free",NA,"difficult situation",NA,NA,NA,117,3.89,3.33,0.14,7.78,4.38,3.82,"Authoritarian","Middle East & North Africa"
+"Panama",26.08,6,68.4,2.06,"free","moderately free","noticeable problems",80,25400,2017,46,7.05,9.58,6.07,6.67,5,7.94,"Flawed democracy","Latin America"
+"Papua New Guinea",6.082,6,13.3,2.51,"partly free","mostly unfree","satisfactory situation",184,3700,2017,74,6.03,6.92,6.07,3.89,5.63,7.65,"Flawed democracy","Asia & Australasia"
+"Paraguay",7.74,6,62.2,1.71,"partly free","moderately free","noticeable problems",123,12800,2017,70,6.24,8.75,5.71,5,4.38,7.35,"Flawed democracy","Latin America"
+"Peru",55.94,6,78.3,1.44,"free","moderately free","noticeable problems",120,13500,2017,58,6.6,9.17,5,5.56,5.63,7.65,"Flawed democracy","Latin America"
+"Philippines",117.2,6,47.4,1.99,"partly free","moderately free","difficult situation",148,8400,2017,54,6.64,9.17,5.36,7.22,4.38,7.06,"Flawed democracy","Asia & Australasia"
+"Pitcairn Islands",NA,NA,0,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"Poland",359,6,60,-0.25,"free","moderately free","noticeable problems",69,29600,2017,57,6.62,9.17,6.07,6.11,4.38,7.35,"Flawed democracy","Eastern Europe"
+"Portugal",54.97,6,66.3,0.47,"free","moderately free","good situation",67,30500,2017,22,8.03,9.58,7.86,6.11,7.5,9.12,"Full democracy","Western Europe"
+"Puerto Rico",19.85,6,93.6,-0.14,NA,NA,NA,47,39400,2017,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"Qatar",114.2,6,99.2,2.41,"not free","mostly free","difficult situation",2,124100,2017,128,3.19,0,4.29,2.22,5.63,3.82,"Authoritarian","Middle East & North Africa"
+"Romania",72.07,6,54.2,-0.38,"free","moderately free","noticeable problems",83,24600,2017,63,6.49,9.17,5.71,5.56,4.38,7.65,"Flawed democracy","Eastern Europe"
+"Russia",1.847,9,74.8,0.18,"not free","moderately free","difficult situation",74,27900,2017,134,3.11,2.17,1.79,5,2.5,4.12,"Authoritarian","Eastern Europe"
+"Rwanda",985600,0,17.4,2.86,"not free","mostly free","difficult situation",208,2100,2017,129,3.16,1.42,4.29,2.78,4.38,2.94,"Authoritarian","Sub-Saharan Africa"
+"SÃ£o TomÃ© and PrÃ­ncipe",NA,NA,NA,NA,"free","mostly unfree",NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"Saint Helena, Ascension, and Tristan da Cunha",10650,0,40.1,0.73,NA,NA,NA,153,7800,9,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"Saint Kitts and Nevis",248100,0,30.8,0.92,"free",NA,"satisfactory situation",73,28200,2017,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"Saint Lucia",437900,0,18.8,0.8,"free","moderately free","satisfactory situation",117,14400,2017,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"Saint Martin",NA,NA,NA,NA,NA,NA,NA,92,19300,2005,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"Saint Pierre and Miquelon",100200,0,90,0.36,NA,NA,NA,36,46200,2006,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"Saint Vincent and the Grenadines",226800,0,53,1.03,"free","moderately free","satisfactory situation",133,11500,2017,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"Samoa",341100,0,17.9,-0.47,"free","moderately free","satisfactory situation",169,5700,2017,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"San Marino",NA,NA,97.5,0.67,"free",NA,NA,20,59000,2017,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"Sao Tome and Principe",148100,0,74.4,3.33,NA,NA,NA,191,3200,2017,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"Saudi Arabia",657.1,6,84.3,2.17,"not free","moderately free","very serious situation",22,54500,2017,159,1.93,0,2.86,2.22,3.13,1.47,"Authoritarian","Middle East & North Africa"
+"Senegal",8.644,6,48.1,3.73,"partly free","mostly unfree","satisfactory situation",188,3500,2017,82,5.81,6.08,6.07,4.44,6.25,6.18,"Hybrid regime","Sub-Saharan Africa"
+"Serbia",50.21,6,56.4,-0.07,"partly free","moderately free","noticeable problems",111,15100,2017,66,6.41,8.25,5.36,6.11,5,7.35,"Flawed democracy","Eastern Europe"
+"Seychelles",1.15,6,57.5,1.26,"partly free","moderately free","noticeable problems",70,29300,2017,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"Sierra Leone",984800,0,42.9,3.12,"partly free","repressed","noticeable problems",219,1600,2017,102,4.86,6.58,2.86,3.33,6.25,5.29,"Hybrid regime","Sub-Saharan Africa"
+"Singapore",249.5,6,100,1.39,"partly free","free","very serious situation",7,94100,2017,75,6.02,3.92,7.86,5,6.25,7.06,"Flawed democracy","Asia & Australasia"
+"Sint Maarten",NA,NA,100,1.56,NA,NA,NA,14,66800,2014,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"Slovakia",34.86,6,53.8,0,"free","moderately free","satisfactory situation",61,33100,2017,42,7.17,9.58,7.14,5.56,5.63,7.94,"Flawed democracy","Eastern Europe"
+"Slovenia",14.37,6,55.1,0.56,"free","moderately free","satisfactory situation",58,34500,2017,36,7.5,9.58,6.79,6.67,6.25,8.24,"Flawed democracy","Eastern Europe"
+"Solomon Islands",233500,0,24.7,3.91,"free","mostly unfree",NA,207,2200,2017,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"Somalia",852500,0,46.1,4.23,"not free",NA,"very serious situation",NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"South Africa",572.3,6,67.4,1.97,"free","mostly unfree","satisfactory situation",119,13600,2017,40,7.24,7.42,7.5,8.33,5,7.94,"Flawed democracy","Sub-Saharan Africa"
+"South Sudan",1.224,6,20.2,4.1,"not free",NA,"difficult situation",220,1600,2017,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"Spain",286.7,6,80.8,0.33,"free","moderately free","satisfactory situation",49,38400,2017,16,8.29,9.58,7.14,7.78,8.13,8.82,"Full democracy","Western Europe"
+"Sri Lanka",25.19,6,18.7,0.85,"partly free","mostly unfree","difficult situation",121,12900,2017,69,6.27,7,6.07,5.56,6.25,6.47,"Flawed democracy","Asia & Australasia"
+"Sudan",16.03,6,35.3,3.17,"not free","repressed","very serious situation",174,4300,2017,147,2.7,0,1.79,5.56,5,1.18,"Authoritarian","Middle East & North Africa"
+"Suriname",2.075,6,66.1,0.9,"free","repressed","satisfactory situation",114,14900,2017,49,6.98,9.17,6.43,6.67,5,7.65,"Flawed democracy","Latin America"
+"Sweden",52.31,6,88,1.05,"free","mostly free","good situation",26,51200,2017,3,9.39,9.58,9.64,8.33,10,9.41,"Full democracy","Western Europe"
+"Switzerland",38.95,6,73.9,0.88,"free","free","good situation",17,62100,2017,10,9.03,9.58,9.29,7.78,9.38,9.12,"Full democracy","Western Europe"
+"Syria",27.51,6,55.5,1.43,"not free",NA,"very serious situation",194,2900,2015,164,1.43,0,0,2.78,4.38,0,"Authoritarian","Middle East & North Africa"
+"Taiwan",348.8,6,78.9,0.8,"free","mostly free","satisfactory situation",28,50500,2017,31,7.73,9.58,8.21,6.11,5.63,9.12,"Flawed democracy","Asia & Australasia"
+"Tajikistan",6.329,6,27.5,2.62,"not free","mostly unfree","very serious situation",192,3200,2017,159,1.93,0.08,0.79,1.67,6.25,0.88,"Authoritarian","Eastern Europe"
+"Tanzania",14.57,6,35.2,5.22,"partly free","moderately free","difficult situation",193,3200,2017,95,5.16,5.75,5,5,5.63,4.41,"Hybrid regime","Sub-Saharan Africa"
+"Thailand",355,6,51.4,1.73,"partly free","moderately free","difficult situation",99,17900,2017,68,6.32,7.42,5.36,6.11,6.25,6.47,"Flawed democracy","Asia & Australasia"
+"Timor-Leste",533400,0,31.3,3.35,NA,NA,NA,164,6000,2017,41,7.19,9.58,6.29,5.56,6.88,7.65,"Flawed democracy","Asia & Australasia"
+"Togo",2.651,6,42.8,3.76,"partly free","mostly unfree","noticeable problems",215,1700,2017,126,3.3,3.17,1.79,3.33,5,3.24,"Authoritarian","Sub-Saharan Africa"
+"Tokelau",NA,NA,0,0,NA,NA,NA,225,1000,1993,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"Tonga",139700,0,23.1,0.71,"free","mostly unfree","noticeable problems",167,5900,2017,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"Trinidad and Tobago",48.92,6,53.2,0.22,"free","mostly unfree","satisfactory situation",65,31300,2017,43,7.16,9.58,7.14,6.11,5.63,7.35,"Flawed democracy","Latin America"
+"Tunisia",23.42,6,69.6,1.53,"free","mostly unfree","noticeable problems",131,11900,2017,53,6.72,9.17,5.71,7.22,5.63,5.88,"Flawed democracy","Middle East & North Africa"
+"Turkey",379.5,6,76.1,2.04,"not free","moderately free","difficult situation",77,27000,2017,110,4.09,3.08,5,5,5,2.35,"Hybrid regime","Western Europe"
+"Turkmenistan",100.5,6,52.5,2.46,"not free","repressed","very serious situation",97,18200,2017,162,1.72,0,0.79,2.22,5,0.59,"Authoritarian","Eastern Europe"
+"Turks and Caicos Islands",221800,0,93.6,1.77,NA,NA,NA,72,29100,2007,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"Tuvalu",NA,NA,64,2.27,"free",NA,NA,180,3800,2017,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"Uganda",4.703,6,25,5.7,"not free","mostly unfree","difficult situation",200,2400,2017,99,5.02,4.33,3.57,4.44,6.88,5.88,"Hybrid regime","Sub-Saharan Africa"
+"Ukraine",238.9,6,69.6,-0.33,"partly free","mostly unfree","noticeable problems",146,8800,2017,78,5.9,7.42,2.71,6.67,6.25,6.47,"Hybrid regime","Eastern Europe"
+"United Arab Emirates",289.4,6,87,1.71,"not free","mostly free","difficult situation",13,68600,2017,145,2.76,0,3.93,2.22,5,2.65,"Authoritarian","Middle East & North Africa"
+"United Kingdom",424,6,83.9,0.89,"free","mostly free","satisfactory situation",39,44300,2017,14,8.52,9.58,7.5,8.89,7.5,9.12,"Full democracy","Western Europe"
+"United States",5.242,9,82.7,0.95,"free","mostly free","satisfactory situation",19,59800,2017,25,7.96,9.17,7.14,7.78,7.5,8.24,"Flawed democracy","North America"
+"Uruguay",7.554,6,95.5,0.46,"free","moderately free","satisfactory situation",85,22400,2017,15,8.38,10,8.57,6.11,7.5,9.71,"Full democracy","Latin America"
+"Uzbekistan",95.58,6,50.4,1.28,"not free","mostly unfree","difficult situation",158,6900,2017,157,2.01,0.08,1.86,2.22,5,0.88,"Authoritarian","Eastern Europe"
+"Vanuatu",164800,0,25.5,2.55,"free","moderately free",NA,196,2700,2017,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"Venezuela",129.9,6,88.3,1.28,"not free","repressed","difficult situation",126,12500,2017,140,2.88,0,1.79,5,4.38,3.24,"Authoritarian","Latin America"
+"Vietnam",235.3,6,37.3,2.98,"not free","mostly unfree","very serious situation",159,6900,2017,136,3.08,0,3.21,3.89,5.63,2.65,"Authoritarian","Asia & Australasia"
+"Virgin Islands",2.764,6,95.9,0.1,NA,NA,NA,54,37000,2016,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"Wallis and Futuna",NA,NA,0,0,NA,NA,NA,181,3800,2004,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"West Bank",3.113,6,76.7,3,NA,NA,NA,175,4300,2014,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"Western Sahara",268400,0,86.8,2.61,NA,NA,NA,198,2500,2007,NA,NA,NA,NA,NA,NA,NA,NA,NA
+"Yemen",13.68,6,37.9,4.06,"not free",NA,"very serious situation",199,2500,2017,158,1.95,0,0,3.89,5,0.88,"Authoritarian","Middle East & North Africa"
+"Zambia",3.777,6,44.6,4.23,"partly free","mostly unfree","difficult situation",178,4000,2017,97,5.09,4.75,2.93,4.44,6.88,6.47,"Hybrid regime","Sub-Saharan Africa"
+"Zimbabwe",12.06,6,32.2,2.19,"partly free","repressed","difficult situation",203,2300,2017,129,3.16,0,2.5,4.44,5.63,3.24,"Authoritarian","Sub-Saharan Africa"

@@ -1,0 +1,41 @@
+
+EJERCICIO 3
+
+```{r}
+linkCIA_GDP = "https://www.cia.gov/library/publications/resources/the-world-factbook/fields/211rank.html"
+linkPath_GDP ='//*[@id="rankOrder"]'
+
+GDP= htmltab(doc = linkCIA_GDP, 
+                which =linkPath_GDP)
+```
+
+```{r}
+head(GDP)
+```
+Limpiamos:
+
+opcion 1: con parse
+```{r}
+library(readr)
+GDP$`GDP - per capita (PPP)`= parse_number(GDP$`GDP - per capita (PPP)`)
+str(GDP$`GDP - per capita (PPP)`)
+```
+
+opcion 2: (MÁS LARGO) eliminar dollar y as.numeric
+```{r}
+GDP$`GDP - per capita (PPP)`=gsub(',|\\$',"",GDP$`GDP - per capita (PPP)`)
+
+```
+¿que hacer con los as.numeric?
+
+```{r}
+GDP$`GDP - per capita (PPP)`=as.numeric(GDP$`GDP - per capita (PPP)`)
+GDP$Rank=NULL
+```
+
+```{r}
+write.csv(GDP,"GDP.csv",row.names = F)
+```
+
+
+

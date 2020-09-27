@@ -1,0 +1,101 @@
+
+```{r}
+library(htmltab)
+library(tidyr)
+library(stringr)
+library(magrittr)
+library(readr)
+
+```
+PASO 1: base 1
+
+link:
+```{r}
+url1 = "https://www.cia.gov/library/publications/resources/the-world-factbook/fields/223.html" 
+
+G= htmltab(doc = url1, 
+              which = '//*[@id="fieldListing"]',
+              encoding = "UTF-8") 
+```
+```{r}
+names(G)[2]="Gi"
+head(G)
+```
+Limpio
+```{r}
+G$Gi1=str_split(string = G$Gi,
+                pattern = '\\(',
+                simplify = T)[,1]
+```
+
+```{r}
+str(G)
+```
+```{r}
+G[,c(3)]=lapply(G[,c(3)],as.numeric)
+```
+O Tambien puede ser:
+```{r}
+G$Gi1=as.numeric(G$Gi1)
+```
+
+```{r}
+summary(G$Gi1)
+```
+PASO 2: base 2
+
+```{r}
+url2 = "https://www.cia.gov/library/publications/resources/the-world-factbook/fields/225.html"
+
+taxes = htmltab(doc = url2, 
+               which = '//*[@id="fieldListing"]', #herramientas de desarrollador
+               encoding = "UTF-8")
+```
+
+
+```{r}
+head(taxes)
+```
+
+```{r}
+names(taxes)[2]="Ta"
+```
+
+```{r}
+taxes$Ta1=str_split(string = taxes$Ta,
+                pattern = '\\%',
+                simplify = T)[,1]
+```
+
+```{r}
+taxes$Ta1= as.numeric(taxes$Ta1)
+str(taxes$Ta1)
+```
+PASO 3: MERGE
+```{r}
+Gfinal=merge(G,taxes,by.x = "Country",by.y = "Country" )
+Gfinal[,c(2,4)]=NULL
+```
+
+```{r}
+Gfinal[!complete.cases(Gfinal),]
+```
+
+
+```{r}
+attach(Gfinal)
+plot(G,taxes)
+```
+
+EXTRA
+```{r}
+aggregate(Gi1~Ta1,data=Gfinal,FUN = mean)
+```
+
+
+
+
+
+
+
+

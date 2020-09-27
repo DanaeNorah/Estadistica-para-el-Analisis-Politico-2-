@@ -1,0 +1,148 @@
+
+# Datas:
+
+```{r}
+library(htmltab)
+```
+
+1. Urban data
+```{r}
+linkUrban="https://www.cia.gov/library/publications/resources/the-world-factbook/fields/349.html"
+pathUrban='//*[@id="fieldListing"]'
+urban=htmltab(linkUrban,pathUrban)
+```
+
+2. Carbon data
+
+```{r}
+linkCO="https://www.cia.gov/library/publications/resources/the-world-factbook/fields/274.html"
+pathCO='//*[@id="fieldListing"]'
+co=htmltab(linkCO,pathCO)
+
+```
+
+3. Democracy data
+```{r}
+linkDemo="https://en.wikipedia.org/wiki/Democracy_Index"
+pathDemo='//*[@id="mw-content-text"]/div[1]/table[2]'
+demo=htmltab(linkDemo,pathDemo)
+```
+
+4. GDP
+
+```{r}
+linkGDP="https://www.cia.gov/library/publications/resources/the-world-factbook/fields/211rank.html" 
+pathGDP = '//*[@id="rankOrder"]'
+gdp=htmltab(linkGDP,pathGDP)
+```
+
+
+5. Freedom data
+```{r}
+linkFree="https://en.wikipedia.org/wiki/List_of_freedom_indices"
+pathFree='//*[@id="mw-content-text"]/div[1]/table[2]'
+free=htmltab(linkFree,pathFree)
+```
+
+# Limpieza
+
+```{r}
+library(stringr)
+```
+
+## Urban:
+
+```{r}
+
+PATRON="(\\-*\\d+\\.*\\d*)(?=\\%)"
+COLSUCIA=urban$Urbanization
+
+# UNA COLUMNA
+urban$pop_urb=str_extract_all(string = COLSUCIA,
+                              pattern= PATRON,
+                              simplify = T)[,1]
+
+# OTRA COLUMNA
+urban$rate_urb=str_extract_all(string = COLSUCIA,
+                               pattern=PATRON,
+                               simplify = T)[,2]
+urban$Urbanization=NULL
+
+urban$Country=trimws(urban$Country,whitespace = "[\\h\\v]")
+# grabando
+write.csv(urban,"urban.csv", row.names = F)
+```
+
+## Carbon
+```{r}
+#mejores nombres
+names(co)[2]='co'
+co$co=str_split(string = co$co,
+                pattern = '\\(',
+                simplify = T)[,1]
+co$unit=str_split(string = co$co,
+                pattern = ' ',
+                simplify = T)[,2]
+co$co=str_split(string = co$co,
+                pattern = ' ',
+                simplify = T)[,1]
+# table(co$unit)
+co$co=gsub(",","",co$co)
+co$unit=gsub("million",6,co$unit)
+co$unit=gsub("billion",9,co$unit)
+co$unit=gsub("Mt",0,co$unit)
+
+
+# "en toda columna"
+co[,]=lapply(co[,], trimws,whitespace = "[\\h\\v]")
+#str(co)
+write.csv(co,"co.csv", row.names = F)
+```
+
+## DEMOCRACY
+
+```{r}
+names(demo)=str_split(string = names(demo),
+                pattern = ' ',
+                simplify = T)[,1]
+demo$Changes=NULL
+names(demo)[1]="rankDemo"
+demo[,]=lapply(demo[,], trimws,whitespace = "[\\h\\v]")
+write.csv(demo,"demo.csv", row.names = F)
+```
+
+## GDP
+
+```{r}
+library(readr)
+
+
+names(gdp)=str_split(string = names(gdp),
+                pattern = ' ',
+                simplify = T)[,1]
+
+gdp$GDP=parse_number(gdp$GDP)
+gdp$Date=parse_number(gdp$Date)
+names(gdp)[1]="rankGDP"
+gdp[,]=lapply(gdp[,], trimws,whitespace = "[\\h\\v]")
+write.csv(gdp,"gdp.csv", row.names = F)
+```
+
+
+```{r}
+free=free[,-5] #eliminé dem index!
+
+names(free)=c("Country","freeMundo","freeEco","freePress")
+
+free$freeEco=gsub("n/a",NA,free$freeEco)
+free$freeMundo=gsub("n/a",NA,free$freeMundo)
+free$freePress=gsub("n/a",NA,free$freePress)
+free[,]=lapply(free[,], trimws,whitespace = "[\\h\\v]")
+# free[free$freeEco=='n/a','freeEco']=NA !!!ojo
+
+write.csv(free,"free.csv", row.names = F)
+```
+
+
+
+

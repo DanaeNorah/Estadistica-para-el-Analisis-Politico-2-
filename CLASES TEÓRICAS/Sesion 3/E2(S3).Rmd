@@ -1,0 +1,53 @@
+
+EJERCICIO 2
+
+```{r}
+library(htmltab)
+link_democracy = "https://en.wikipedia.org/wiki/Democracy_Index"
+linkPath_democracy ='//*[@id="mw-content-text"]/div[1]/table[2]'
+
+democracia = htmltab(doc = link_democracy, 
+                which =linkPath_democracy)
+```
+
+Cambiamos los nombres:
+```{r}
+library(stringr)
+names(democracia)=str_split(string = names(democracia),
+                         pattern = '>>',
+                         simplify = T)[,1]
+
+head(democracia)
+```
+
+Limpiamos:
+
+```{r}
+names(democracia)= gsub("Â","", names(democracia))
+head(democracia)
+```
+(¿Preguntar como separar casda columna?) (porque no me sale)
+```{r}
+names(democracia)=gsub(' ','',names(democracia))
+```
+```{r}
+democracia$Country= gsub("Â","",democracia$Country)
+```
+
+```{r}
+names(democracia)[4]='Electoral proces and pluralism'
+names(democracia)[5]='Political participation'
+democracia$Rank=NULL
+head(democracia)
+```
+
+
+```{r}
+
+write.csv(democracia,"democracia.csv",row.names = F)
+```
+
+
+
+
+

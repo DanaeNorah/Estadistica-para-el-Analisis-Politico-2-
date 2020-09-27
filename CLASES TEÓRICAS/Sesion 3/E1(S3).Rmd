@@ -1,0 +1,78 @@
+
+
+EJERCIO 1
+```{r}
+library(htmltab) 
+
+link_carbon = "https://www.cia.gov/library/publications/resources/the-world-factbook/fields/274.html"
+linkPath_carbon='//*[@id="fieldListing"]'
+
+co= htmltab(doc = link_carbon, 
+                which =linkPath_carbon)
+```
+Veamos:
+```{r}
+head(co)
+
+#cambiar el nombre
+names(co)[2]="co2"
+```
+Separamos y limpiamos:
+```{r}
+library(stringr)
+#año
+co$año= str_split(string = co$co2,
+                         pattern = '\\(',
+                         simplify = T)[,2]
+
+#valor
+co$valor= str_split(string = co$co2,
+                         pattern = ' ',
+                         simplify = T)[,1]
+
+#limpio año
+co$año= str_split(string = co$año,
+                         pattern = ' ',
+                         simplify = T)[,1]
+
+#unidad
+co$unidad= str_split(string = co$co2,
+                         pattern = ' ',
+                         simplify = T)[,2]
+
+#limpiar unidad
+co$unidad= str_split(string = co$unidad,
+                         pattern = '\\(',
+                         simplify = T)[,1]
+
+```
+
+Reemplazamos las unidades:
+```{r}
+co$unidad=gsub("million",6, co$unidad)
+co$unidad=gsub("billion",9, co$unidad)
+co$unidad=gsub("Mt",0, co$unidad)
+
+#numerica
+co$unidad=as.numeric(co$unidad)
+
+```
+
+Convertimos a numeros con parsers:
+```{r}
+library(readr)
+co$valor= parse_number(co$valor)
+```
+
+Elevamos al cuadrado:
+```{r}
+co$valor= co$valor*(10**co$unidad)
+```
+
+Cuadro final:
+```{r}
+co = co[,-2]
+write.csv(co,"co.csv", row.names = F)
+```
+
+

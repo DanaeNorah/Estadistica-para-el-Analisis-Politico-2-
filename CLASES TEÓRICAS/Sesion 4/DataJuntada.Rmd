@@ -1,0 +1,69 @@
+
+MERGING - JUNTANDO DATA
+
+PASO1:
+- Links
+```{r}
+library(rio)
+
+lco='https://github.com/DanaeNorah/Estadistica-para-el-Analisis-Politico-2-/raw/master/co.csv'
+ldemocracia='https://github.com/DanaeNorah/Estadistica-para-el-Analisis-Politico-2-/raw/master/democracia.csv'
+lGDP='https://github.com/DanaeNorah/Estadistica-para-el-Analisis-Politico-2-/raw/master/GDP.csv'
+llibertad='https://github.com/MAGALLANESJoseManuel/projectoTest/raw/master/free.csv'
+lurban='https://github.com/DanaeNorah/Estadistica-para-el-Analisis-Politico-2-/raw/master/urban.csv'
+
+```
+IMPORTO o CARGO LAS BASES
+```{r}
+co=read.csv(lco,stringsAsFactors = F)
+demo=read.csv(ldemocracia,stringsAsFactors = F)
+gdp=read.csv(lGDP,stringsAsFactors = F)
+libertad=read.csv(llibertad,stringsAsFactors = F)
+urban=read.csv(lurban,stringsAsFactors = F)
+```
+PASO 2:
+- Merge o juntar
+```{r}
+co=co[co$Country!='European Union',]
+co=co[co$Country!='World',]
+
+co[co$Country=='Bahamas, The',"Country"]="Bahamas"
+co[co$Country=='Gambia, The',"Country"]="Gambia"
+co[co$Country=='Cabo Verde',"Country"]="Cape Verde"
+
+urban=urban[urban$Country!='Sint Maarten',]
+urban=urban[urban$Country!='World',]
+urban[urban$Country=='Bahamas, The',"Country"]="Bahamas"
+urban[urban$Country=='Gambia, The',"Country"]="Gambia"
+urban[urban$Country=='Cabo Verde',"Country"]="Cape Verde"
+
+libertad[libertad$Country=='São Tomé and Príncipe',"Country"]="Sao Tome and Principe"
+libertad[libertad$Country=='SÃ£o TomÃ© and PrÃncipe',"Country"]="Sao Tome and Principe"
+libertad[libertad$Country=='Ivory Coast',"Country"]="Cote d'Ivoire"
+
+gdp[gdp$Country=='Bahamas, The',"Country"]="Bahamas"
+gdp[gdp$Country=='Gambia, The',"Country"]="Gambia"
+gdp[gdp$Country=='Cabo Verde',"Country"]="Cape Verde"
+
+demo[demo$Country=='Democratic Republic of the Congo',"Country"]="Congo, Democratic Republic of the"
+demo[demo$Country=='Republic of the Congo',"Country"]="Congo, Republic of the"
+demo[demo$Country=='Ivory Coast',"Country"]="Cote d'Ivoire"
+demo[demo$Country=='North Korea',"Country"]="Korea, North"
+demo[demo$Country=='South Korea',"Country"]="Korea, South"
+
+
+totaldata=merge(co,urban,all.x = T, all.y = T)
+totaldata=merge(totaldata,libertad,all.x = T, all.y = T)
+totaldata=merge(totaldata,gdp,all.x = T, all.y = T)
+totaldata=merge(totaldata,demo,all.x = T, all.y = T)
+
+```
+VERIFICANDO TOTAL DATA
+```{r}
+totaldata[!complete.cases(totaldata),]
+```
+
+
+
+
+

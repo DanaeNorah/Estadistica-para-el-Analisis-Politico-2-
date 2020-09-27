@@ -1,0 +1,135 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+EJERCIO 1
+
+```{r}
+library(htmltab) 
+
+linkCIA_carbon = "https://www.cia.gov/library/publications/resources/the-world-factbook/fields/274.html"
+linkPath_carbon='//*[@id="fieldListing"]'
+
+carbon = htmltab(doc = linkCIA_carbon, 
+                which =linkPath_carbon)
+```
+```{r}
+names(carbon)[names(carbon) == 'Carbon dioxide emissions from consumption of energy'] <- 'CarbonEmissions'
+head(carbon)
+```
+```{r}
+PATRON1="(\\-*\\d+\\.*\\d*\\,*\\d*)"
+COLSUCIA1=carbon$CarbonEmissions
+
+carbon$Emissions=str_extract_all(string = COLSUCIA1,
+                              pattern= PATRON1,
+                              simplify = T)[,1]
+
+```
+
+```{r}
+head(carbon)
+```
+
+```{r}
+test1=carbon[1,2]
+test1
+```
+
+```{r}
+str_split(string = test1,
+          pattern = ' Mt')
+```
+
+```{r}
+carbon$Emissions_1=str_split(string = carbon$CarbonEmissions,
+                         pattern = ' Mt',
+                         simplify = T)[,1]
+
+```
+
+```{r}
+carbon$emissions_1[2]
+```
+
+```{r}
+head(carbon)
+tail(carbon)
+```
+
+```{r}
+carbon$Emissions_2=str_split(string = carbon$Emissions_1, pattern = ' ',simplify = T)[,2]
+head(carbon)
+```
+
+```{r}
+carbon$Emissions_2=replace(carbon$Emissions_2, carbon$Emissions_2=="million",10**6)
+carbon$Emissions_2=replace(carbon$Emissions_2, carbon$Emissions_2=="billion",10**9)
+carbon$Emissions_2=replace(carbon$Emissions_2, carbon$Emissions_2=="",10**0)
+head(carbon)
+```
+
+```{r}
+carbon[,c(4)]=NULL
+head(carbon)
+```
+```{r}
+carbon[,c(2)]=NULL
+head(carbon)
+```
+```{r}
+gsub(',',"",carbon)
+head(carbon)
+```
+EJERCICIO 2
+```{r}
+linkCIA_democracy = "https://en.wikipedia.org/wiki/Democracy_Index"
+linkPath_democracy ='//*[@id="mw-content-text"]/div[1]/table[2]'
+
+democracia = htmltab(doc = linkCIA_democracy, 
+                which =linkPath_democracy)
+```
+```{r}
+
+```
+
+
+```{r}
+head(democracia)
+```
+```{r}
+names(democracia) =str_split(string = names(democracia),
+                         pattern = '>>',
+                         simplify = T)[,1]
+head(democracia)
+```
+
+
+```{r}
+
+```
+
+```{r}
+names(democracia) =str_split(string = names(democracia),
+                         pattern = '>>',
+                         simplify = T)[,1]
+head(democracia)
+```
+
+EJERCICIO 3:
+```{r}
+linkCIA_GDP = "https://en.wikipedia.org/wiki/Democracy_Index"
+linkPath_GDP ='//*[@id="mw-content-text"]/div[1]/table[4]'
+
+democracia = htmltab(doc = linkCIA_GDP, 
+                which =linkPath_democracy)
+```
+
+
+
+```

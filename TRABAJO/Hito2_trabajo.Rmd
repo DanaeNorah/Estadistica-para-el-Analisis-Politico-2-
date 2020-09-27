@@ -1,0 +1,112 @@
+
+TRABAJO FINAL - GRUPO 2 - DANAE
+
+```{r}
+library(htmltab)
+library(stringr) 
+library(readr)
+library(rio)
+library(tidyr)
+```
+
+BASE DE DATOS DE LA OCDE LIBERTADES CIVILES 
+(VARIABLE 1: Political Voice) (Practice)
+(VARIABLE 2: Freedom of movement) (Practice)
+
+
+1. LIMPIEZA DE LA BASE DE DATOS POLITICAL VOICE
+
+PASO 1: Abrir nuestra base de datos original
+```{r}
+link_github="https://github.com/DanaeNorah/Estadistica-para-el-Analisis-Politico-2-/raw/master/Political_voice_(original).csv"
+Politica=import(link_github)
+
+
+```
+
+PASO 2: Eliminamos los duplicadoS:
+```{r}
+Politica=Politica[-grep("ALL",Politica$REGION),]
+
+```
+
+PASO 3: Eliminados las columnas que no necesitaremos:
+```{r}
+Politica=Politica[,-grep("REGION|Region|LOCATION|INC|Income|VAR|TIME|Year|Flags|Flag Codes",names(Politica))]
+
+```
+
+PASO 4:Verificamos que sean numericos los valores:
+```{r}
+str(Politica$Value)
+```
+PASO 5: Eliminamos los "law" en las filas de nuestra data "Politica" 
+```{r}
+Politica = Politica[Politica$Variable=="Practice",]
+
+```
+
+PASO 6: Cambiamos el nombre de la tercera columna de nuestra data "Politica"
+```{r}
+names(Politica)[3]="Politica_p"
+head(Politica)
+```
+
+
+2. LIMPIEZA DE LA BASE DE DATOS FREEDOM OF MOVEMENT
+
+PASO 1: Abrir nuestra base de datos original de nuestro Git Hub:
+```{r}
+link1_github="https://github.com/DanaeNorah/Estadistica-para-el-Analisis-Politico-2-/raw/master/Freedom%20_(original).csv"
+freedom =import(link1_github)
+```
+
+PASO 2: Eliminamos los duplicados de nuestra data:
+```{r}
+freedom=freedom[-grep("ALL",freedom$REGION),]
+
+```
+
+PASO 3: Eliminados las columnas que no utilizaremos:
+```{r}
+freedom=freedom[,-grep("REGION|Region|LOCATION|INC|Income|VAR|TIME|Year|Flags|Flag Codes",names(freedom))]
+
+```
+
+PASO 4: Verificamos que sean numericos los valores:
+```{r}
+str(freedom$Value)
+```
+
+PASO 5: Eliminamos los "law" en las filas de nuestra data "freedom"
+```{r}
+freedom = freedom[freedom$Variable=="Practice",]
+```
+
+PASO 6: Cambiamos el nombre de la tercera columna de nuestra data "freedom"
+```{r}
+names(freedom)[3]="Freedom_p"
+head(freedom)
+```
+
+3. MERGE O JUNTAR NUESTRAS DOS BASES DE DATOS (POLITICA T FREEDOM)
+
+PASO 1: Empleamos la funcion merge
+```{r}
+Libertad_civil=merge(Politica,freedom,by.x = "Country",by.y="Country")
+head(Libertad_civil)
+```
+PASO 2: Eliminamos las columnas que no usaremos
+
+```{r}
+Libertad_civil=Libertad_civil[,c(-2,-4)]
+```
+
+3. EXPORTAR PARA SUBIR A GIT HUB
+
+```{r}
+write.csv(Libertad_civil,"Libertad_civil.csv",row.names = F)
+```
+
+
+

@@ -1,0 +1,23 @@
+
+EJERCICIO 4
+
+```{r}
+library(jsonlite) #para extraer datos del API
+library(stringr) #para limpieza de columnas (extracción de numeros, particiones)
+library(readr)   #para extraer un único numero de la columna
+library(htmltab) #para scraping
+library(rio)
+
+link_libertad = "https://en.wikipedia.org/wiki/List_of_freedom_indices"
+linkPath_libertad ='//*[@id="mw-content-text"]/div[1]/table[2]'
+
+libertad= htmltab(doc = link_libertad, 
+                which =linkPath_libertad)
+head(libertad)
+```
+Limpiar:
+```{r}
+libertad$Country=gsub("Â","",libertad$Country)
+```
+
+¿que hacer con los NA?

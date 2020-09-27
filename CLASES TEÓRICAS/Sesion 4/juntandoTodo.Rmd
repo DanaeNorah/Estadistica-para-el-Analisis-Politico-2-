@@ -1,0 +1,79 @@
+
+llamando data:
+
+LINKS
+```{r}
+lco="https://github.com/MAGALLANESJoseManuel/projectoTest/raw/master/co.csv"
+
+ldemo="https://github.com/MAGALLANESJoseManuel/projectoTest/raw/master/demo.csv"
+
+lurban="https://github.com/MAGALLANESJoseManuel/projectoTest/raw/master/urban.csv"
+
+lgdp="https://github.com/MAGALLANESJoseManuel/projectoTest/raw/master/gdp.csv"
+
+lfree="https://github.com/MAGALLANESJoseManuel/projectoTest/raw/master/free.csv"
+
+```
+
+CARGAS
+
+```{r}
+co=read.csv(lco,stringsAsFactors = F)
+urban=read.csv(lurban,stringsAsFactors = F)
+free=read.csv(lfree,stringsAsFactors = F)
+gdp=read.csv(lgdp,stringsAsFactors = F)
+demo=read.csv(ldemo,stringsAsFactors = F)
+```
+
+MERGE
+```{r}
+co=co[co$Country!='European Union',]
+co=co[co$Country!='World',]
+
+co[co$Country=='Bahamas, The',"Country"]="Bahamas"
+co[co$Country=='Gambia, The',"Country"]="Gambia"
+co[co$Country=='Cabo Verde',"Country"]="Cape Verde"
+
+urban=urban[urban$Country!='World',]
+urban[urban$Country=='Bahamas, The',"Country"]="Bahamas"
+urban[urban$Country=='Gambia, The',"Country"]="Gambia"
+urban[urban$Country=='Cabo Verde',"Country"]="Cape Verde"
+
+gdp[gdp$Country=='Bahamas, The',"Country"]="Bahamas"
+gdp[gdp$Country=='Gambia, The',"Country"]="Gambia"
+gdp[gdp$Country=='Cabo Verde',"Country"]="Cape Verde"
+
+demo[demo$Country=='Democratic Republic of the Congo',"Country"]="Congo, Democratic Republic of the"
+demo[demo$Country=='Republic of the Congo',"Country"]="Congo, Republic of the"
+demo[demo$Country=='Ivory Coast',"Country"]="Cote d'Ivoire"
+demo[demo$Country=='North Korea',"Country"]="Korea, North"
+demo[demo$Country=='South Korea',"Country"]="Korea, South"
+
+ #
+free[free$Country=='São Tomé and Príncipe',"Country"]="Sao Tome and Principe"
+free[free$Country=='Ivory Coast',"Country"]="Cote d'Ivoire"
+
+
+totalData=merge(co,urban,all.x = T, all.y = T)
+totalData=merge(totalData,free,all.x = T, all.y = T)
+totalData=merge(totalData,gdp,all.x = T, all.y = T)
+totalData=merge(totalData,demo,all.x = T, all.y = T)
+
+```
+
+verificando:
+```{r}
+totalData[!complete.cases(totalData),]
+```
+```{r}
+names(totalData)=gsub("Â","",names(totalData))
+```
+
+
+```{r}
+ag1=aggregate(pop_urb~Region,data=totalData,FUN = mean)
+
+
+write.csv(totalData,"totalData.csv", row.names = F)
+```
+

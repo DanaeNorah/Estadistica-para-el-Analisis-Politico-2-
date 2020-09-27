@@ -1,0 +1,66 @@
+
+PC 2 - 20180267 - DANAE NORAH BALLENA VARGAS
+
+```{r}
+library(jsonlite) #para extraer datos del API
+library(stringr) #para limpieza de columnas 
+library(readr)   #para extraer un único numero de la columna
+library(htmltab) #para scraping
+library(rio)
+```
+
+1. Extracción de base de datos "Promedio de edad por cada pais" usando el paquete "htmltab"
+```{r}
+link_CIA = "https://www.cia.gov/library/publications/resources/the-world-factbook/fields/343.html"
+linkPath_CIA ='//*[@id="fieldListing"]'
+
+dataCIA= htmltab(doc = link_CIA, 
+                which =linkPath_CIA)
+head(dataCIA)
+```
+Para calcular cuántas variables y observaciones tiene la data extraída usamos la función "str"
+```{r}
+str(dataCIA)
+```
+
+¿Cuántas observaciones y columnas tiene la base de datos?
+RESPUESTA: la base de datos tiene 230 observaciones y 2 variables
+
+¿Qué tipo de variables contiene esta base? Describa la naturaleza (tipo de objeto) de cada una.
+
+RESPUESTA: nuestra base de datos contiene variables de tipo "caracter", las dos (coountry y median age) son de tipo caracter
+
+
+2. PROCESAMIENTO
+
+Creamos una columna con el promedio de edad total usando la funcion str_split
+```{r}
+#Primero partimos la data segun el espacio en blanco
+dataCIA$Promedio=str_split(string = dataCIA$`Median age`,
+         pattern = ' ',
+         simplify = T)[,1]
+
+#Segundo nos quedamos con la segunda parte ubicada despues de los : 
+dataCIA$Promedio=str_split(string = dataCIA$Promedio,
+         pattern = ':',
+         simplify = T)[,2]
+```
+
+Convertimos esta columna en una variable númerica:
+```{r}
+dataCIA$Promedio = parse_number(dataCIA$Promedio)
+```
+
+3. ANALISIS
+
+- Para saber cúal es el valor mínimo, máximo y promedio de la variable creada usamos la funicon "summary"
+```{r}
+summary(dataCIA$Promedio)
+```
+RESPUESTA:
+-el valor minimo es 14.80
+-el valor maximo es 55.40
+-el promedio es 31.55
+
+
+

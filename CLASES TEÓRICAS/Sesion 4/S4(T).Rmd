@@ -1,0 +1,276 @@
+
+SESION 4 - TEORIA - Preparación de Tabla de Datos
+
+1. Combinación o Merging
+
+- Este proceso combina data frames con difente información, siempre que tengan un campo común (key), y este no se repita en ninguna otra columna. Traigamos tres data frames:
+```{r}
+library(rio)
+
+#link base
+base='https://github.com/PoliticayGobiernoPUCP/estadistica_anapol2/raw/master/DATA/'
+
+#creando links particulares
+corruptionLK=paste0(base,'corruption.csv')
+gdpLK=paste0(base,'gdp.csv')
+demoLK=paste0(base,'demo.csv')
+
+# trayendo data:
+corru=import(corruptionLK,stringsAsFactors = F)
+gdp=import(gdpLK,stringsAsFactors = F)
+democ=import(demoLK,stringsAsFactors = F)
+```
+PREGUNTA: ¿para que se pone el strignsasfactors?
+
+Estos tres data frames deben tener un campo (columa) en común que sirva de key:
+```{r}
+names(corru)
+names(gdp)
+names(democ)
+```
+El merge producirá una tabla, integrando las columnas que correspondan a cada key. Vea que la columna rank está presente en las tres pero no es la key; como el ranking se puede calcular si se necesitase, eliminemoslos de cada data frame:
+```{r}
+#eliminando
+corru$Rank=NULL
+gdp$Rank=NULL
+democ$Rank=NULL
+```
+
+La columna Score de la tabla democ podriamos cambiar para no olvidar qué representa:
+```{r}
+names(democ)[names(democ)=='Score']='ScoreDemo'
+```
+Hay una column Region en dos tablas:
+```{r}
+table(corru$Region)
+table(democ$Region)
+```
+Quedémonos con la de democracia:
+```{r}
+# eliminando
+corru$Region=NULL
+```
+El key es Country, usemoslo de manera explicita una vez
+```{r}
+# el key se presenta con el "by"
+# el x es data frame de la derecha/ el y de la izquierda
+# solo dos a la vez.
+corrgdp=merge(corru,gdp,by.x='Country', by.y='Country') # no era necesario KEY aqui!
+corrgdpdemo=merge(corrgdp,democ)
+```
+limpiar data:
+```{r}
+names(democ)=gsub("Â","",names(democ))
+```
+
+Veamos el resultado:
+```{r}
+# cabecera
+head(corrgdpdemo)
+# cola
+tail(corrgdpdemo)
+```
+2. Formateo de Escala / Ajuste de escala
+Veamos los tipos de datos que tenemos hasta ahora:
+```{r}
+str(corrgdpdemo)
+```
+
+
+La key debe quedar como texto ( chr ), pero hay scores que deben pasar a numerico, otra a nominal y una a ordinal.
+
+a Numérico:
+Aplicar una funcióna un conjunto de columnas es sencillo con lapply:
+```{r}
+corrgdpdemo[,c(2:6)]=lapply(corrgdpdemo[,c(2:6)],as.numeric)
+```
+No debería salir mensaje de NAs producidos, habría problemas de limpieza.
+
+a Nominal:
+Las nominales hay que revisar con una tabla simple:
+```{r}
+# todo OK?
+table(corrgdpdemo$Region)
+```
+Asi detectas si hay alguna anomalia antes de hacer el cambio.
+
+Como no hay problema, procedemos:
+```{r}
+# para una columna NO se necesita 'lapply'
+corrgdpdemo$Region=as.factor(corrgdpdemo$Region)
+```
+a Ordinal:
+Verificando los niveles:
+```{r}
+# todo OK?
+table(corrgdpdemo$Regimetype)
+```
+Lo que se necesita ahora es recodificar, poniendo un numero que indique el orden ascendente:
+```{r}
+library(dplyr)
+corrgdpdemo$Regimetype= recode(corrgdpdemo$Regimetype,
+       'Full democracy'='4FullDemocracy',
+       'Flawed democracy'='3FlawedDemocracy',
+       'Hybrid regime'='2Hybrid regime',
+       'Authoritarian'='1Authoritarian')
+
+```
+
+```{r}
+# poner numero delante, ayuda a crear una ordinal
+corrgdpdemo$Regimetype=as.ordered(corrgdpdemo$Regimetype)
+```
+Ahora está listo para los estadisticos:
+```{r}
+summary(corrgdpdemo)
+```
+3. Appending / Anexado
+Appending es unir diversas tablas en una sola, pero todas tienen los mismos nombres de columna.
+
+Dejenme traer tres data frames:
+```{r}
+df1=read.csv('https://github.com/PoliticayGobiernoPUCP/estadistica_anapol2/raw/master/DATA/interview_1_2_p1.csv')
+df2=read.csv('https://github.com/PoliticayGobiernoPUCP/estadistica_anapol2/raw/master/DATA/interview_1_2_p2.csv')
+df3=read.csv('https://github.com/PoliticayGobiernoPUCP/estadistica_anapol2/raw/master/DATA/interview_1_2_p3.csv')
+df4=read.csv('https://github.com/PoliticayGobiernoPUCP/estadistica_anapol2/raw/master/DATA/interview_1_2_p4.csv')
+
+```
+Note que cada una tiene las mismas columnas:
+```{r}
+names(df1) ; names(df2) ; names(df3); names(df4)
+
+```
+Pero tienen diferentes entrevistados:
+```{r}
+head(df2)
+head(df4)
+```
+Para tener un unico data frame, necesitamos anexarlas con rbind:
+```{r}
+df1234=rbind(df1,df2,df3,df4)
+```
+Un caso especial es cuando tienes un archivo en Excel, pues este puede tener varias hojas que puedan ser anexadas en una sola. Hagamos lo siguiente:
+Traigamos el archivo a la computadora (desde GitHub)
+```{r}
+#link
+lkexcel="https://github.com/PoliticayGobiernoPUCP/estadistica_anapol2/raw/master/DATA/viaticos_2018_nac.xlsx"
+
+#descargando en carpeta actual
+download.file(lkexcel, "file.xlsx")
+```
+Leer todas las hojas y aplicar rbind:
+```{r}
+library(rio)
+viaticos <- import_list('file.xlsx',rbind = TRUE)
+```
+Verificar:
+```{r}
+str(viaticos)
+```
+4. Aggregating / Sintetizar
+Cuando agregas, sintetizas los valores de tu unidad de analisis en otro que contiene a un conjuntos de estas. 
+
+Dejame traer estos datos del Censo Actual, que indica la disponibilidad de agua a nivel de distrito en el Perú:
+```{r}
+Lk="https://github.com/PoliticayGobiernoPUCP/estadistica_anapol2/raw/master/DATA/AGUA.xlsx"
+agua=import(Lk)
+```
+Veamos ls tipos de datos:
+```{r}
+str(agua)
+```
+Se ve que cada fila es un distrito:
+```{r}
+head(agua)
+```
+
+
+La data muestra la cantidad de viviendas por distrito que tienen agua toda la semana o no. Como una provincia tiene varias provincias podriamos crear un data frame a nivel de departamento.
+```{r}
+aggregate(cbind(todaSemana, NoTodaSemana) # dependientes
+          ~ Departamento, # nivel
+          data = agua,    # data
+          sum)            # operacion
+```
+Si lo quisieramos a nivel de provincia:
+```{r}
+aggregate(cbind(todaSemana, NoTodaSemana) ~ Provincia + Departamento, 
+          data = agua, sum)
+```
+
+5.BONUS:Creación de intervalos
+Muchas veces necesitamos crear intervalos a partir de una variable numerica. Por ejemplo, TheEconomist crea intervalos con el SCORE y luego le da nombre a cada grupo. Eso NO es clusterizar, pero es buebno saberlo. Usemos la data del indice de felicidad
+```{r}
+# bibliotecas:
+library(htmltab)
+
+
+# coleccion
+links=list(web="https://en.wikipedia.org/wiki/World_Happiness_Report",
+           xpath ='//*[@id="mw-content-text"]/div/table/tbody')
+feliz =htmltab(doc = links$web, which =links$xpath)
+names(feliz)
+```
+```{r}
+# limpieza
+names(feliz)=gsub('\\s','',names(feliz))
+feliz[,]=lapply(feliz[,], trimws,whitespace = "[\\h\\v]")
+names(feliz)
+```
+```{r}
+str(feliz)
+```
+```{r}
+# preparación
+feliz[,-c(2)]=lapply(feliz[,-c(2)], as.numeric) # a numerico
+## Warning in lapply(feliz[, -c(2)], as.numeric): NAs introduced by coercion
+row.names(feliz)=feliz$Countryorregion
+
+
+# veamos que tenemos:
+str(feliz)
+```
+```{r}
+feliz[!complete.cases(feliz),]
+```
+```{r}
+#data sin pedidos:
+feliz=feliz[complete.cases(feliz),] # un pais menos
+```
+
+Creando intervalos:
+1. Saca descriptivos:
+```{r}
+summary(feliz$Score)
+```
+Determina maximos y minimos: Estos deben aparecer en el reporte
+
+3. Crea los intervalos segun el ANCHO de cada intervalo.
+Aqui necesitas a cut():
+```{r}
+# puntos de corte (incluye min y max)
+CORTES=c(0,2.5,5,7.5,10)
+
+# corta y crea "nueva" variable:
+feliz$ScoreCut=cut(feliz$Score,breaks = CORTES, ordered_result = TRUE)
+#Mira resultado:
+table(feliz$ScoreCut)
+```
+Puedes quedarte con ello, pero podrias crear tres grupos para evitar grupo con cero:
+```{r}
+# puntos de corte (incluye min y max)
+CORTES2=c(0,3.3,6.6,10) # 4 CORTES
+NOMBRES2=c("BAJO","MEDIO","ALTO") # 4-1 NOMBRES (en orden)
+
+# corta y crea "nueva" variable:
+feliz$ScoreCut2=cut(feliz$Score,breaks = CORTES2, 
+                    labels = NOMBRES2,
+                    ordered_result = TRUE)
+#Mira resultado nuevo:
+
+table(feliz$ScoreCut2)
+```
+Esta puede ser tu nueva columna validadora cuando NO la HAY. De aqui, calcula clusters y compara como hacias con del Democracy Index.
+
+
+

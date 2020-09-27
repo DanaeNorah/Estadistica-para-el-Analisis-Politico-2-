@@ -1,0 +1,75 @@
+
+SESION 2 - PRACTICA
+
+```{r}
+library(jsonlite) #extraer datos del API
+library(stringr) #limpieza de columnas
+library(readr)   #extraer un único numero de la columna
+library(htmltab) #scraping
+```
+
+Extraemos data
+```{r}
+library(rio)
+data1=import("data.csv")
+```
+Cambiar nombre de la variable
+```{r}
+names(data1)[2]='Labor'
+```
+Extraer el porcentaje que corresponde a AGRICULTURA
+```{r}
+data1$agricultura=str_split(string = data1$Labor,
+         pattern = '%',
+         simplify = T)[,1]
+
+data1$agricultura=str_split(string = data1$agricultura,
+         pattern = ':',
+         simplify = T)[,2]
+
+```
+Quitar espacio en Country:
+```{r}
+data1$Country = gsub(" ","",data1$Country)
+```
+Extraer el porcentaje que corresponde a INDUSTRIA
+```{r}
+data1$industria=str_split(string = data1$Labor,
+         pattern = '%',
+         simplify = T)[,2]
+
+data1$industria=str_split(string = data1$industria,
+         pattern = ':',
+         simplify = T)[,2]
+
+```
+Extraer el porcentaje que corresponde a SERVICIOS
+```{r}
+data1$servicios=str_split(string = data1$Labor,
+         pattern = '%',
+         simplify = T)[,3]
+
+data1$servicios=str_split(string = data1$servicios,
+         pattern = ':',
+         simplify = T)[,2]
+
+```
+Extraer el porcentaje que corresponde a AÑOS
+```{r}
+data1$año=str_split(string = data1$Labor,
+         pattern = '%',
+         simplify = T)[,4]
+```
+Convertirlo Número:
+```{r}
+data1$agricultura = parse_number(data1$agricultura)
+data1$industria = parse_number(data1$industria)
+data1$servicios = parse_number(data1$servicios)
+data1$año = parse_number(data1$año)
+
+```
+EXPORTAR:
+```{r}
+export(data1,"datafinal.csv")
+```
+

@@ -1,0 +1,96 @@
+---
+title: "PC3-20180267-Danae"
+output: html_notebook
+---
+
+PRACTICA CALIFICADA 3
+
+PASO 0: solicito paquetes
+```{r}
+library(htmltab) #para scrapear
+library(stringr) #para limpieza de columnas 
+library(readr) #para extraer un único numero de la columna
+```
+BASE DATOS 1:
+
+PASO 1: SCRAPING
+```{r}
+url1= "https://www.cia.gov/library/publications/resources/the-world-factbook/fields/223.html" 
+
+gini=htmltab(doc = url1, 
+              which = '//*[@id="fieldListing"]',
+              encoding = "UTF-8") 
+```
+PASO 2:Cambiar el nombre de la columna por uno más simple.
+```{r}
+names(gini)[2]="Gi"
+head(gini)
+```
+PASO 3: Limpiar base "gini" mediante 
+```{r}
+gini$Gi1=str_split(string = gini$Gi,
+                pattern = '\\(',
+                simplify = T)[,1]
+```
+
+PASO 4: Verifico con "str" y convierto a variable numerica con  "as.numeric"
+```{r}
+str(gini)
+```
+```{r}
+gini$Gi1=as.numeric(gini$Gi1)
+```
+
+BASE DATOS 2:
+
+PASO 1: SCRAPING
+```{r}
+url2 = "https://www.cia.gov/library/publications/resources/the-world-factbook/fields/225.html"
+
+taxes = htmltab(doc = url2, 
+               which = '//*[@id="fieldListing"]', 
+               encoding = "UTF-8")
+head(taxes)
+```
+PASO 2:Cambiar el nombre de la columna por uno más simple.
+```{r}
+names(taxes)[2]="Ta"
+```
+PASO 3: Limpiar base "taxes" mediante str_split 
+```{r}
+taxes$Ta1=str_split(string = taxes$Ta,
+                pattern = '\\%',
+                simplify = T)[,1]
+```
+PASO 4: Verifico con "str" y convierto a variable numerica con "as.numeric"
+```{r}
+str(taxes$Ta1)
+```
+```{r}
+taxes$Ta1= as.numeric(taxes$Ta1)
+```
+
+HAGO MERGING O JUNTO AMBAS BASES
+
+PASO 5:JuntO ambas bases en una sola de nombre “base_final”, que no contenga valores perdidos con "by.x = "columna",by.y = "columna"
+```{r}
+base_final=merge(gini,taxes,by.x = "Country",by.y = "Country")
+base_final[,c(2,4)]=NULL
+str(base_final)
+```
+
+PASO 6: Realizo un gráfico con mi base de datos final
+```{r}
+attach(base_final)
+plot(gini,taxes)
+```
+¿Existe alguna tendencia (creciente o decreciente) entre ambas variables?
+
+RESPUESTA: decreciente
+
+
+
+
+
+
+

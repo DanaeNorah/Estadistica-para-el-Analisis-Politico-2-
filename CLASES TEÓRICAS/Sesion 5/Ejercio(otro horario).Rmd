@@ -1,0 +1,124 @@
+```{r}
+library(htmltab)
+wiki_path='//*[@id="mw-content-text"]/div[1]/table[2]'
+wiki_doc='https://en.wikipedia.org/wiki/List_of_freedom_indices'
+
+Freedom=htmltab(doc=wiki_doc, which = wiki_path)
+head(Freedom)
+str(Freedom)
+```
+
+```{r}
+Freedom[2:5]=replace(Freedom[2:5], Freedom[2:5]=="n/a",NA)
+
+```
+
+```{r}
+Freedom=na.omit(Freedom)
+
+head(Freedom)
+```
+
+```{r}
+str(Freedom)
+```
+
+
+```{r}
+row.names(Freedom)=Freedom$Country
+#Colocamos nombre a las filas
+```
+
+
+*convertimos a ordinales*
+```{r}
+table(Freedom$`Freedom in the World 2020`)
+
+Freedom$`Freedom in the World 2020`= recode(Freedom$`Freedom in the World 2020`,
+       'free'="1free",
+       'not free'="2notfree",
+       'partly free'="3partlyfree")
+       
+table(Freedom$`Freedom in the World 2020`)
+Freedom$`Freedom in the World 2020`=as.ordered(Freedom$`Freedom in the World 2020`)
+
+```
+```{r}
+table(Freedom$`2020 Index of Economic Freedom`)
+Freedom$`2020 Index of Economic Freedom`= recode(Freedom$`2020 Index of Economic Freedom`,
+       'free'="1free",
+       'moderately free'="2moderatelyfree",
+       'mostly free'="3mostlyfree", 'mostly unfree'="4mostlyunfree",'repressed'="5repressed")
+
+Freedom$`2020 Index of Economic Freedom`=as.ordered(Freedom$`2020 Index of Economic Freedom`)
+```
+
+
+```{r}
+table(Freedom$`2020 Press Freedom Index`)
+Freedom$`2020 Press Freedom Index`= recode(Freedom$`2020 Press Freedom Index`,
+       'difficult situation'="1difficultsituation",
+       'good situation'="2goodsituation",
+       'noticeable problems'="3noticeableproblems", 'satisfactory situation'="4satisfactorysituation",'very serious situation'="5veryserioussituation")
+
+Freedom$`2020 Press Freedom Index`=as.ordered(Freedom$`2020 Press Freedom Index`)
+```
+```{r}
+table(Freedom$`2020 Press Freedom Index`)
+Freedom$`2020 Press Freedom Index`= recode(Freedom$`2020 Press Freedom Index`,
+       'difficult situation'="1difficultsituation",
+       'good situation'="2goodsituation",
+       'noticeable problems'="3noticeableproblems", 'satisfactory situation'="4satisfactorysituation",'very serious situation'="5veryserioussituation")
+
+Freedom$`2020 Press Freedom Index`=as.ordered(Freedom$`2020 Press Freedom Index`)
+```
+
+```{r}
+str(Freedom)
+```
+
+
+
+#1.Calcular distancias
+
+```{r}
+library(cluster)
+
+# usar en C() las dimensiones de interes:
+g.dist = daisy(Freedom[,c(2:4)], metric="gower")
+
+#daisy= Dissimilarity Matrix Calculation ->Calcular todas las disimilitudes (distancias) por pares entre las observaciones del conjunto de datos
+```
+
+
+#2. Proponer cantidad de Cluster (conjuntos)
+
+```{r}
+#Partioning Around Medoids (PAM) . Objeto
+
+pam.resultado=pam(g.dist,4,cluster.only = F) #se crearon 4 grupos
+
+Freedom$clusterPT=pam.resultado$cluster
+```
+
+
+#3. Comparar
+
+```{r}
+#Usemos una tabla de contingencia para verificar la asignación
+
+table(Freedom$clusterPT,Freedom$`2019 Democracy Index`,dnn = c('clusterPT','Democracy Index'))
+```
+
+```{r}
+
+Freedom[Freedom$clusterPT==1 & Freedom$`2019 Democracy Index`=="authoritarian regime",'Country']
+
+```
+
+#4.Número de casos por cluster
+```{r}
+table(Freedom$clusterPT)
+```
+
+*el profesor explicó que solo pedía el ejercicio hasta el punto #2, pero comparé debido al ejercicio que dejó en paideia. Se tenía que convertir también a ordinal la variable 'democracy index'. En un examen él especificará qué es lo que querrá que hagamos*

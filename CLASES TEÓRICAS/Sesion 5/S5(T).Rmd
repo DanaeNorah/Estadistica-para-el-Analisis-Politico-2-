@@ -1,0 +1,176 @@
+
+SESION 5 - CLASE TEORICA
+
+Análisis de Conglomerados: Estrategia de Partición
+
+
+Partir los casos en grupos.Estos puntos atractores van moviendose conforme los grupos se van formando. 
+Hay diversos algoritmos que buscan una implementación de estos principios básicos. 
+
+
+El más conocido es el de K-medias, pero para ciencias sociales tiene la desventaja que requiere que todas las variables sean numéricas, no siendo muy eficiente ante categorías. No usa distancias entre categóricas, sólo entre numéricas (la distancia Euclideana).
+
+
+La alternativa a las necesidades en ciencias sociales es la técnica de k-medoides. Esta técnica trabaja muy bien con las distancias euclideas, pero también con otras distancias como la Mahattan (revisar este debate).
+- K-medodides es alternativa a la K-means, que evita ser afectada por los DATOS ATIPICOS
+
+DEBATE ENTRE LA DISTNACIA EUCLEDIANA Y MAHATTAN:
+- EUCLEDIANA:la longitud del segmento o linea recta entre dos putos, solo para numericas
+- MAHATTAN: en la practica es mas real y es mayor que la euclediana. Es la suma de los catetos, una consecencia del toerema de pitagoras
+
+En particular, usaremos la distancia Gower útil para todos tipo de escalas.
+-una medida para encontrar la similitud entre dos filas de un conjunto de datos que consta de atributos de tipo mixto. Sigue el emparejamiento de variables categóricas, la similitud de Manhattan para las variables continuas y la similitud de Jaccard para las variables binarias.
+
+
+¿Dónde se utiliza la similitud de Gower?
+-Porque es para todo tipo de escalas
+
+
+Gower Distance se usa popularmente para agrupar filas similares con atributos mixtos. La técnica de agrupación de K-Prototype, que es una modificación de la agrupación de K-Means para una combinación de atributos numéricos y categóricos, utiliza Gower Similarity.
+
+*El cluster agrupa, sin embargo las dos primeras que llevaremos clusteriza todo los datos, la ultima NO
+*lo mejor siempre es eliminar criterios, la tecnica te dice donde esta el grupo que quieres entcontrar, perosi no hay datano sirve
+
+
+*todos los calculos computacionales, deben detenerse en algun momento
+
+
+
+
+
+
+PASO 1
+
+Traigamos nuevamente los datos del Democracy Index:
+
+```{r}
+# coleccion
+library(htmltab)
+demolink = "https://en.wikipedia.org/wiki/Democracy_Index"
+demopath = '//*[@id="mw-content-text"]/div/table[2]/tbody'
+demo <- htmltab(doc = demolink, which =demopath)
+
+# limpieza
+library(stringr)
+library(magrittr)
+names(demo)=str_split(names(demo),">>",simplify = T)[,1]%>%gsub('\\s','',.)
+demo[,-c(1,8,9)]=lapply(demo[,-c(1,8,9)], trimws,whitespace = "[\\h\\v]") # no blanks
+names(demo)=gsub("Â","",names(demo))
+demo$Country=gsub("Â","",demo$Country)
+demo$Country=trimws(demo$Country,whitespace = "[\\h\\v]") #PREGUNTAR CUAL ES LA DIFERENCIA ENTRE ESTE Y GSUB
+
+# preparación
+demo=demo[,-c(1)] #sin Rank
+demo[,-c(1,8,9)]=lapply(demo[,-c(1,8,9)], as.numeric) # a numerico
+names(demo)[9]= 'Continent'
+demo=demo[,-10]
+
+# veamos que tenemos:
+str(demo)
+```
+
+
+Ya sabemos a qué grupo pertenece cada país segun The Economist. Ahora nos toca aplicar la técnica de clusterización para ver qué diferencias obtenemos.
+
+Como pasos previo, hagamos dos cosas:
+
+a. Los nombres de cada caso aparezcan en las gráficas:
+```{r}
+row.names(demo)=demo$Country
+```
+
+b.Solo trabajemos con data sin valores perdidos:
+```{r}
+# alternativa a complete.cases:
+demo=na.omit(demo)
+```
+
+Ahora podemos continuar:
+
+1. Calcular distancias:
+
+MATRIZ DISTANCIA: es la distancia entre los datos, el algoritmo de separación. Uno no puede realziar cluster si no tiene l matriz de distancia
+```{r}
+library(cluster)
+
+# usar en C() las dimensiones de interes:
+g.dist = daisy(demo[,c(3:7)], metric="gower")
+```
+
+2. Proponer cantidad de clusters:
+
+Como ya sabemos cuantos grupos habría, usamos esa cantidad para los clusters.
+
+PAM:
+*el resultado que sale al aplicar la matriz de distancia. PAM calcula los clusters
+*el PAM, recibe la matriz de distancias
+```{r}
+pam.resultado=pam(g.dist,4,cluster.only = F)
+demo$clusterPT= pam.resultado$cluster
+```
+
+3. Explorar Resultados
+
+Aquí corresponde saber las caracteristicas de los paises en cada cluster. Veamos el resultado preliminar al aplicar aggregate con la función each (esta última está en la biblioteca plyr):
+```{r}
+library(plyr) # para funcion "each"..
+
+# nota el uso de as.matrix con cbind:
+aggregate(as.matrix(cbind(demo[,c(3:7)]))~ clusterPT, data=demo,
+          FUN=plyr::each(MD = median, Media = mean))
+```
+Podemos volver esa tabla resumen un data frame:
+```{r}
+# guardando resultado anterior en objeto "agg": 
+agg=aggregate(as.matrix(cbind(demo[,c(3:7)]))~ clusterPT, 
+              data=demo, # luego las funciones que deseas
+              FUN=plyr::each(MD = median, Media = mean))
+
+# convertir en data frame, y 
+tablaResumen=t(as.data.frame(agg))
+tablaResumen
+```
+Para una mejor presentacion en la web, tienes la funcion kable(): 
+```{r}
+library(knitr)
+library(kableExtra)
+kable(tablaResumen, format = "html", digits = 2)%>%kable_styling()
+```
+4. Comparar
+Usemos una tabla de contingencia para verificar la asignación:
+```{r}
+table(demo$clusterPT,demo$Regimetype,dnn = c('clusterPT','TipoEconomist'))
+```
+Nótese que: * El cluster 1 ha juntado todas las democracias plenas y ha admitido a 21 (22) de las débiles. Así, dejó entrar a estos paises:
+
+```{r}
+demo[demo$clusterPT==1 & demo$Regimetype=="Flawed democracy",'Country']
+```
+El cluster 2 tiene las democracias débiles restantes y a 12 de las híbridas.
+El cluster 3 tiene las democracias híbridas restantes y a 9 de las autoritarias.
+El cluster 4 tiene las 44 de las autoritarias restantes.
+
+
+5. Visualizar:
+Veamos lo obtenido:
+
+```{r}
+library(factoextra)
+## Loading required package: ggplot2
+## Welcome! Related Books: `Practical Guide To Cluster Analysis in R` at https://goo.gl/13EFCZ
+fviz_cluster(object = list(data=g.dist, cluster = demo$clusterPT),
+             geom = c("text"), 
+             ellipse.type = "convex")
+
+```
+Si deseamos una mejor gráfica:
+
+```{r}
+library(ggrepel)
+
+fviz_cluster(object = list(data=g.dist, cluster = demo$clusterPT),
+             geom = c("text"), 
+             ellipse = FALSE,labelsize = 5,
+             repel = T)
+```
+Nota que esta técnica asignará un cluster a cada elemento.

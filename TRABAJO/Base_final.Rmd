@@ -77,9 +77,10 @@ row.names(basefinal)=basefinal$Pais
 #verificamos
 str(basefinal)
 ```
+
+PASO 6: EXPORTAMOS
 ```{r}
-#¿eliminar los paises o no?
-basefinal=basefinal[,-c(1)]
+export(basefinal,"basefinal.csv")
 ```
 
 

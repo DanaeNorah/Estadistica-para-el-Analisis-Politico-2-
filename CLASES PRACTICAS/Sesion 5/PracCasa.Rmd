@@ -1,0 +1,99 @@
+
+PRACTICA CALIFICADA 4                                                                 
+
+PASO 0: solicito paquetes
+```{r}
+library(htmltab) #para scrapear
+library(stringr) #para limpieza de columnas 
+library(readr) #para extraer un único numero de la columna
+library(rio) #para importar
+library(cluster) #clustering
+library(plyr) #aggregate, funcion each
+library(psych) #para hacer tablas comparadas
+library(knitr) #para generar tablas html
+library(kableExtra) #para generar tablas html
+library(factoextra) #visualización de clusters
+library(ggrepel) #para que las etiquetas de los graficos no se superpongan
+library(dplyr)
+library(car) #recodificacion
+
+
+```
+
+PASO 1: cargo la data
+```{r}
+ecofree="https://github.com/jcgcjuan/Magallanes-Clases-/raw/master/Data%20EconoFreedom.xlsx"
+ecofree2019=import(ecofree)
+names(ecofree2019)
+```
+
+PASO 2: preparamos la data
+```{r}
+#eliminamos
+ecofree2019[,c(1,3,4,5,6)] = NULL
+
+#reemplazamos
+ecofree2019[,c(2:13)]= replace(ecofree2019[,c(2:13)], ecofree2019[,c(2:13)] == "N/A",NA)
+
+#volvemos a numerica
+ecofree2019[,c(2:13)]=lapply(ecofree2019[,c(2:13)],as.numeric)
+str(ecofree2019)
+
+```
+```{r}
+#Los nombres de cada caso aparezcan en las gráficas
+row.names(ecofree2019)=ecofree2019$`Country Name`
+
+#eliminamos valores perdidos
+ecofree2019=na.omit(ecofree2019)
+```
+PASO 3: clusterizamos - por PARTICIÓN
+
+1. Calculamos la distancia
+```{r}
+g.dist = daisy(ecofree2019[,c(2:13)], metric="gower")
+```
+
+```{r}
+# Calculamos los cluster
+ecofree2019_part = pam(g.dist, 4, cluster.only = T)
+# Creamos una variable en la data con el cluster creado
+ecofree2019$Cparticionante = ecofree2019_part
+# Visualizamos los cluster
+fviz_cluster(object = list(data=g.dist, cluster = ecofree2019$Cparticionante),
+             geom = c("point", "text"), 
+             ellipse = FALSE, labelsize = 8,
+             repel = T, main = "Agrupación particionante")
+```
+
+
+PASO 4: metodo JERARQUICO
+
+##Cluster aglomerativo
+```{r}
+# Calculamos los cluster
+ecofree_aglo <- hcut(g.dist, k = 4 , hc_func='agnes',hc_method = "ward.D") 
+
+# Creamos una variable en la data con el cluster creado
+ecofree2019$Caglo = ecofree_aglo$cluster
+# Visualizamos los cluster
+fviz_dend(ecofree_aglo, cex = 0.7, horiz = T, main = "Agrupación aglomerativa")
+```
+
+##Cluster divisivo
+```{r}
+ecofree_div <- hcut(g.dist, k = 4 , hc_func='diana')
+ecofree2019$Cdivisivo = ecofree_div$cluster
+fviz_dend(ecofree_div, cex = 0.7, horiz = T, main = "Agrupación divisiva")
+```
+
+```{r}
+table(ecofree2019$Cparticionante , ecofree2019$Caglomerativo ,dnn = c('part','aglo'))
+table(ecofree2019$Cparticionante , ecofree2019$Cdivisivo ,dnn = c('part','divisivo'))
+```
+
+
+
+
+
+

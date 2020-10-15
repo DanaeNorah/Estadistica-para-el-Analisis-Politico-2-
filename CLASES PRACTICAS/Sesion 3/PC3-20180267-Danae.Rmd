@@ -82,7 +82,7 @@ str(base_final)
 PASO 6: Realizo un gráfico con mi base de datos final
 ```{r}
 attach(base_final)
-plot(gini,taxes)
+plot(Gi1,Ta1)
 ```
 ¿Existe alguna tendencia (creciente o decreciente) entre ambas variables?
 

@@ -1,0 +1,114 @@
+
+PRACTICA CALIFICADA 4  - 20180267                                                               
+
+PASO 0: solicito paquetes
+```{r}
+library(htmltab) #para scrapear
+library(stringr) #para limpieza de columnas 
+library(readr) #para extraer un único numero de la columna
+library(rio) #para importar
+library(cluster) #clustering
+library(plyr) #aggregate, funcion each
+library(psych) #para hacer tablas comparadas
+library(knitr) #para generar tablas html
+library(kableExtra) #para generar tablas html
+library(factoextra) #visualización de clusters
+library(ggrepel) #para que las etiquetas de los graficos no se superpongan
+library(dplyr)
+library(car) #recodificacion
+```
+
+PASO 1: cargo la data
+```{r}
+ecofree="https://github.com/jcgcjuan/Magallanes-Clases-/raw/master/Data%20EconoFreedom.xlsx"
+ecofree2019=import(ecofree)
+names(ecofree2019)
+```
+
+PASO 2: preparamos la data
+```{r}
+#a. eliminamos
+ecofree2019[,c(1,3,4,5,6)] = NULL
+
+#b. reemplazamos
+ecofree2019[,c(2:13)]= replace(ecofree2019[,c(2:13)], ecofree2019[,c(2:13)] == "N/A",NA)
+
+#Los nombres de cada caso aparezcan en las gráficas
+row.names(ecofree2019)=ecofree2019$`Country Name`
+
+#c. Eliminamos valores perdidos
+ecofree2019=na.omit(ecofree2019)
+
+#d. volvemos a numerica
+ecofree2019[,c(2:13)]=lapply(ecofree2019[,c(2:13)],as.numeric)
+str(ecofree2019)
+
+```
+PASO 3: clusterizamos - por PARTICIÓN
+
+1. Calculamos la distancia
+```{r}
+g.dist = daisy(ecofree2019[,c(2:13)], metric="gower")
+```
+
+2. Proponer cantidad de clusters:
+```{r}
+pam.resultado = pam(g.dist,4,cluster.only = F)
+ecofree2019$clusterPT = pam.resultado$cluster
+```
+
+3. Explorar resultados
+```{r}
+agg=aggregate(as.matrix(cbind(ecofree2019[,c(2:13)]))~ clusterPT, data=ecofree2019,
+              FUN=plyr::each(MD = median, Media = mean))
+```
+4. Vizualizar
+```{r}
+fviz_cluster(object = list(data=g.dist, cluster = ecofree2019$clusterPT),
+             geom = c("text"), 
+             ellipse.type = "convex")
+```
+
+RESPONDEMOS A LA PREGUNTA 2:
+a.	¿Los grupos obtenidos con la estrategia particionante se distinguen claramente? 
+       RESPUESTA: NO se distitnguen claramente los grupos obtenidos con la estrategia de partición, se superoponen; por lo     
+       tanto, es optimo usar el metodo JERARQUICO
+
+b.	En caso de que no sea así, ¿cuál sería otra alternativa para aplicar de forma exitosa un método de agrupamiento?
+       RESPUESTA: la estrategia optima para usar es el metodo JERARQUICO
+       
+c.	Desarrolle esa otra alternativa. ¿Cuántos grupos propondría formar? ¿Por qué?
+
+PASO 4: metodo JERARQUICO
+
+##Cluster aglomerativo
+```{r}
+# Calculamos los cluster
+ecofree_aglo <- hcut(g.dist, k = 4 , hc_func='agnes',hc_method = "ward.D") 
+
+# Creamos una variable en la data con el cluster creado
+ecofree2019$Caglomerativo = ecofree_aglo$cluster
+
+# Visualizamos los cluster
+fviz_dend(ecofree_aglo, cex = 0.7, horiz = T, main = "Agrupación aglomerativa")
+```
+
+##Cluster divisivo
+```{r}
+ecofree_div <- hcut(g.dist, k = 4 , hc_func='diana')
+ecofree2019$Cdivisivo = ecofree_div$cluster
+fviz_dend(ecofree_div, cex = 0.7, horiz = T, main = "Agrupación divisiva")
+```
+
+c.	Desarrolle esa otra alternativa. ¿Cuántos grupos propondría formar? ¿Por qué?
+    
+RESPUESTA: si usamos la agrupacion aglomerativa, analizando el dendograma nos damos cuenta que se deberia formar 4 grupos.
+          porque, se puede ver que las distancias entre los clusters forman 4 grupos, asimismo, podemos imaginarnos 
+          una línea que nos muestra la particion de 4 grupos. 
+```{r}
+table(ecofree2019$clusterPT , ecofree2019$Caglomerativo ,dnn = c('part','aglo'))
+table(ecofree2019$clusterPT , ecofree2019$Cdivisivo ,dnn = c('part','divisivo'))
+
+```
+    
+    

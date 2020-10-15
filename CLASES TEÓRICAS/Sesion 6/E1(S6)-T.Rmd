@@ -1,0 +1,98 @@
+
+EJERCICIO 1- SESION 6 - CLASE TEORICA
+
+Análisis de Conglomerados: Estrategia de Jerarquizacion
+
+```{r}
+# coleccion
+library(htmltab)
+happylink = "https://en.wikipedia.org/wiki/World_Happiness_Report"
+happypath = '//*[@id="mw-content-text"]/div[1]/table'
+happy<- htmltab(doc = happylink, which =happypath)
+```
+
+```{r}
+# limpieza
+library(stringr)
+library(magrittr)
+happy$`Country or region`=gsub("Â","",happy$`Country or region`)
+str(happy)
+happy=happy[,-1]
+```
+
+```{r}
+# preparación
+happy[,c(2:8)]=lapply(happy[,c(2:8)], as.numeric) # a numerico
+```
+
+```{r}
+# veamos que tenemos:
+str(happy)
+```
+
+```{r}
+# veamos que tenemos:
+str(demo)
+```
+
+ESTRATETGIA AGLOMERATIVA 
+
+```{r}
+#Los nombres de cada caso aparezcan en las gráficas:
+row.names(happy)=happy$`Country or region`
+```
+Solo trabajemos con data sin valores perdidos:
+```{r}
+# alternativa a complete.cases:
+happy=na.omit(happy)
+```
+
+1. Calcular distancias 
+
+PASO 1: calcular distancias
+```{r}
+library(cluster)
+g.dist = daisy(happy[,c(3:8)], metric="gower")
+```
+
+2. Decidir linkages
+   - Otro metodo adicional, y muy eficiente, es el de WARD. Al final, lo que necesitamos saber cual de ellos nos entregará una mejor propuesta de clusters. Usemos este para nuestro caso.
+
+3. Calcular clusters
+La función hcut es la que usaremos para el método jerarquico, y el algoritmo aglomerativo se emplea usando agnes. El linkage será ward (aquí ward.D):
+```{r}
+library(factoextra)
+
+res.agnes <- hcut(g.dist, k =3,hc_func='agnes',hc_method = "ward.D")
+
+happy$clustagnes=res.agnes$cluster
+```
+
+```{r}
+#LINKAGES COMPLETE
+res.agnes1 <- hcut(g.dist, k =3,hc_func='agnes',hc_method = "complete")
+fviz_dend(res.agnes1, k= 3, cex = 0.7, horiz = T)
+plot(res.agnes1)
+```
+
+4. Comparar
+Veamos qué tanto se parece a la clasificación de The Economist:
+```{r}
+table(happy$`Perceptions of corruption`,happy$clustagnes,dnn = c('TheEconomist','clustAgg'))
+```
+5. Visualizar
+
+El dendograma nos muestra el proceso de conglomeración:
+```{r}
+# Visualize
+fviz_dend(res.agnes, k= 3, cex = 0.7, horiz = T)
+```
+
+
+
+
+
+
+
+
+

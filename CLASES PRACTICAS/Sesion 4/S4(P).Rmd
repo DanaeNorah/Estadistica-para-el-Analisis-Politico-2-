@@ -1,8 +1,19 @@
 ---
 title: "Sesion 4"
-output: html_notebook
+output:
+  html_document:
+    df_print: paged
 ---
 CONGLOMERADOS - MÉTODO PARTICIONANTE
+
+CONSIDERAICONES TEORICAS:
+   -Cluster y aglomeraicones agrupa CASOS, es una clasificacion
+   -Los conglomerdados, es agrupar los casos segun algunas similitudes
+   -Al mismo tiempo se puede usar vairas variables y no solo agrupamiento 
+   univariable
+   - K-medias: se agrupa mas a un centroide. 
+   -los datos atipicos que no guarda mucha similitud genera problemas con este metodo
+
 
 PAQUETES
 ```{r}
@@ -17,11 +28,11 @@ library(ggrepel) #para que las etiquetas de los graficos no se superpongan
 library(htmltab)
 library(dplyr)
 ```
-
 ## Ejercicio 1: Agrupar los departamentos según cobertura de servicios públicos básicos (agua, desague, electrificación)
 
 En la siguiente base de datos tenemos los departamentos del Perú (excepto Lima y Callao) con el siguiente conjunto de variables. 
 
+#NOTA: realiar un analisis de las variables
 ```{r}
 data <- import("https://github.com/DataPolitica/salidas/raw/master/Data/regiones.xlsx")
 str(data)
@@ -37,6 +48,7 @@ View(data)
 row.names(data)=data$region
 View(data)
 data = data[,-1]
+#trabajar sin valores perdidos
 ```
 
 ### Paso 2: Calcular la distancia entre los conglomerados
@@ -44,8 +56,8 @@ data = data[,-1]
 Para hacer el cálculo de la distancia utilizaremos 3 variables: agua, desague y electrificación. 
 
 ```{r}
-head(data)[, c(4:6)]
-dist = daisy(data[,c(4:6)], metric = "gower") 
+head(data)[, c(3:5)]
+dist = daisy(data[,c(3:5)], metric = "gower") 
 # seleccionamos las columnas de insumo
 # usamos metric="gower" para estandarizar cada variable. Importante. 
 ```
@@ -54,6 +66,7 @@ dist = daisy(data[,c(4:6)], metric = "gower")
 
 Proponemos agrupar a los distritos en 3 grupos según su nivel de cobertura de servicios públicos básicos (agua, desague y electrificación) 
 
+#NOTA: el cluster.only TRUE tre solo los clusters, cuando pone FALSE te trae todo
 ```{r}
 grupos = pam(dist, 2, cluster.only = T) #Le decimos que cree dos grupos o cluster
 data$grupos = grupos
@@ -74,23 +87,25 @@ describeBy(data$desague, group=data$grupos, digits = 2)
 # Veamos los descriptivos de la variable "Electrificacion" (columna N° 6) entre los grupos
 describeBy(data$electrificacion, group=data$grupos, digits = 2)
 ```
+#NOTA: Revisrar el R consola siempre 
+
 
 Si deseamos podemos solicitar dichos resultados al mismo tiempo:
-
+#NOTA: es la mas facil al mostrar todo juntos
 ```{r}
-describeBy(as.matrix(cbind(data[,c(4:6)])), group=data$grupos, digits = 2)
+describeBy(as.matrix(cbind(data[,c(3:5)])), group=data$grupos, digits = 2)
 ```
 
 También usar aggregate() para crear una nueva base que sean los resultados:
-
+#NOTA: el aggegate es para crear un nuev objeto, toma de referencia un nivel de una variable (por ejemplo nivel 1 y 2), a esto le hace una operación matemática. 
 ```{r}
-aggregate(as.matrix(cbind(data[,c(4:6)]))~ grupos, data=data,
+aggregate(as.matrix(cbind(data[,c(3:5)]))~ grupos, data=data,
           mean)
 
 #Guardamos la visualización en un data.frame
-tabla = aggregate(as.matrix(cbind(data[,c(4:6)]))~ grupos, data=data,
+tabla = aggregate(as.matrix(cbind(data[,c(3:5)]))~ grupos, data=data,
          mean)
-
+#tranponer: trasladar de filas a columnas
 tabla = t(as.data.frame(tabla))
 tabla
 ```
@@ -123,6 +138,7 @@ Generamos nuestro primer gráfico
 fviz_cluster(object = list(data=dist, cluster = data$grupos),
              geom = c("text"), 
              ellipse.type = "convex")
+#Dim 1 y 2 representan a las vairbales que se uso
 ```
 
 Mejoramos el gráfico:
@@ -133,6 +149,8 @@ fviz_cluster(object = list(data=dist, cluster = data$grupos),
              ellipse = FALSE, labelsize = 8,
              repel = T)
 # Decimos que elimine el elipse, cambiamos el nombre de la etiqueta y decimos que no se superpongan las etiquetas. 
+#REPEL: si se pone F se supoerponen los datos
+#datos frontera son los que estan cerca pero en distintos grupos
 ```
 
 ##Ejercicio 2
@@ -158,6 +176,7 @@ dist = daisy(sispol[,c(5:11)], metric = "gower")
 ```
 
 Proponemos agrupar a los distritos en 4 grupos
+#NOTA: grupos no jerarquicos, es decir, cada uno elige cuantos grupos quiere
 ```{r}
 grupos = pam(dist, 4, cluster.only = F)
 grupos$clustering

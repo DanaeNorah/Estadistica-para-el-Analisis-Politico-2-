@@ -1,0 +1,131 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: inline
+---
+con "all.x=T"
+
+#MERGE DE LAS DATAS
+
+PASO 1: IMPORTAR LAS DOS DATAS
+```{r}
+library(rio)
+
+#link base  1 Dana
+libertad=import('https://github.com/DanaeNorah/Estadistica-para-el-Analisis-Politico-2-/raw/Trabajo/Libertad_civil.csv')
+str(libertad)
+
+#link base 2 Gabriela
+sec=import('https://github.com/GabiCorazao/EstS2/raw/Trabajo/Acceso_Secundaria.csv')
+str(sec)
+```
+
+PASO 2: MERGE
+```{r}
+baseLyS=merge(libertad,sec,all.x = T, all.y = T)
+str(baseLyS)
+```
+
+PASO 3: MERGEAMOS CON LA TERCERA BASE DE GENDER
+
+#Importamos base 3 Gender
+```{r}
+#link base 3 Winny
+gender=import('https://github.com/Winny-calderon/Proyecto-EAP2/raw/master/GenderData.csv')
+str(gender)
+```
+#Mergeamos nuestra baseLyS con Gender
+```{r}
+baseLSG=merge(baseLyS,gender,all.x = T, all.y = T)
+str(baseLSG)
+```
+PASO 4: MERGE CON LA BASE 4 DE AUTONOMIA
+#importamos la base de Mercy, de Autonomia, 
+```{r}
+#link base 4 Mercy
+autonomia=import('https://github.com/mercy-diaz/ProyectoEst/raw/master/basefinal_MD.csv')
+str(autonomia)
+
+```
+```{r}
+names(autonomia)[1]= 'Country'
+```
+
+
+#merge para tener la base final
+```{r}
+Basefinal=merge(baseLSG,autonomia,all.x = T, all.y = T)
+str(Basefinal)
+```
+
+PASO 5: PREPARAMOS Y MODIFICAMOS NUESTRA BASE FINAL PARA HACERLA MÁS ENTENDEDIBLE
+```{r}
+#Uniformizar a 2 digitos el número de decimales a utilizar en nuestra data "Basefinal" 
+Basefinal[,c(2:10)]=round(Basefinal[,c(2:10)], digits = 2)
+
+#cambiar nombres a las columnas
+names(Basefinal)[1]='Pais'
+names(Basefinal)[2]='VozPolitica'
+names(Basefinal)[3]='LibertadMov'
+names(Basefinal)[4]='AccesoJ'
+names(Basefinal)[5]='SecundariaC'
+names(Basefinal)[6]='Desempleo'
+names(Basefinal)[7]='CuentaF'
+names(Basefinal)[10]='DesigualdadGenero'
+
+#ordenar las columnas para poner primero la variable dependiente
+Basefinal = Basefinal[ , c(1,10,8,9,2,3,4,5,6,7)]
+names (Basefinal)
+
+
+#eliminar duplicados
+autonomia[autonomia$Country=='Bolivia (Plurinational State of)','Country']='Bolivia'
+Basefinal[Basefinal$Country=='CÃ´te d\'Ivoire','Country']='Costa de Marfil'
+Basefinal[Basefinal$Country=='China (People\'s Republic of)','Country']='China'
+Basefinal[Basefinal$Country=='Congo, Democratic Republic of the','Country']='Congo'
+Basefinal[Basefinal$Country=='Congo (Democratic Republic of the)','Country']='Congo'
+Basefinal[Basefinal$Country=='Democratic Republic of the Congo','Country']='Congo'
+Basefinal[Basefinal$Country=='Czech Republic','Country']='Czechia'
+Basefinal[Basefinal$Country=='Eswatini (Kingdom of) ','Country']='Eswatini'
+Basefinal[Basefinal$Country=='Eswatini, Kingdom of','Country']='Eswatini'
+Basefinal[Basefinal$Country=='Iran (Islamic Republic of)"','Country']='Iran'
+Basefinal[Basefinal$Country=='Iran, Islamic Republic of','Country']='Iran'
+Basefinal[Basefinal$Country=='Korea (Democratic People\'s Rep. of)','Country']='Korea'
+Basefinal[Basefinal$Country=='Korea (Republic of)','Country']='Korea'
+Basefinal[Basefinal$Country=='Korea, Republic of','Country']='Korea'
+Basefinal[Basefinal$Country=='Lao People\'s Democratic Republic','Country']='Laos'
+Basefinal[Basefinal$Country=='Micronesia (Federated States of)','Country']='Micronesia'
+Basefinal[Basefinal$Country=='Micronesia, Federated States of','Country']='Micronesia'
+
+
+#ver duplicados
+Basefinal[!duplicated(Basefinal$Pais),]
+
+[130] "Moldova (Republic of)"                            
+[131] "Moldova, Republic of"                             
+[151] "Palestine, State of"                              
+[152] "Palestinian Authority or West Bank and Gaza Strip"
+[163] "Russian Federation"                              
+"Slovak Republic"                                  
+"Slovakia"                                         
+"South Africa"                                     
+"South Sudan"                                      
+"South Sudan"                                      
+"South Sudan "                                     
+
+"Tanzania (United Republic of)"                    
+"Tanzania, United Republic of"                     
+"Venezuela (Bolivarian Republic of)"               
+ Venezuela, Bolivarian Republic of                
+                                       
+#Cambiando row.names
+row.names(Basefinal)=Basefinal$Pais 
+
+#verificamos
+str(Basefinal)
+```
+
+PASO 6: EXPORTAMOS
+```{r}
+export(Basefinal,"Basefinal.csv")
+```

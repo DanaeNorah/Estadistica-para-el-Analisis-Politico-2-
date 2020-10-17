@@ -1,0 +1,243 @@
+---
+title: "Densidad_CR"
+output: html_notebook
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r}
+library(stringr)
+library(magrittr)
+library(htmltab)
+library(factoextra)
+library(cluster)
+library(ggrepel)
+library(foreign)
+```
+
+0.- BAJAMOS LA DATA ORIGINAL, OMITIMOS PERDIDOS, COLOCAMOS NOMBRE A LAS FILAS Y CREAMOS UNA SUBDATA CON LAS VARIABLES NUMÉRICAS A UTILIZAR EN NUESTRO CÁLCULOS DE CONGLOMERADOS (OJO CON ESTO)
+
+
+```{r}
+library(rio)
+regiones<-import("regiones.xlsx")
+str(regiones)
+regiones <- regiones[,c(1, 4:6)]
+row.names(regiones)=regiones$region
+regiones$region= NULL
+str(regiones)
+subdata<-regiones
+subdata<-na.omit(subdata)
+```
+##una data que se llama regiones que tiene esclusivamente las variables numericas con las que calcularemos los clusters
+##se creea una misma copia de regiones que se llama subdata y se le saca los NA perdidos. se crea esta copia para solo copiar eñ codigo y acelerar en tiempo
+########################################################################################
+
+Creamos una base llamada "subdata" que tenga exclusivamente las columnas que utilizaremos para el cálculo de los cluster
+
+########################################################################################
+
+IDENTIFICAR EL NÚMERO DE CLUSTER ADECUADO (EN PARTICIÓN Y JERÁRQUICO)
+
+Realizamos los cálculos con la subdata creada. 
+
+```{r}
+#CALCULAMOS LAS DISTANCIAS CON DAYSY
+g.dist = daisy(subdata, metric="gower")
+
+#NÚMERO DE CLUSTER PARA PARTICIÓN (colocamos pam)
+fviz_nbclust(subdata, pam,diss=g.dist,method = "gap_stat",k.max = 10,verbose = F)
+
+#Número de clusters para JERARQUIZACION (colocamos hcut)
+fviz_nbclust(subdata, hcut,diss=g.dist,method = "gap_stat",k.max = 10,verbose = F)
+```
+
+respuesta: ¿con cuantos te quedas? 3 dependiendo de la linea que salga. en los dos graficos es el mismo
+
+########################################################################################
+
+
+GRÁFICOS DE SILUETAS PARA VISUALIZAR LA MEJOR OPCIÓN DE CLUSTERIZACIÓN
+
+Primero calculamos cada uno de los cluster según las tres metodologías aprendidas hasta el momento. Ojo con el "cluster.only = F"". #genera una lista de elementos.
+
+Recordemos que cada uno de los elementos que crearemos será una lista de elementos. Dentro de estas listas se encuentra un vector numérico que indica el conglomerado pero también otra información de utilidad (que veremos más adelante).
+
+```{r}
+particion = pam(g.dist,3,cluster.only = F) #Indicamos 3 por el resultado anterior
+aglomerativo = hcut(g.dist, k = 3,hc_func='agnes',hc_method = "ward.D") #Indicamos 3 por el resultado anterior
+divisivo = hcut(g.dist, k = 3,hc_func='diana') #Indicamos 3 por el resultado anterior
+```
+
+En base a estas listas podemos calcular los gráficos de siluetas. Hay que recordar que en este tipo de gráficos cada barra representa un caso de nuestra base de datos. 
+
+```{r}
+fviz_silhouette(particion)
+fviz_silhouette(aglomerativo)
+fviz_silhouette(divisivo)
+```
+
+Criterios para definir el mejor método: 
+1) Aquel que tenga el Average silhouette width más alto. 
+2) Aquel con menos casos con width negativos = Aquel con menor cantidad de barras que vayan para abajo. 
+
+Respuesta: NOS QUEDAMOS CON EL 0.52 que es de particion
+
+########################################################################################
+
+
+IDENTIFICACIÓN DE CASOS QUE HAN SIDO MAL ASIGNADOS A LOS CLUSTER 
+
+Esto quiere decir identificar los casos que han sido representados como barras con width negativo (hacia abajo).
+
+Esto nos puede servir para identificar los casos "problemáticos". Estos podrían ser outliers. 
+
+Para eso tenemos que identificar en cada cluster aquellos que tienen width negativo (esta información está dentro de cada cluster - lista - creado, dentro de silinfo y a su vez dentro de widths). Para entrar a esos elementos hacemos uso de $. 
+##los negativos son los mal clasificados
+Para el método partición:
+
+```{r}
+# Revisamos cómo se ve ese elemento widths
+head(particion$silinfo$widths) 
+# Creamos un data.frame que sea equivalente a ese elemento
+widths.particion=data.frame(particion$silinfo$widths)
+# Creamos un vector que sea el nombre de la región. Lo jalamos del nombre de la fila.
+widths.particion$Id=row.names(widths.particion)
+# Creamos un objeto que sea los nombres de aquellos casos cuyos widths sean menor a 0. 
+malos.widths.particion=widths.particion[widths.particion$sil_width<0,'Id']
+malos.widths.particion
+#cantidad de casos
+length(malos.widths.particion)
+```
+
+Para el método aglomerativo:
+
+```{r}
+# Revisamos cómo se ve ese elemento widths
+head(aglomerativo$silinfo$widths) 
+# Creamos un data.frame que sea equivalente a ese elemento
+widths.aglomerativo=data.frame(aglomerativo$silinfo$widths)
+# Creamos un vector que sea el nombre de la región. Lo jalamos del nombre de la fila.
+widths.aglomerativo$Id=row.names(widths.aglomerativo)
+# Creamos un objeto que sea los nombres de aquellos casos cuyos widths sean menor a 0. 
+malos.widths.aglomerativo=widths.aglomerativo[widths.aglomerativo$sil_width<0,'Id']
+malos.widths.aglomerativo
+#cantidad de casos
+length(malos.widths.aglomerativo)
+```
+
+Para el método divisivo:
+
+```{r}
+# Revisamos cómo se ve ese elemento widths
+head(divisivo$silinfo$widths) 
+# Creamos un data.frame que sea equivalente a ese elemento
+widths.divisivo=data.frame(divisivo$silinfo$widths)
+# Creamos un vector que sea el nombre de la región. Lo jalamos del nombre de la fila.
+widths.divisivo$Id=row.names(widths.divisivo)
+# Creamos un objeto que sea los nombres de aquellos casos cuyos widths sean menor a 0. 
+malos.widths.divisivo=widths.divisivo[widths.divisivo$sil_width<0,'Id']
+malos.widths.divisivo
+#cantidad de casos
+length(malos.widths.divisivo)
+```
+
+########################################################################################
+
+CLUSTER DE DENSIDAD
+
+Primero necesitamos calcular un mapa de posiciones para todos los casos. Para eso usamos escalamiento multidimensional:
+
+```{r}
+#Generamos el escalamiento usanto las distancias calculadas. Es decir el g.dist
+proyeccion = cmdscale(g.dist, k=2,add = T) #k es el número de dimensiones solicitadas
+#Creamos una nueva columna en nuestra data que sea la primera dimensión
+subdata$dim1 <- proyeccion$points[,1]
+#Creamos una nueva columna en nuestra data que sea la segunda dimensión
+subdata$dim2 <- proyeccion$points[,2]
+```
+
+
+Graficamos en base a las dimensiones calculadas. 
+
+```{r}
+#GRAFICANDO (REPASAR GGPLOT!!)
+
+base= ggplot(subdata,aes(x=dim1, y=dim2,label=row.names(subdata))) 
+base + geom_text(size=2)#aes=ejes, labels=etiquetas
+
+#Coloreando el mapa
+
+##Creemos primero las columnas 
+subdata$c.particion=as.factor(particion$clustering)
+subdata$c.aglomerativo=as.factor(aglomerativo$cluster)
+subdata$c.divisivo=as.factor(divisivo$cluster) ###se vuelve factor para poder colorearlos, porque estaban numericas
+
+##Estimando límites
+min(subdata[,c('dim1','dim2')]); max(subdata[,c('dim1','dim2')])
+
+#GRAFICAS PARA PAM, AGNES Y DIANA
+
+limites=c(-0.49,0.52) #Estos límites deben incluir los números obtenidos con el comando anterior
+
+base= ggplot(subdata,aes(x=dim1, y=dim2)) + ylim(limites) + xlim(limites) + coord_fixed()
+
+base + geom_point(size=2, aes(color=c.particion))  + labs(title = "PARTICIONANTE") 
+base + geom_point(size=2, aes(color=c.aglomerativo)) + labs(title = "AGLOMERATIVO")
+base + geom_point(size=2, aes(color=c.divisivo)) + labs(title = "DIVISIVO")
+```
+
+Ahora utilizamos la agrupación por densidad
+
+```{r}
+#Calculando nuevas distancias (euclideandas) utilizando las dimensiones creadas anteriormente. 
+g.dist.cmd = daisy(subdata[,c('dim1','dim2')], metric = 'euclidean')
+
+#CALCULANDO EL EPSilon. Tenemos que ver en qué parte la curva eleva su ángulo drásticamente. 
+
+library(dbscan)
+kNNdistplot(g.dist.cmd, k=5) # Consideramos 5 como el número mínimo de vecinos (puntos)
+abline(h=0.12, lty=2)
+
+# Generamos la agrupación de densidada, es decir, una lista con información así como las otras estrategias. 
+install.packages("fpc")
+library(fpc)
+db.cmd = dbscan(g.dist.cmd, eps=0.12, MinPts=5, method = 'dist')
+db.cmd #salieron 3 grupos, 2 no fueron clasificados porqeu estan en la columna 0
+
+# Creamos una columna llamada c.densidad con el vector cluster.
+subdata$c.densidad=as.factor(db.cmd$cluster)
+
+#GRAFICANDO
+
+install.packages("ggrepel")
+library(ggplot2)
+library(ggrepel)
+base= ggplot(subdata,aes(x=dim1, y=dim2)) + ylim(limites) + xlim(limites) + coord_fixed()
+dbplot= base + geom_point(aes(color=c.densidad)) 
+dbplot
+
+#graficando con texto de los casos. No sirve cuando son muchos casos. 
+dbplot + geom_text_repel(size=5,aes(label=row.names(subdata)))
+
+
+#Se puede solicitar el gráfico sólo resaltando aquellos atípicos que no están en ningún grupo o cluster creado. 
+LABEL=ifelse(subdata$c.densidad==0,row.names(subdata),"")
+dbplot + geom_text_repel(aes(label=LABEL),
+                         size=5, 
+                         direction = "x", ylim = 0.45,
+                         angle=45,
+                         segment.colour = "grey")
+```
+
+
+
+
+
+
+
+
+
+
+
+

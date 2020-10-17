@@ -68,9 +68,6 @@ names(basefinal)[10]='DesigualdadGenero'
 basefinal = basefinal [ , c(1,10,8,9,2,3,4,5,6,7)]
 names (basefinal)
 
-#Eliminamos los NAs
-basefinal = na.omit(basefinal)
-
 #Cambiando row.names
 row.names(basefinal)=basefinal$Pais 
 

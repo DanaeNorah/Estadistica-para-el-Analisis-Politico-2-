@@ -1,0 +1,119 @@
+
+HITO 3 - GRUPO 2
+
+PRODUCTO 1: 
+
+#PASO 0: IMPORTAMOS LA DATA BASEFINAL DEL GITHUB
+```{r}
+library(rio)
+
+basefinal=import('https://github.com/DanaeNorah/Estadistica-para-el-Analisis-Politico-2-/raw/master/TRABAJO/basefinal.csv')
+data= basefinal
+str(data)
+```
+1. ANALISIS UNIVARIADO DE NUESTAS VARIABLES
+
+PASO 3: VARIABLE NUMERICA VozPolitica
+```{r}
+#Pedimos que se emplee tablas
+
+```
+
+```{r}
+#Solicitamos las medidas de tendencia central
+library(psych)
+library(DescTools)
+describeBy(data$VozPolitica)
+```
+
+
+```{r}
+summary(data$VozPolitica)
+hist(data$VozPolitica, col = "green", main="Voz politica", xlab = "Por parlamento", ylab ="Porcnetaje de mujeres")
+
+boxplot(data$VozPolitica, col = "lightgreen", main="Voz politica")
+```
+```{r}
+var(lapop$q2) #varianza
+
+sd(lapop$q2) #desviación
+
+install.packages("moments") #Funcion que instala paquete para obtener la asimetria o curtosis
+library(moments)
+skewness(lapop$q2) #asimetría
+
+kurtosis(lapop$q2) #curtosis
+```
+
+PASO 4: VARIABLE NUMERICA LibertadMov (libertad de movimiento)
+```{r}
+#Pedimos que se emplee tablas
+
+```
+
+```{r}
+#Solicitamos las medidas de tendencia central
+library(psych)
+library(DescTools)
+describeBy(data$LibertadMov)
+```
+
+
+```{r}
+summary(data$LibertadMov)
+hist(data$LibertadMov, col = "lightblue", main="Libertad de movimiento", xlab = "", ylab =NULL)
+
+boxplot(data$LibertadMov, col = "red", main="Libertad de movimiento")
+```
+
+
+2. ANALISIS BIVARIADO: CORRELACION Y GRÁFICO DE DISPERSION
+
+#PASO 1: Correlacion entre  "DesigualdadGenero"y "Autonomía"
+```{r}
+#Analisis visual usando un grafico de dispersion
+plot(data$DesigualdadGenero, data$Autonomia, xlab="Desigualdad de Genero", ylab="Autonomía Reproductiva")
+
+#Solicitamos la prueba R de Pearson
+cor.test(data$DesigualdadGenero, data$Autonomia)
+## H0: Las variables son estad�sticamente independientes
+## HA: Las variables son estad�sticamente dependientes
+```
+RESPUESTA:
+
+#PASO 3: Correlacion entre  "DesigualdadGenero"y "Violencia"
+```{r}
+#Analisis visual usando un grafico de dispersion
+plot(data$DesigualdadGenero, data$Violencia, xlab="Desigualdad de Genero", ylab="Violencia")
+
+#Solicitamos la prueba R de Pearson
+cor.test(data$DesigualdadGenero, data$Violencia)
+## H0: Las variables son estadisticamente independientes
+## HA: Las variables son estadisticamente dependientes
+```
+RESPUESTA:
+
+#PASO 3: Correlacion entre  "DesigualdadGenero"y "VozPolitica"
+```{r}
+#Analisis visual usando un grafico de dispersion
+plot(data$DesigualdadGenero, data$VozPolitica, xlab="Desigualdad de Genero", ylab="Voz Politica")
+
+#Solicitamos la prueba R de Pearson
+cor.test(data$DesigualdadGenero, data$VozPolitica)
+## H0: Las variables son estad�sticamente independientes
+## HA: Las variables son estad�sticamente dependientes
+```
+
+RESPUESTA: Que tan fuerte es la correlacion? Que sentido tiene? Por que?
+
+#PASO 4: Correlacion entre  "DesigualdadGenero"y "LibertadMov"(libertad de movimiento)
+```{r}
+#Analisis visual usando un grafico de dispersion
+plot(data$DesigualdadGenero, data$LibertadMov, xlab="Desigualdad de Genero", ylab="Libertad de movimiento")
+
+#Solicitamos la prueba R de Pearson
+cor.test(data$DesigualdadGenero, data$LibertadMov)
+## H0: Las variables son estad�sticamente independientes
+## HA: Las variables son estad�sticamente dependientes
+```
+RESPUESTA:

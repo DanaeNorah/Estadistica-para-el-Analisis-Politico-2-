@@ -14,56 +14,80 @@ str(data)
 1. ANALISIS UNIVARIADO DE NUESTAS VARIABLES
 
 PASO 3: VARIABLE NUMERICA VozPolitica
-```{r}
-#Pedimos que se emplee tablas
-
-```
 
 ```{r}
 #Solicitamos las medidas de tendencia central
 library(psych)
 library(DescTools)
 describeBy(data$VozPolitica)
+summary(data$VozPolitica)
 ```
 
 
-```{r}
-summary(data$VozPolitica)
-hist(data$VozPolitica, col = "green", main="Voz politica", xlab = "Por parlamento", ylab ="Porcnetaje de mujeres")
 
+```{r}
+#Solicitamos un histograma
+hist(data$VozPolitica, col = "green", main="Voz politica", xlab = "Por parlamento", ylab ="Porcnetaje de mujeres")
+#Solicitamos un boxplot para ver los outliers
 boxplot(data$VozPolitica, col = "lightgreen", main="Voz politica")
 ```
-```{r}
-var(lapop$q2) #varianza
 
-sd(lapop$q2) #desviación
-
-install.packages("moments") #Funcion que instala paquete para obtener la asimetria o curtosis
-library(moments)
-skewness(lapop$q2) #asimetría
-
-kurtosis(lapop$q2) #curtosis
-```
 
 PASO 4: VARIABLE NUMERICA LibertadMov (libertad de movimiento)
 ```{r}
-#Pedimos que se emplee tablas
-
-```
-
-```{r}
 #Solicitamos las medidas de tendencia central
-library(psych)
-library(DescTools)
 describeBy(data$LibertadMov)
+summary(data$LibertadMov)
 ```
 
 
 ```{r}
-summary(data$LibertadMov)
+#Solicitamos un histograma 
 hist(data$LibertadMov, col = "lightblue", main="Libertad de movimiento", xlab = "", ylab =NULL)
-
+#Solicitamos un boxplot para ver los outliers
 boxplot(data$LibertadMov, col = "red", main="Libertad de movimiento")
+```
+PASO 5: Analisis descriptivo de la variable "AccesoJ"
+```{r}
+#Solicitamos el desvrybeBy para el analisis univariado
+describeBy(data$AccesoJ, digits=2)
+```
+
+```{r}
+#Solicitamos un boxplot
+boxplot(data$AccesoJ, col = "lightgreen", main="Acceso a Justicia")
+
+#Solicitamos un histograma
+hist((data$AccesoJ),col="lightblue",
+        xlab="Cantidad de paises",
+        ylab="Acceso a justicia",
+        main="Acceso a Justicia")
+```
+
+
+PASO 6: Analisis descriptivo de la variable "SecundariaC"
+```{r}
+#Solicitamos el desvrybeBy para el analisis univariado
+describeBy(data$SecundariaC, digits=2)
+```
+
+```{r}
+#Solicitamos un boxplot
+boxplot(data$SecundariaC, col = "lightgreen", main="Secundaria Completa")
+
+#Solicitamos el histograma
+hist((data$SecundariaC),col="lightblue",
+        xlab="Cantidad de paises",
+        ylab="Promedio de mujeres con secundaria completa",
+        main="Promedio de mujeres con secundaria completa")
+```
+
+PASO 9: aplicamos las funciones para todas las vairables a la vez
+```{r}
+#para varias variables
+describeBy(as.matrix(cbind(data[,c(2:10)])), digits = 2)
+#summary
+summary(data[,c(2:10)])
 ```
 
 
@@ -76,12 +100,12 @@ plot(data$DesigualdadGenero, data$Autonomia, xlab="Desigualdad de Genero", ylab=
 
 #Solicitamos la prueba R de Pearson
 cor.test(data$DesigualdadGenero, data$Autonomia)
-## H0: Las variables son estad�sticamente independientes
-## HA: Las variables son estad�sticamente dependientes
+## H0: Las variables son estadIsticamente independientes
+## HA: Las variables son estadIsticamente dependientes
 ```
 RESPUESTA:
 
-#PASO 3: Correlacion entre  "DesigualdadGenero"y "Violencia"
+#PASO 2: Correlacion entre  "DesigualdadGenero"y "Violencia"
 ```{r}
 #Analisis visual usando un grafico de dispersion
 plot(data$DesigualdadGenero, data$Violencia, xlab="Desigualdad de Genero", ylab="Violencia")
@@ -100,8 +124,8 @@ plot(data$DesigualdadGenero, data$VozPolitica, xlab="Desigualdad de Genero", yla
 
 #Solicitamos la prueba R de Pearson
 cor.test(data$DesigualdadGenero, data$VozPolitica)
-## H0: Las variables son estad�sticamente independientes
-## HA: Las variables son estad�sticamente dependientes
+## H0: Las variables son estadIsticamente independientes
+## HA: Las variables son estadIsticamente dependientes
 ```
 
 RESPUESTA: Que tan fuerte es la correlacion? Que sentido tiene? Por que?
@@ -113,7 +137,55 @@ plot(data$DesigualdadGenero, data$LibertadMov, xlab="Desigualdad de Genero", yla
 
 #Solicitamos la prueba R de Pearson
 cor.test(data$DesigualdadGenero, data$LibertadMov)
-## H0: Las variables son estad�sticamente independientes
-## HA: Las variables son estad�sticamente dependientes
+## H0: Las variables son estadIsticamente independientes
+## HA: Las variables son estadIsticamente dependientes
+```
+RESPUESTA:
+
+#PASO 5: Correlacion entre  "DesigualdadGenero"y "AccesoJ"(acceso a justicia)
+```{r}
+#Analisis visual usando un grafico de dispersion
+plot(data$DesigualdadGenero, data$AccesoJ, xlab="Desigualdad de Genero", ylab="Acceso a Justicia")
+
+#Solicitamos la prueba R de Pearson
+cor.test(data$DesigualdadGenero, data$AccesoJ)
+## H0: Las variables son estadIsticamente independientes
+## HA: Las variables son estadIsticamente dependientes
+```
+RESPUESTA:
+
+#PASO 6: Correlacion entre  "DesigualdadGenero"y "SecundariaC"(secundaria completa)
+```{r}
+#Analisis visual usando un grafico de dispersion
+plot(data$DesigualdadGenero, data$SecundariaC, xlab="Desigualdad de Genero", ylab="Secundaria completa")
+
+#Solicitamos la prueba R de Pearson
+cor.test(data$DesigualdadGenero, data$SecundariaC) 
+## H0: Las variables son estadIsticamente independientes
+## HA: Las variables son estadIsticamente dependientes
+```
+RESPUESTA:
+
+#PASO 7: Correlacion entre  "DesigualdadGenero"y "Desempleo"
+```{r}
+#Analisis visual usando un grafico de dispersion
+plot(data$DesigualdadGenero, data$Desempleo, xlab="Desigualdad de Genero", ylab="Desempleo")
+
+#Solicitamos la prueba R de Pearson
+cor.test(data$DesigualdadGenero, data$Desempleo)
+## H0: Las variables son estadIsticamente independientes
+## HA: Las variables son estadIsticamente dependientes
+```
+RESPUESTA:
+
+#PASO 8: Correlacion entre  "DesigualdadGenero"y "CuentaF"(Cuenta financiera)
+```{r}
+#Analisis visual usando un grafico de dispersion
+plot(data$DesigualdadGenero, data$CuentaF, xlab="Desigualdad de Genero", ylab="Cuenta financiera")
+
+#Solicitamos la prueba R de Pearson
+cor.test(data$DesigualdadGenero, data$CuentaF) 
+## H0: Las variables son estadIsticamente independientes
+## HA: Las variables son estadIsticamente dependientes
 ```
 RESPUESTA:

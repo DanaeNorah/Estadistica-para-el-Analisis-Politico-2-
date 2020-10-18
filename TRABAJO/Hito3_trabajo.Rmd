@@ -257,7 +257,7 @@ Malo-Regular  0.9530128
 ```{r}
 #Gráfico de medias con intervalos de confianza (ver superposición)
 library(gplots) 
-plotmeans(data$DesigualdadGenero ~ Autonomia, data = data)
+plotmeans(data$DesigualdadGenero ~ Autonomia, data = data,ylab = "Desigualdad de género")
 ```
 
 #PASO 2: ANOVA de unfactor entre  "DesigualdadGenero"y "Violencia"
@@ -282,7 +282,7 @@ Malo-Regular    0.8572113
 
 ```{r}
 #Gráfico de medias con intervalos de confianza (ver superposición)
-plotmeans(data$DesigualdadGenero ~ Violencia, data = data)
+plotmeans(data$DesigualdadGenero ~ Violencia, data = data, ylab = "Desigualdad de género")
 ```
 
 

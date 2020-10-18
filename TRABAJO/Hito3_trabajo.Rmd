@@ -65,7 +65,7 @@ str(data$Violencia)
 table(data$Violencia)
 ```
 
-PASO 1: VARIABLE NUMERICA Desigualdad de genero
+PASO 1: VARIABLE ORDINAL Desigualdad de genero
 
 #Variable dependiente: Indice de Desigualdad de Genero
 ```{r}
@@ -84,7 +84,7 @@ describe.by(data$DesigualdadGenero)
 hist(data$Violencia, main = "Desigualdad de genero")
 ```
 
-PASO 2;:VARIABLE NUMERICA Autonomia reproductiva
+PASO 2;:VARIABLE ORDINAL Autonomia reproductiva
 
 ```{r}
 #Solicitamos estadisticos descriptivos

@@ -27,19 +27,19 @@ table(data$Autonomia)
 
 ```{r}
 #Para recodificar usamos la funcion recode
-data$Autonomia1 <- recode(data$Autonomia, "0=0 ; 0.25=0 ; 0.5=0.5 ; 0.75=1 ; 1=1")
+data$Autonomia,  <- recode(data$Autonomia, "0=0 ; 0.25=0 ; 0.5=0.5 ; 0.75=1 ; 1=1")
 #Verificamos los nuevos valores
-table(data$Autonomia1)
+table(data$Autonomia, )
 ```
 
 ```{r}
 #Luego, variable debe ser convertida en una variable tipo factor
-data$Autonomia1 <- as.factor(data$Autonomia1)
+data$Autonomia <- as.factor(data$Autonomia )
 #Le asignamos etiquetas a los valores
-levels(data$Autonomia1)<-c("Bueno","Regular","Malo")
+levels(data$Autonomia )<-c("Bueno","Regular","Malo")
 #verificamos
-str(data$Autonomia1)
-table(data$Autonomia1)
+str(data$Autonomia)
+table(data$Autonomia )
 ```
 
 #Variable violencia
@@ -50,19 +50,19 @@ table(data$Violencia)
 
 ```{r}
 #Empleamos funcion recode
-data$Violencia1 <- recode(data$Violencia, "0=0 ; 0.25=0 ; 0.5=0.5 ; 0.75=1 ; 1=1")
+data$Violencia <- recode(data$Violencia, "0=0 ; 0.25=0 ; 0.5=0.5 ; 0.75=1 ; 1=1")
 #Verificamos
-table(data$Violencia1)
+table(data$Violencia)
 ```
 
 ```{r}
 #Luego, variable debe ser convertida en una variable tipo factor
-data$Violencia1 <- as.factor(data$Violencia1)
+data$Violencia <- as.factor(data$Violencia)
 #Le asignamos etiquetas a los valores
-levels(data$Violencia1)<-c("Bueno","Regular","Malo")
+levels(data$Violencia)<-c("Bueno","Regular","Malo")
 #verificamos
-str(data$Violencia1)
-table(data$Violencia1)
+str(data$Violencia)
+table(data$Violencia)
 ```
 
 PASO 1: VARIABLE NUMERICA Desigualdad de genero
@@ -237,11 +237,11 @@ summary(data[,c(2:10)])
 
 ```{r}
 #Aplicamos la prueba ANOVA de un factor. Usamos la nueva variable creada unos pasos atrás.
-anovaautonomia <- aov(data$DesigualdadGenero ~ data$Autonomia1)
+anovaautonomia <- aov(data$DesigualdadGenero ~ data$Autonomia)
 summary(anovaautonomia)
 ```
                   Pr(>F)    
-data$Autonomia1   4.26e-09 ***
+data$Autonomia   4.26e-09 ***
 
 ```{r}
 #Prueba de comparaciones múltiples (Tukey)
@@ -255,19 +255,18 @@ Malo-Regular  0.9530128
 
 ```{r}
 #Gráfico de medias con intervalos de confianza (ver superposición)
-install.packages("gplots")
 library(gplots) 
-plotmeans(data$DesigualdadGenero ~ Autonomia1, data = data)
+plotmeans(data$DesigualdadGenero ~ Autonomia, data = data)
 ```
 
 #PASO 2: ANOVA de unfactor entre  "DesigualdadGenero"y "Violencia"
 ```{r}
 #Aplicamos la prueba ANOVA de un factor
-anovaviolencia <- aov(data$DesigualdadGenero ~ data$Violencia1)
+anovaviolencia <- aov(data$DesigualdadGenero ~ data$Violencia)
 summary(anovaviolencia)
 ```
                   Pr(>F)   
-data$Violencia1   0.00644 **
+data$Violencia   0.00644 **
 
 ```{r}
 #Prueba de comparaciones múltiples (Tukey)
@@ -280,7 +279,7 @@ Malo-Regular    0.8572113
 
 ```{r}
 #Gráfico de medias con intervalos de confianza (ver superposición)
-plotmeans(data$DesigualdadGenero ~ Violencia1, data = data)
+plotmeans(data$DesigualdadGenero ~ Violencia, data = data)
 ```
 
 

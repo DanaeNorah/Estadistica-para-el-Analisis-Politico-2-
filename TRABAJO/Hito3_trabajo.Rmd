@@ -65,7 +65,7 @@ str(data$Violencia)
 table(data$Violencia)
 ```
 
-PASO 1: VARIABLE ORDINAL Desigualdad de genero
+PASO 1: VARIABLE NUMERICA Desigualdad de genero
 
 #Variable dependiente: Indice de Desigualdad de Genero
 ```{r}
@@ -103,7 +103,7 @@ barplot(table(data$DesigualdadGenero),col="red",
         xlab=NULL,main="Autonomia Reproductiva")
 ```
 
-PASO 3: VARIABLE NUMERICA Violencia contra la mujer
+PASO 3: VARIABLE ORDINAL Violencia contra la mujer
 ```{r}
 #Solicitamos estadisticos descriptivos
 summary(data$Violencia)

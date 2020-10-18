@@ -81,7 +81,7 @@ describe.by(data$DesigualdadGenero)
 -Analisis grafico de variable
 ```{r}
 #Solicitamos histograma
-hist(data$Violencia, main = "Desigualdad de genero","")
+hist(data$Violencia, main = "Desigualdad de genero")
 ```
 
 PASO 2;:VARIABLE NUMERICA Autonomia reproductiva
@@ -92,6 +92,7 @@ summary(data$Autonomia)
 ```
 
 ```{r}
+#o tambien se puede utilizar:
 describe.by(data$Autonomia)
 ```
 
@@ -109,6 +110,7 @@ summary(data$Violencia)
 ```
 
 ```{r}
+#o tambien se puede utilizar:
 describe.by(data$Violencia)
 ```
 
@@ -134,8 +136,6 @@ summary(data$VozPolitica)
 ```{r}
 #Solicitamos un histograma
 hist(data$VozPolitica, col = "green", main="Voz politica", xlab = "Por parlamento", ylab ="Porcnetaje de mujeres")
-#Solicitamos un boxplot para ver los outliers
-boxplot(data$VozPolitica, col = "lightgreen", main="Voz politica")
 ```
 
 

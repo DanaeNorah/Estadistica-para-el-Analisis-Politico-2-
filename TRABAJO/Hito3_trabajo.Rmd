@@ -36,7 +36,11 @@ table(data$Autonomia)
 #Luego, variable debe ser convertida en una variable tipo factor
 data$Autonomia <- as.factor(data$Autonomia )
 #Le asignamos etiquetas a los valores
-levels(data$Autonomia )<-c("Bueno","Regular","Malo")
+data$Autonomia=factor(data$Autonomia,
+                     levels = levels(data$Autonomia),
+                     labels = c("Protege","Regular","No protege"),
+                     ordered = T)
+
 #verificamos
 str(data$Autonomia)
 table(data$Autonomia )
@@ -59,8 +63,10 @@ table(data$Violencia)
 #Luego, variable debe ser convertida en una variable tipo factor
 data$Violencia <- as.factor(data$Violencia)
 #Le asignamos etiquetas a los valores
-levels(data$Violencia)<-c("Bueno","Regular","Malo")
-#verificamos
+data$Violencia=factor(data$Violencia,
+                     levels = levels(data$Violencia),
+                     labels = c("Protege","Regular","No protege"),
+                     ordered = T)#verificamos
 str(data$Violencia)
 table(data$Violencia)
 ```

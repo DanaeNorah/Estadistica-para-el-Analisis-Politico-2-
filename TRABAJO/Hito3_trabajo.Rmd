@@ -240,6 +240,7 @@ summary(data[,c(2:10)])
 anovaautonomia <- aov(data$DesigualdadGenero ~ data$Autonomia)
 summary(anovaautonomia)
 ```
+RESPUESTA:
                   Pr(>F)    
 data$Autonomia   4.26e-09 ***
 
@@ -247,7 +248,7 @@ data$Autonomia   4.26e-09 ***
 #Prueba de comparaciones múltiples (Tukey)
 TukeyHSD(anovaautonomia)
 ```
-
+RESPUESTA:
                 p adj
 Regular-Bueno 0.0001108
 Malo-Bueno    0.0000000
@@ -265,6 +266,7 @@ plotmeans(data$DesigualdadGenero ~ Autonomia, data = data)
 anovaviolencia <- aov(data$DesigualdadGenero ~ data$Violencia)
 summary(anovaviolencia)
 ```
+RESPUESTA:
                   Pr(>F)   
 data$Violencia   0.00644 **
 
@@ -272,6 +274,7 @@ data$Violencia   0.00644 **
 #Prueba de comparaciones múltiples (Tukey)
 TukeyHSD(anovaviolencia)
 ```
+RESPUESTA: 
                 p adj
 Regular-Bueno   0.0112447
 Malo-Bueno      0.0113994

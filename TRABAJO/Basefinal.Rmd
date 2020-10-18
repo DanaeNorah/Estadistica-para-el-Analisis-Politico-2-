@@ -1,0 +1,122 @@
+#MERGE DE LAS DATAS
+
+PASO 1: IMPORTAR LAS DOS DATAS
+```{r}
+library(rio)
+#link base  1 Danae
+libertad=import('https://github.com/DanaeNorah/Estadistica-para-el-Analisis-Politico-2-/raw/Trabajo/Libertad_civil.csv')
+str(libertad)
+#link base 2 Gabriela
+sec=import('https://github.com/GabiCorazao/EstS2/raw/Trabajo/Acceso_Secundaria.csv')
+str(sec)
+#link base 3 Winny
+gender=import('https://github.com/Winny-calderon/Proyecto-EAP2/raw/master/GenderData.csv')
+str(gender)
+#link base 4 Mercy
+autonomia=import('https://github.com/mercy-diaz/ProyectoEst/raw/master/basefinal_MD.csv')
+str(autonomia)
+```
+
+```{r}
+#Cambiar la column Pais a Country para eliminar duplicados
+names(autonomia)[1]='Country'
+```
+
+```{r}
+#eliminar duplicados 
+##Data 1
+libertad[libertad$Country=='CÃ´te d\'Ivoire','Country']='Costa de Marfil'
+libertad[libertad$Country=='Côte d\'Ivoire','Country']='Costa de Marfil'
+libertad[libertad$Country=='China (People\'s Republic of)','Country']='China'
+libertad[libertad$Country=='Congo (Democratic Republic of the)','Country']='Democratic Republic of the Congo'
+libertad[libertad$Country=='Czech Republic','Country']='Czechia'
+libertad[libertad$Country=='Palestinian Authority or West Bank and Gaza Strip','Country']='Palestine'
+libertad[libertad$Country=='Slovak Republic','Country']='Slovakia'
+##Data 2
+sec[sec$Country=='Côte d\'Ivoire','Country']='Costa de Marfil'
+sec[sec$Country=='Czech Republic','Country']='Czechia'
+sec[sec$Country=='Eswatini (Kingdom of)','Country']='Eswatini'
+sec[sec$Country=='Korea (Republic of)','Country']='Korea'
+sec[sec$Country=='Palestine, State of','Country']='Palestine'
+sec[sec$Country=='Slovak Republic','Country']='Slovakia'
+##Data 3
+gender[gender$Country=='CÃ´te d\'Ivoire','Country']='Costa de Marfil'
+gender[gender$Country=='Congo, Democratic Republic of the','Country']='Democratic Republic of the Congo'
+gender[gender$Country=='Czech Republic','Country']='Czechia'
+gender[gender$Country=='Eswatini, Kingdom of','Country']='Eswatini'
+gender[gender$Country=='Iran, Islamic Republic of','Country']='Iran'
+gender[gender$Country=='Korea (Democratic People\'s Rep. of)','Country']='North Korea'
+gender[gender$Country=='Korea, Republic of','Country']='Korea'
+gender[gender$Country=='Moldova, Republic of','Country']='Moldova'
+gender[gender$Country=='Palestine, State of','Country']='Palestine'
+gender[gender$Country=='Russian Federation','Country']='Russia'
+gender[gender$Country=='Tanzania, United Republic of','Country']='Tanzania'
+gender[gender$Country=='Venezuela, Bolivarian Republic of','Country']='Venezuela'
+##Data 4
+autonomia[autonomia$Country=='Bolivia (Plurinational State of)','Country']='Bolivia'
+autonomia[autonomia$Country=='Côte d\'Ivoire','Country']='Costa de Marfil'
+autonomia[autonomia$Country=='China (People\'s Republic of)','Country']='China'
+autonomia[autonomia$Country=='Congo (Democratic Republic of the)','Country']='Democratic Republic of the Congo'
+autonomia[autonomia$Country=='Eswatini (Kingdom of)','Country']='Eswatini'
+autonomia[autonomia$Country=='Iran (Islamic Republic of)','Country']='Iran'
+autonomia[autonomia$Country=='Korea (Republic of)','Country']='Korea'
+autonomia[autonomia$Country=='Moldova (Republic of)','Country']='Moldova'
+autonomia[autonomia$Country=='Palestinian Authority or West Bank and Gaza Strip','Country']='Palestine'
+autonomia[autonomia$Country=='Russian Federation','Country']='Russia'
+autonomia[autonomia$Country=='Slovak Republic','Country']='Slovakia'
+autonomia[autonomia$Country=='Tanzania (United Republic of)','Country']='Tanzania'
+autonomia[autonomia$Country=='Venezuela (Bolivarian Republic of)','Country']='Venezuela'
+```
+
+PASO 2: MERGE
+```{r}
+#base 1 y 2
+baseLyS=merge(libertad,sec,all.x = T, all.y = T)
+str(baseLyS)
+#base 1-2 y 3
+baseLSG=merge(baseLyS,gender,all.x = T, all.y = T)
+str(baseLSG)
+#base 1-2-3 y 4
+baseLSGA=merge(baseLSG,autonomia,all.x = T, all.y = T)
+str(baseLSGA)
+```
+
+BASE FINAL 
+```{r}
+Basefinal=baseLSGA
+```
+
+PASO 5: PREPARAMOS Y MODIFICAMOS NUESTRA BASE FINAL PARA HACERLA MÁS ENTENDEDIBLE
+```{r}
+#Uniformizar a 2 digitos el número de decimales a utilizar en nuestra data "Basefinal" 
+Basefinal[,c(2:10)]=round(Basefinal[,c(2:10)], digits = 2)
+#cambiar nombres a las columnas
+names(Basefinal)[1]='Pais'
+names(Basefinal)[2]='VozPolitica'
+names(Basefinal)[3]='LibertadMov'
+names(Basefinal)[4]='AccesoJ'
+names(Basefinal)[5]='SecundariaC'
+names(Basefinal)[6]='Desempleo'
+names(Basefinal)[7]='CuentaF'
+names(Basefinal)[10]='DesigualdadGenero'
+#ordenar las columnas para poner primero la variable dependiente
+Basefinal = Basefinal[ , c(1,10,8,9,2,3,4,5,6,7)]
+names (Basefinal)
+str(Basefinal)
+```
+Modificando los nombres de las bases
+```{r}
+#identificar duplicados
+Basefinal[!complete.cases(Basefinal),] 
+```
+```{r}
+Basefinal=Basefinal[-c(36,38,60,79,84,96,97,98,100,123,125,157,172,179,180,189,208),]
+```
+
+```{r}
+#Cambiando row.names
+row.names(Basefinal)=Basefinal$Pais 
+#verificamos
+str(Basefinal)
+```
+

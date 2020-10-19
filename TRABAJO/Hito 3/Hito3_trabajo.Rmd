@@ -1,0 +1,367 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: inline
+---
+title: "HITO 3 - GRUPO 2"
+output: html_notebook
+---
+HITO 3 - GRUPO 2
+
+PRODUCTO 1: 
+
+IMPORTAMOS LA DATA BASEFINAL DEL GITHUB
+```{r}
+library(rio)
+basefinal=import('https://github.com/DanaeNorah/Estadistica-para-el-Analisis-Politico-2-/raw/master/TRABAJO/basefinal.csv')
+data= basefinal
+str(data)
+```
+
+1. ANALISIS UNIVARIADO DE NUESTAS VARIABLES
+
+PAS0 0: Antes de proceder con el análisis, vamos a recodificar las variables independientes (autonomia y violencia) para poder hacer un mejor analisis.
+
+#Variable Autonomia
+```{r}
+#Para recodificar tenemos que abrir la libreria car
+library(car)
+#Revisamos valores iniciales
+table(data$Autonomia)
+```
+
+```{r}
+#Para recodificar usamos la funcion recode
+data$Autonomia  <- recode(data$Autonomia,"0=0 ; 0.25=0 ; 0.5=0.5 ; 0.75=1 ; 1=1")
+#Verificamos los nuevos valores
+table(data$Autonomia)
+```
+
+```{r}
+#Luego, variable debe ser convertida en una variable tipo factor
+data$Autonomia <- as.factor(data$Autonomia )
+#Le asignamos etiquetas a los valores
+data$Autonomia=factor(data$Autonomia,
+                     levels = levels(data$Autonomia),
+                     labels = c("Protege","Regular","No protege"),
+                     ordered = T)
+
+#verificamos
+str(data$Autonomia)
+table(data$Autonomia )
+```
+
+#Variable violencia
+```{r}
+#Revisamos los valores
+table(data$Violencia)
+```
+
+```{r}
+#Empleamos funcion recode
+data$Violencia <- recode(data$Violencia, "0=0 ; 0.25=0 ; 0.5=0.5 ; 0.75=1 ; 1=1")
+#Verificamos
+table(data$Violencia)
+```
+
+```{r}
+#Luego, variable debe ser convertida en una variable tipo factor
+data$Violencia <- as.factor(data$Violencia)
+#Le asignamos etiquetas a los valores
+data$Violencia=factor(data$Violencia,
+                     levels = levels(data$Violencia),
+                     labels = c("Protege","Regular","No protege"),
+                     ordered = T)#verificamos
+str(data$Violencia)
+table(data$Violencia)
+```
+
+PASO 1: VARIABLE NUMERICA Desigualdad de genero
+
+#Variable dependiente: Indice de Desigualdad de Genero
+```{r}
+#Solicitamos estadisticos descriptivos
+summary(data$DesigualdadGenero)
+```
+
+```{r}
+library(psych)
+describe.by(data$DesigualdadGenero)
+```
+
+-Analisis grafico de variable
+```{r}
+#Solicitamos histograma
+hist(data$Violencia, main = "Desigualdad de genero")
+```
+
+PASO 2;:VARIABLE ORDINAL Autonomia reproductiva
+
+```{r}
+#Solicitamos estadisticos descriptivos
+summary(data$Autonomia)
+```
+
+```{r}
+#o tambien se puede utilizar:
+describe.by(data$Autonomia)
+```
+
+-Analisis grafico de variable
+```{r}
+#Solicitamos histograma
+barplot(table(data$DesigualdadGenero),col="red",
+        xlab=NULL,main="Autonomia Reproductiva")
+```
+
+PASO 3: VARIABLE ORDINAL Violencia contra la mujer
+```{r}
+#Solicitamos estadisticos descriptivos
+summary(data$Violencia)
+```
+
+```{r}
+#o tambien se puede utilizar:
+describe.by(data$Violencia)
+```
+
+-Analisis grafico de variable
+```{r}
+#Solicitamos una grafica de barras
+barplot(table(data$Autonomia),col="lightgreen",
+        xlab=NULL,main="Violencia contra la mujer")
+```
+
+PASO 4: VARIABLE NUMERICA VozPolitica
+
+```{r}
+#Solicitamos las medidas de tendencia central
+library(psych)
+library(DescTools)
+describeBy(data$VozPolitica)
+summary(data$VozPolitica)
+```
+
+
+- Graficos
+```{r}
+#Solicitamos un histograma
+hist(data$VozPolitica, col = "green", main="Voz politica", xlab = "Por parlamento", ylab ="Porcnetaje de mujeres")
+```
+
+
+PASO 5: VARIABLE NUMERICA LibertadMov (libertad de movimiento)
+```{r}
+#Solicitamos las medidas de tendencia central
+describeBy(data$LibertadMov)
+summary(data$LibertadMov)
+```
+
+- Graficos
+```{r}
+#Solicitamos un histograma 
+hist(data$LibertadMov, col = "lightblue", main="Libertad de movimiento", xlab = "", ylab =NULL)
+#Solicitamos un boxplot para ver los outliers
+boxplot(data$LibertadMov, col = "red", main="Libertad de movimiento")
+```
+
+PASO 6: Analisis descriptivo de la variable "AccesoJ"
+```{r}
+#Solicitamos el desvrybeBy para el analisis univariado
+describeBy(data$AccesoJ, digits=2)
+```
+
+- Graficos
+```{r}
+#Solicitamos un boxplot
+boxplot(data$AccesoJ, col = "lightgreen", main="Acceso a Justicia")
+#Solicitamos un histograma
+hist((data$AccesoJ),col="lightblue",
+        xlab="Cantidad de paises",
+        ylab="Acceso a justicia",
+        main="Acceso a Justicia")
+```
+
+
+PASO 7: Analisis descriptivo de la variable "SecundariaC"
+```{r}
+#Solicitamos el desvrybeBy para el analisis univariado
+describeBy(data$SecundariaC, digits=2)
+```
+
+- Graficos
+```{r}
+#Solicitamos un boxplot
+boxplot(data$SecundariaC, col = "lightgreen", main="Secundaria Completa")
+#Solicitamos el histograma
+hist((data$SecundariaC),col="lightblue",
+        xlab="Cantidad de paises",
+        ylab="Promedio de mujeres con secundaria completa",
+        main="Mujeres con secundaria completa")
+```
+
+PASO 8: Analisis descriptivo de la variable "Desempleo"
+```{r}
+#Solicitamos el desvrybeBy para el analisis univariado
+describeBy(data$Desempleo, digits=2)
+```
+
+- Graficos
+```{r}
+#Solicitamos un boxplot
+boxplot(data$Desempleo,  col="blue", main="Boxplot de Desempleo")
+#Solicitamos el histograma
+hist((data$Desempleo), col="blue",
+        xlab="Cantidad de paises",
+        ylab="Proporcion de mujeres desempleadas",
+        main="Mujeres desempleadas")
+```
+
+PASO 9: Analisis descriptivo de la variable "CuentaF"
+```{r}
+#Solicitamos el desvrybeBy para el analisis univariado
+describeBy(data$CuentaF, digits=2)
+```
+
+```{r}
+#Solicitamos un boxplot
+boxplot(data$CuentaF, main="Boxplot de Cuenta Financiera ", col="blue")
+#Solicitamos el histograma
+hist((data$CuentaF), col="blue",
+        xlab="Cantidad de paises",
+        ylab="Porcentaje de mujeres con banca movil",
+        main="Mujeres con banca movil")
+```
+
+PASO 10: aplicamos las funciones para todas las vairables a la vez
+```{r}
+#para varias variables
+describeBy(as.matrix(cbind(data[,c(2:10)])), digits = 2)
+#summary
+summary(data[,c(2:10)])
+```
+
+
+2. ANALISIS BIVARIADO: CORRELACION Y GRÁFICO DE DISPERSION
+
+#PASO 1: ANOVA de un factor entre  "DesigualdadGenero"y "Autonomía"
+
+```{r}
+#Aplicamos la prueba ANOVA de un factor. Usamos la nueva variable creada unos pasos atrás.
+anovaautonomia <- aov(data$DesigualdadGenero ~ data$Autonomia)
+summary(anovaautonomia)
+```
+RESPUESTA:
+                  Pr(>F)    
+data$Autonomia   4.26e-09 ***
+
+```{r}
+#Prueba de comparaciones múltiples (Tukey)
+TukeyHSD(anovaautonomia)
+```
+RESPUESTA:
+                     p adj
+Regular-Protege      0.0001108
+No protege-Protege   0.0000000
+No protege-Regular   0.9530128
+
+```{r}
+#Gráfico de medias con intervalos de confianza (ver superposición)
+library(gplots) 
+plotmeans(data$DesigualdadGenero ~ Autonomia, data = data,ylab = "Desigualdad de género")
+```
+
+#PASO 2: ANOVA de unfactor entre  "DesigualdadGenero"y "Violencia"
+```{r}
+#Aplicamos la prueba ANOVA de un factor
+anovaviolencia <- aov(data$DesigualdadGenero ~ data$Violencia)
+summary(anovaviolencia)
+```
+RESPUESTA:
+                  Pr(>F)   
+data$Violencia   0.00644 **
+
+```{r}
+#Prueba de comparaciones múltiples (Tukey)
+TukeyHSD(anovaviolencia)
+```
+RESPUESTA: 
+                    p adj
+Regular- Protege    0.0112447
+No protege-Protege  0.0113994
+No protege-Regular  0.8572113
+
+```{r}
+#Gráfico de medias con intervalos de confianza (ver superposición)
+plotmeans(data$DesigualdadGenero ~ Violencia, data = data, ylab = "Desigualdad de género")
+```
+
+
+#PASO 3: Correlacion entre  "DesigualdadGenero"y "VozPolitica"
+```{r}
+#Analisis visual usando un grafico de dispersion
+plot(data$DesigualdadGenero, data$VozPolitica, xlab="Desigualdad de Genero", ylab="Voz Politica")
+#Solicitamos la prueba R de Pearson
+cor.test(data$DesigualdadGenero, data$VozPolitica)
+## H0: Las variables son estadIsticamente independientes
+## HA: Las variables son estadIsticamente dependientes
+```
+
+RESPUESTA: cor = -0.3797722  p-value = 6.529e-06
+
+Que tan fuerte es la correlacion? Que sentido tiene? Por que?
+
+#PASO 4: Correlacion entre  "DesigualdadGenero"y "LibertadMov"(libertad de movimiento)
+```{r}
+#Analisis visual usando un grafico de dispersion
+plot(data$DesigualdadGenero, data$LibertadMov, xlab="Desigualdad de Genero", ylab="Libertad de movimiento")
+#Solicitamos la prueba R de Pearson
+cor.test(data$DesigualdadGenero, data$LibertadMov)
+## H0: Las variables son estadIsticamente independientes
+## HA: Las variables son estadIsticamente dependientes
+```
+RESPUESTA: cor = -0.4299311  p-value = 2.41e-07
+
+#PASO 5: Correlacion entre  "DesigualdadGenero"y "AccesoJ"(acceso a justicia)
+```{r}
+#Analisis visual usando un grafico de dispersion
+plot(data$DesigualdadGenero, data$AccesoJ, xlab="Desigualdad de Genero", ylab="Acceso a Justicia")
+#Solicitamos la prueba R de Pearson
+cor.test(data$DesigualdadGenero, data$AccesoJ)
+## H0: Las variables son estadIsticamente independientes
+## HA: Las variables son estadIsticamente dependientes
+```
+RESPUESTA: cor = -0.1588468   p-value = 0.06888
+
+#PASO 6: Correlacion entre  "DesigualdadGenero"y "SecundariaC"(secundaria completa)
+```{r}
+#Analisis visual usando un grafico de dispersion
+plot(data$DesigualdadGenero, data$SecundariaC, xlab="Desigualdad de Genero", ylab="Secundaria Completa")
+#Solicitamos la prueba R de Pearson
+cor.test(data$DesigualdadGenero, data$SecundariaC) 
+## H0: Las variables son estadIsticamente independientes
+## HA: Las variables son estadIsticamente dependientes
+```
+RESPUESTA: cor = -0.7925136   p-value < 2.2e-16
+
+#PASO 7: Correlacion entre  "DesigualdadGenero"y "Desempleo"
+```{r}
+#Analisis visual usando un grafico de dispersion
+plot(data$DesigualdadGenero, data$Desempleo, xlab="Desigualdad de Genero", ylab="Desempleo")
+#Solicitamos la prueba R de Pearson
+cor.test(data$DesigualdadGenero, data$Desempleo)
+## H0: Las variables son estadIsticamente independientes
+## HA: Las variables son estadIsticamente dependientes
+```
+RESPUESTA: cor = 0.01774458  p-value = 0.8227
+
+#PASO 8: Correlacion entre  "DesigualdadGenero"y "CuentaF"(Cuenta financiera)
+```{r}
+#Analisis visual usando un grafico de dispersion
+plot(data$DesigualdadGenero, data$CuentaF, xlab="Desigualdad de Genero", ylab="Cuenta financiera")
+#Solicitamos la prueba R de Pearson
+cor.test(data$DesigualdadGenero, data$CuentaF) 
+## H0: Las variables son estadIsticamente independientes
+## HA: Las variables son estadIsticamente dependientes
+```
+RESPUESTA: cor = -0.8300363  p-value < 2.2e-16

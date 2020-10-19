@@ -1,3 +1,8 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: inline
+---
 title: "HITO 3 - GRUPO 2"
 output: html_notebook
 ---
@@ -255,10 +260,10 @@ data$Autonomia   4.26e-09 ***
 TukeyHSD(anovaautonomia)
 ```
 RESPUESTA:
-                p adj
-Regular-Bueno 0.0001108
-Malo-Bueno    0.0000000
-Malo-Regular  0.9530128
+                     p adj
+Regular-Protege      0.0001108
+No protege-Protege   0.0000000
+No protege-Regular   0.9530128
 
 ```{r}
 #Gráfico de medias con intervalos de confianza (ver superposición)
@@ -281,10 +286,10 @@ data$Violencia   0.00644 **
 TukeyHSD(anovaviolencia)
 ```
 RESPUESTA: 
-                p adj
-Regular-Bueno   0.0112447
-Malo-Bueno      0.0113994
-Malo-Regular    0.8572113
+                    p adj
+Regular- Protege    0.0112447
+No protege-Protege  0.0113994
+No protege-Regular  0.8572113
 
 ```{r}
 #Gráfico de medias con intervalos de confianza (ver superposición)

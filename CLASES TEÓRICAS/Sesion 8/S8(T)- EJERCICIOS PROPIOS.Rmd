@@ -1,0 +1,35 @@
+
+SEMANA 8 - REPASO
+
+#DATA 1 : MILITARY EXPEDITURES
+```{r}
+military = htmltab(doc = "https://www.cia.gov/library/publications/resources/the-world-factbook/fields/330rank.html", 
+                which ='//*[@id="rankOrder"]')
+```
+
+```{r}
+#cambiar datos
+military$`Date of Information`=gsub(" est.","", military$`Date of Information`)
+
+#volver a numericas
+str(military)
+military[,c(3,4)]=lapply(military[,c(3,4)], as.numeric)
+str(military)
+
+#eliminar Rank
+military[1]=NULL
+
+#sin espacios
+military$Country=trimws(military$Country, whitespace = "[\\h\\v]")
+```
+
+NOTA:
+```{r}
+#datas[datas$`1985`=="..",`1985`]=NA #para solucionar esto tendría que cambiarle el nombre
+#names(datas)[4]="a2018"
+#datas[datas$a2018=="..",'a2018']=NA #listo ahora los hace NA
+
+#datas$`2018`=gsub( '..',NA, datas$`2018``,fixed=T)#si coloco fixed no toma regex
+#dos maneras de borrarlo
+```
+

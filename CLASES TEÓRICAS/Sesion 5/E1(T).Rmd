@@ -17,24 +17,17 @@ free=na.omit(free)
 c. ordinal
 Ahora está listo para los estadisticos:
 ```{r}
-free[,c(2:4)]=lapply(free[,c(2:4)],as.ordered)
+free[,c(2:4)]=lapply(free[,c(2:4)],as.factor)
 
 library(dplyr)
-free$freeMundo= recode(free$freeMundo,
-       'free'='1free',
-       'not free'='2notfree','partly free'='3partlyfree')
+levels(free$freeMundo) = c("1free", "2notfree", "3partlyfree")
 table(free$freeMundo)
 
-free$freeEco= recode(free$freeEco,
-       'free'='1free','moderately free'='2moderatelyfree','mostly free'='3mostlyfree',
-       'mostly unfree'='4mostlyunfree','repressed'='5repressed') 
+levels(free$freeEco) = c("1free", "2moderatelyfree", "3partlyfree","4mostlyunfree","5repressed")
 table(free$freeEco)
 
-free$freePress= recode(free$freePress,
-       'difficult situation'='1difficultsituation',
-       'good situation'='2goodsituation',
-       'noticeable problems'='3noticeableproblems','satisfactory situation'='4satisfactorysituation',
-       'very serious situation'='5veryserioussituation')
+levels(free$freePress) = c("1difficultsituation", "2goodsituation", "3noticeableproblems","4satisfactorysituation","5veryserioussituation")
+table(free$freePress)
 table(free$freePress)
 
 summary(free)
@@ -47,7 +40,7 @@ str(free)
 
 library(cluster)
 # usar en C() las dimensiones de interes:
-dist= daisy(free[,c(2:4)], metric="gower")
+dist= daisy(free[,c(2:4)], metric="gower", stand=T)
 ```
 
 2. Proponer cantidad de clusters:
@@ -65,7 +58,10 @@ Aquí corresponde saber las caracteristicas de los paises en cada cluster. Veamo
 library(plyr) # para funcion "each"..
 
 # nota el uso de as.matrix con cbind:
-aggregate(as.matrix(cbind(free[,c(2:4)]))~ clusterPT, data=free,FUN=plyr::each(MD = median))
+aggregate(as.matrix(cbind(free[,c(2:4)]))~ clusterPT, 
+              data=free, # luego las funciones que deseas
+              FUN= plyr::each(median))
+
 ```
 Podemos volver esa tabla resumen un data frame:
 ```{r}
@@ -73,7 +69,7 @@ library(DescTools)
 # guardando resultado anterior en objeto "agg": 
 ag=aggregate(as.matrix(cbind(free[,c(2:4)]))~ clusterPT, 
               data=free, # luego las funciones que deseas
-              FUN=plyr::each(MD = Median))
+              FUN=plyr::each(median))
 
 # convertir en data frame, y 
 tablafree=t(as.data.frame(ag))

@@ -169,7 +169,7 @@ abline(h=0.15, lty=2)
 # Generamos la agrupación de densidada, es decir, una lista con información así como las otras estrategias. 
 install.packages("fpc")
 library(fpc)
-db.cmd = dbscan(g.dist.cmd, eps=0.12, MinPts=5, method = 'dist')
+db.cmd = dbscan(g.dist.cmd, eps=0.15, MinPts=6, method = 'dist')
 db.cmd 
 
 # Creamos una columna llamada c.densidad con el vector cluster.
@@ -200,8 +200,8 @@ dbplot + geom_text_repel(aes(label=LABEL),
 #b.	¿Cuántos clústers obtenemos? ¿Cuántos casos no se pueden clusterizar?
 
 RESPUESTA: 
-- el total de clusters es 153 por la tabla de dbscan
--Analizando la grafica, los casos que no se pueden clusterizar con 3 (Uzbekistan, Rwanda y Solmalia). Asimismo, analizando la tabla de dbscan son tresgrupos que no fueron clasificados porque estan en la columna 0.
+- el total de clusters es 156 por la tabla de dbscan
+-Analizando la grafica, los casos que no se pueden clusterizar con 3 ( Rwanda y Solmalia). Asimismo, analizando la tabla de dbscan son dosgrupos que no fueron clasificados porque estan en la columna 0.
 
 
 

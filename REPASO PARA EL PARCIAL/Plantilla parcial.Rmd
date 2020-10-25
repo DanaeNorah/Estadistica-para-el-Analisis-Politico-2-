@@ -1,0 +1,23 @@
+
+EXAMEN PARCIAL - 20180267
+PASO 0. PAQUETES
+```{r}
+library(htmltab) #para scrapear
+library(stringr) #para limpieza de columnas 
+library(readr) #para extraer un único numero de la columna
+library(rio) #para importar
+library(cluster) #clustering
+library(plyr) #aggregate, funcion each
+library(psych) #para hacer tablas comparadas
+library(knitr) #para generar tablas html
+library(kableExtra) #para generar tablas html
+library(factoextra) #visualización de clusters
+library(ggrepel) #para que las etiquetas de los graficos no se superpongan
+library(dplyr)
+library(car) #recodificacion
+library(magrittr)
+library(foreign)
+library(cluster)
+library(ggrepel)
+library(foreign)
+```

@@ -203,12 +203,14 @@ g.dist.cmd = daisy(subdata[,c('dim1','dim2')], metric = 'euclidean')
 library(dbscan)
 kNNdistplot(g.dist.cmd, k=4) # Consideramos 4 como el número mínimo de vecinos (puntos)
 abline(h=0.17, lty=2)
+##ver la gráfica en donde se eleva la curva
 
 # Generamos la agrupación de densidada, es decir, una lista con información así como las otras estrategias. 
 install.packages("fpc")
 library(fpc)
 db.cmd = dbscan(g.dist.cmd, eps=0.17, MinPts=4, method = 'dist')
 db.cmd
+##repasar border y seed
 
 # Creamos una columna llamada c.densidad con el vector cluster.
 subdata$c.densidad=as.factor(db.cmd$cluster)
@@ -234,7 +236,11 @@ dbplot + geom_text_repel(aes(label=LABEL),
                          angle=45,
                          segment.colour = "grey")
 ```
-#si queremos hacer por ejemolo sacar el promedio del PBI segun los grupo 1,2,3 de particion, divsivo o aglomerativo
+##el no clusterizado era LIMA
+
+
+#EJEMPLI
+##si queremos hacer por ejemolo sacar el promedio del PBI segun los grupo 1,2,3 de particion, divsivo o aglomerativo
 ##para ello, hay que crear el cluster que se pide y de ahi sacarle el descrybe.by
 ```{r}
 #RESOLUCION EJEMPLO:

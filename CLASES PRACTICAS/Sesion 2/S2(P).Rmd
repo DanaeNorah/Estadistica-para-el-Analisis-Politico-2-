@@ -19,6 +19,21 @@ names(data1)[2]='Labor'
 ```
 Extraer el porcentaje que corresponde a AGRICULTURA
 ```{r}
+#Extraer el porcentaje que corresponde a AGRICULTURA
+#data1$agricultura=str_split(string = data1$Labor, pattern = '%', simplify = T)[,1]
+#data1$agricultura=str_split(string = data1$agricultura, pattern = ':', simplify = T)[,2]%>%parse_number()
+
+#Extraer el porcentaje que corresponde a INDUSTRIA
+#data1$industria=str_split(string = data1$Labor, pattern = '%', simplify = T)[,2]
+#data1$industria=str_split(string = data1$industria, pattern = ':', simplify = T)[,2]%>%parse_number()
+
+#Extraer el porcentaje que corresponde a SERVICE
+#data1$service=str_split(string = data1$Labor, pattern = '%', simplify = T)[,3]
+#data1$service=str_split(string = data1$service, pattern = ':', simplify = T)[,2]%>%parse_number()
+```
+
+
+```{r}
 data1$agricultura=str_split(string = data1$Labor,
          pattern = '%',
          simplify = T)[,1]

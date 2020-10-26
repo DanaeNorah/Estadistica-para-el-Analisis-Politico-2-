@@ -22,6 +22,44 @@ military[1]=NULL
 #sin espacios
 military$Country=trimws(military$Country, whitespace = "[\\h\\v]")
 ```
+PASO 2: SCRAPING
+```{r}
+url1= "https://www.cia.gov/library/publications/resources/the-world-factbook/fields/223.html" 
+
+gini=htmltab(doc = url1, 
+              which = '//*[@id="fieldListing"]',
+              encoding = "UTF-8") 
+head(gini)
+```
+
+limpieza
+```{r}
+names(gini)[2]='GI'
+gini$GI1=str_split(string = gini$GI, pattern = '\\(', simplify = T)[,1]%>%parse_number()
+str(gini)
+
+```
+
+MERGE
+```{r}
+base=merge(military,gini,by.x = "Country",by.y = "Country")
+base[,c(3,4)]=NULL
+```
+
+```{r}
+describeBy(base)
+```
+
+```{r}
+plot(base$`(% of GDP)`, base$GI1)
+```
+
+
+
+
+
+
+
 
 NOTA:
 ```{r}

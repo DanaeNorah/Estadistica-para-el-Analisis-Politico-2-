@@ -162,3 +162,10 @@ feliz$ScoreCut2=cut(feliz$Score,breaks = CORTES2,
 table(feliz$ScoreCut2)
 ```
 
+#/ MERGE ALL HACER LIMPIEZA DE NOMBRES FILAS
+merge, primero decargas la ves, limpias y despues la otravase limpias y recien haces merge y limpias 
+```{r}
+co[co$Country=='Cabo Verde',"Country"]="Cape Verde"
+
+```
+

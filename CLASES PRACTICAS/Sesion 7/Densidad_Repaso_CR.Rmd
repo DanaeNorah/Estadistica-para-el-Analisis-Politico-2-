@@ -211,6 +211,8 @@ library(fpc)
 db.cmd = dbscan(g.dist.cmd, eps=0.17, MinPts=4, method = 'dist')
 db.cmd
 ##repasar border y seed
+###seed:puntos centrales o semillas
+###border: puntos forneterizos
 
 # Creamos una columna llamada c.densidad con el vector cluster.
 subdata$c.densidad=as.factor(db.cmd$cluster)

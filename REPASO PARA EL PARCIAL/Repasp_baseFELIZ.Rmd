@@ -1,0 +1,305 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: inline
+---
+PASO 0. PAQUETES
+```{r}
+library(htmltab) #para scrapear
+library(stringr) #para limpieza de columnas 
+library(readr) #para extraer un único numero de la columna
+library(rio) #para importar
+library(cluster) #clustering
+library(plyr) #aggregate, funcion each
+library(psych) #para hacer tablas comparadas
+library(knitr) #para generar tablas html
+library(kableExtra) #para generar tablas html
+library(factoextra) #visualización de clusters
+library(ggrepel) #para que las etiquetas de los graficos no se superpongan
+library(dplyr)
+library(car) #recodificacion
+library(magrittr)
+library(foreign)
+library(cluster)
+library(ggrepel)
+library(foreign)
+```
+
+```{r}
+# bibliotecas:
+library(htmltab)
+
+
+# coleccion
+links=list(web="https://en.wikipedia.org/wiki/World_Happiness_Report",
+           xpath ='//*[@id="mw-content-text"]/div/table/tbody')
+feliz =htmltab(doc = links$web, which =links$xpath)
+names(feliz)
+```
+
+limpieza
+```{r}
+feliz$`Overall rank`=NULL
+feliz$`Country or region`=gsub('Â','',feliz$`Country or region`)
+feliz[,c(2:8)]=lapply(feliz[,c(2:8)],as.numeric)
+feliz[,]=lapply(feliz[,], trimws,whitespace = "[\\h\\v]")
+names(feliz)=trimws (names(feliz),whitespace = "[\\h\\v]")
+names(feliz)=gsub('\\s','',names(feliz))#para espacio
+
+row.names(feliz)=feliz$Countryorregion
+```
+
+```{r}
+feliz[,c(2:8)]=lapply(feliz[,c(2:8)],as.numeric)
+str(feliz)
+```
+```{r}
+feliz[!complete.cases(feliz),]
+
+```
+
+1. Saca descriptivos:
+```{r}
+summary(feliz$Score)
+```
+Determina maximos y minimos: Estos deben aparecer en el reporte
+
+3. Crea los intervalos segun el ANCHO de cada intervalo.
+Aqui necesitas a cut():
+```{r}
+# puntos de corte (incluye min y max)
+CORTES=c(0,2.5,5,7.5,10)
+
+# corta y crea "nueva" variable:
+feliz$ScoreCut=cut(feliz$Score,breaks = CORTES, ordered_result = TRUE)
+#Mira resultado:
+table(feliz$ScoreCut)
+```
+Puedes quedarte con ello, pero podrias crear tres grupos para evitar grupo con cero:
+```{r}
+# puntos de corte (incluye min y max)
+CORTES2=c(0,3.3,6.6,10) # 4 CORTES
+NOMBRES2=c("BAJO","MEDIO","ALTO") # 4-1 NOMBRES (en orden)
+
+# corta y crea "nueva" variable:
+feliz$ScoreCut2=cut(feliz$Score,breaks = CORTES2, 
+                    labels = NOMBRES2,
+                    ordered_result = TRUE)
+#Mira resultado nuevo:
+
+table(feliz$ScoreCut2)
+```
+Esta puede ser tu nueva columna validadora cuando NO la HAY. De aqui, calcula clusters y compara como hacias con del Democracy Index.
+
+```{r}
+subdata<-feliz
+subdata<-na.omit(subdata) #generara problemas en las distnacias si no se usa el na.omit
+```
+
+```{r}
+subdata[1]=NULL
+str(subdata)
+
+subdata$ScoreCut=NULL
+
+#CALCULAMOS LAS DISTANCIAS CON DAYSY
+g.dist = daisy(subdata, metric="gower")
+
+#NÚMERO DE CLUSTER PARA PARTICIÓN (colocamos pam)
+fviz_nbclust(subdata, pam,diss=g.dist,method = "gap_stat",k.max = 10,verbose = F)
+
+#Número de clusters para jerarquización (colocamos hcut) #solo uno para jerarquico
+fviz_nbclust(subdata, hcut,diss=g.dist,method = "gap_stat",k.max = 10,verbose = F)
+```
+
+```{r}
+particion = pam(g.dist,5,cluster.only = F) #Indicamos 3 por el resultado anterior
+aglomerativo = hcut(g.dist, k = 5,hc_func='agnes',hc_method = "ward.D") #Indicamos 3 por el resultado anterior
+divisivo = hcut(g.dist, k = 5,hc_func='diana') #Indicamos 3 por el resultado anterior
+```
+#cluster.only= F, para que aparezca la lista, pero si se pone T solo aparecer vector y no habra la lista
+
+En base a estas listas podemos calcular los gráficos de siluetas. Hay que recordar que en este tipo de gráficos cada barra representa un caso de nuestra base de datos. 
+```{r}
+fviz_silhouette(particion)
+fviz_silhouette(aglomerativo)
+fviz_silhouette(divisivo)
+```
+#cada barra es un caso
+#la linea punteada roja es el promedio del width
+#en el grafico verificar width y los casos negativos
+
+Criterios para definir el mejor método: 
+1) Aquel que tenga el Average silhouette width más alto. 
+2) Aquel con menos casos con width negativos = Aquel con menor cantidad de barras que vayan para abajo. 
+#ANALISIS: probablemente Lima sea el cluster 3 (como outlier)
+
+-----------------------
+
+
+IDENTIFICACIÓN DE CASOS QUE HAN SIDO MAL ASIGNADOS A LOS CLUSTER 
+
+Esto quiere decir identificar los casos que han sido representados como barras con width negativo (hacia abajo).
+
+Esto nos puede servir para identificar los casos "problemáticos". Estos podrían ser outliers. 
+
+Para eso tenemos que identificar en cada cluster aquellos que tienen width negativo (esta información está dentro de cada cluster - lista - creado, dentro de silinfo y a su vez dentro de widths). Para entrar a esos elementos hacemos uso de $. 
+
+Para el método partición:
+
+```{r}
+# Revisamos cómo se ve ese elemento widths
+head(particion$silinfo$widths) 
+# Creamos un data.frame que sea equivalente a ese elemento
+widths.particion=data.frame(particion$silinfo$widths)
+# Creamos un vector que sea el nombre de la región. Lo jalamos del nombre de la fila./ para que salga el nombre en el grafico
+widths.particion$Id=row.names(widths.particion)
+# Creamos un objeto que sea los nombres de aquellos casos cuyos widths sean menor a 0./ que muestre cual es el negativos
+malos.widths.particion= widths.particion [widths.particion$sil_width<0,'Id']
+malos.widths.particion
+#cantidad de casos
+length(malos.widths.particion)
+```
+#data.frame para crear una data con esos datos seleccionados
+
+
+Para el método aglomerativo:
+```{r}
+# Revisamos cómo se ve ese elemento widths
+head(aglomerativo$silinfo$widths) 
+# Creamos un data.frame que sea equivalente a ese elemento
+widths.aglomerativo=data.frame(aglomerativo$silinfo$widths)
+# Creamos un vector que sea el nombre de la región. Lo jalamos del nombre de la fila.
+widths.aglomerativo$Id=row.names(widths.aglomerativo)
+# Creamos un objeto que sea los nombres de aquellos casos cuyos widths sean menor a 0. 
+malos.widths.aglomerativo=widths.aglomerativo[widths.aglomerativo$sil_width<0,'Id']
+malos.widths.aglomerativo
+#cantidad de casos
+length(malos.widths.aglomerativo)
+```
+
+Para el método divisivo:
+
+```{r}
+# Revisamos cómo se ve ese elemento widths
+head(divisivo$silinfo$widths) 
+# Creamos un data.frame que sea equivalente a ese elemento
+widths.divisivo=data.frame(divisivo$silinfo$widths)
+# Creamos un vector que sea el nombre de la región. Lo jalamos del nombre de la fila.
+widths.divisivo$Id=row.names(widths.divisivo)
+# Creamos un objeto que sea los nombres de aquellos casos cuyos widths sean menor a 0. 
+malos.widths.divisivo=widths.divisivo[widths.divisivo$sil_width<0,'Id']
+malos.widths.divisivo
+#cantidad de casos
+length(malos.widths.divisivo)
+```
+
+-----------------------
+
+CLUSTER DE DENSIDAD
+#una estrateiga de agrupacion
+Primero necesitamos calcular un mapa de posiciones para todos los casos. Para eso usamos escalamiento multidimensional:
+
+```{r}
+#Generamos el escalamiento usanto las distancias calculadas. Es decir el g.dist
+proyeccion = cmdscale(g.dist, k=2,add = T) #k es el número de dimensiones solicitadas
+#Creamos una nueva columna en nuestra data que sea la primera dimensión
+subdata$dim1 <- proyeccion$points[,1]
+#Creamos una nueva columna en nuestra data que sea la segunda dimensión
+subdata$dim2 <- proyeccion$points[,2]
+```
+#k=2 se refiere a dos dimensiones
+
+Graficamos en base a las dimensiones calculadas. 
+```{r}
+#GRAFICANDO (REPASAR GGPLOT!!)
+
+base= ggplot(subdata,aes(x=dim1, y=dim2,label=row.names(subdata))) 
+base + geom_text(size=2)
+
+#Coloreando el mapa
+
+#Creemos primero las columnas 
+subdata$c.particion=as.factor(particion$clustering)#particion es la lista, y el clustering es la lista de los cluster
+subdata$c.aglomerativo=as.factor(aglomerativo$cluster)
+subdata$c.divisivo=as.factor(divisivo$cluster)
+##el factor es para despues graficar, si esta en numero no sale
+##dyscrebyby o aggreggate las variables deben ser factores
+
+#Estimando límites
+
+min(subdata[,c('dim1','dim2')]); max(subdata[,c('dim1','dim2')])
+
+#GRAFICAS PARA PAM AGNES Y DIANA
+
+limites=c(-0.49,0.56) #Estos límites deben incluir los números obtenidos con el comando anterior
+
+base= ggplot(subdata,aes(x=dim1, y=dim2)) + ylim(limites) + xlim(limites) + coord_fixed()
+
+base + geom_point(size=2, aes(color=c.particion))  + labs(title = "PARTICIONANTE") 
+base + geom_point(size=2, aes(color=c.aglomerativo)) + labs(title = "AGLOMERATIVO")
+base + geom_point(size=2, aes(color=c.divisivo)) + labs(title = "DIVISIVO")
+```
+
+Ahora utilizamos la agrupación por densidad
+```{r}
+#Calculando nuevas distancias (euclideandas) utilizando las dimensiones creadas anteriormente. 
+g.dist.cmd = daisy(subdata[,c('dim1','dim2')], metric = 'euclidean')
+
+#CALCULANDO EL EPSilon. Tenemos que ver en qué parte la curva eleva su ángulo drásticamente. 
+
+library(dbscan)
+kNNdistplot(g.dist.cmd, k=7) # Consideramos 4 como el número mínimo de vecinos (puntos)
+abline(h=0.11, lty=2)
+##ver la gráfica en donde se eleva la curva
+
+# Generamos la agrupación de densidada, es decir, una lista con información así como las otras estrategias. 
+install.packages("fpc")
+library(fpc)
+db.cmd = dbscan(g.dist.cmd, eps=0.11, MinPts=5, method = 'dist')
+db.cmd
+##repasar border y seed
+
+# Creamos una colum2na llamada c.densidad con el vector cluster.
+subdata$c.densidad=as.factor(db.cmd$cluster)
+
+#GRAFICANDO
+
+install.packages("ggrepel")
+library(ggplot2)
+library(ggrepel)
+base= ggplot(subdata,aes(x=dim1, y=dim2)) + ylim(limites) + xlim(limites) + coord_fixed()
+dbplot= base + geom_point(aes(color=c.densidad)) 
+dbplot
+
+#graficando con texto de los casos. No sirve cuando son muchos casos. 
+dbplot + geom_text_repel(size=5,aes(label=row.names(subdata)))
+
+
+#Se puede solicitar el gráfico sólo resaltando aquellos atípicos que no están en ningún grupo o cluster creado. 
+LABEL=ifelse(subdata$c.densidad==0,row.names(subdata),"")
+dbplot + geom_text_repel(aes(label=LABEL),
+                         size=5, 
+                         direction = "x", ylim = 0.45,
+                         angle=45,
+                         segment.colour = "grey")
+```
+##el no clusterizado era LIMA
+
+
+#EJEMPLI
+##si queremos hacer por ejemolo sacar el promedio del soporte social segun los grupo 1,2,3 de particion, divsivo o aglomerativo
+##para ello, hay que crear el cluster que se pide y de ahi sacarle el descrybe.by
+```{r}
+#RESOLUCION EJEMPLO:
+feliz$c.particion = subdata$c.particion
+library(psych)
+describe.by(feliz$Socialsupport,group=feliz$c.particion)
+
+
+feliz$c.aglomerativo = subdata$c.aglomerativo
+describe.by(feliz$Socialsupport,group=feliz$c.aglomerativo)
+
+
+```
+

@@ -1,0 +1,86 @@
+
+
+## Ejercicio 5: Emisiones de dióxido de carbono
+
+En el siguiente link tenemos una [tabla sobre emisiones de dióxido de carbono](https://www.cia.gov/library/publications/resources/the-world-factbook/fields/274.html)
+
+Obtenemos la base de datos utilizando el *scrapping web*:
+
+```{r}
+library(htmltab)
+web3 = "https://www.cia.gov/library/publications/resources/the-world-factbook/fields/274.html"
+path3 = '//*[@id="fieldListing"]'
+data3 = htmltab(doc = web3, which =path3)
+```
+Ahora vemos rápidamente la base obtenida para ver si está "limpia o sucia":
+```{r}
+head(data3)
+```
+
+Identificamos el patrón: hay algunos números (también expresados con palabras) que luego son seguidos por Mt (año est.)
+Creamos la var1 que será nuestra variables base.
+Eliminamos la anterior. 
+Creamos la variable 2, la cual será la primera parte de esta variable, dividida por el término "Mt".
+```{r}
+names(data3)
+data3$var1 = data3$`Carbon dioxide emissions from consumption of energy`
+data3$var2=str_split(string = data3$var1,
+                         pattern = 'Mt',
+                        simplify = T)[,1]
+```
+Vemos los primeros elemento de este nuevo vector:
+```{r}
+head(data3$var2)[3]
+```
+
+Una vez que hemos dividido la celda nos damos cuenta que algunas están en miles, otras en millones (con la palabra "million") y otras en billones (con la palabra "billion"). Esto es un problema
+
+Por ello, debemos **reemplazar** estas palabras (million, billion) por números para poder convertir estas variables en **numéricas**.
+
+Entonces, nuevamente dividimos esa variable (var2) y el caracter de separación será el " ". 
+Crearemos el vector "número" que será el número base y el "mult" que será el multiplicador. 
+```{r}
+data3$numero=str_split(string = data3$var2,
+                         pattern = ' ',
+                         simplify = T)[,1]
+data3$mult=str_split(string = data3$var2,
+                         pattern = ' ',
+                         simplify = T)[,2]
+table(data3$mult)
+
+```
+Una vez que creamos dichos vectores los visualizamos.
+```{r}
+head(data3$numero)
+head(data3$mult)
+```
+
+Ahora veamos la columna "mult" y comencemos a reemplazar.
+
+La palabra "million" por 1000000:
+```{r}
+data3$mult = gsub('million',"1000000",data3$mult) # reemplaza la palabra million por el número correspondiente.
+```
+La palabra "billion" por 1000000000:
+```{r}
+data3$mult = gsub('billion',"1000000000",data3$mult) # reemplaza la palabra billion por el número correspondiente.
+```
+Los espacios vacíos por 1 (para que el resultado sea el mismo).
+```{r}
+data3$mult[data3$mult == ""] <- "1" # reemplaza los espacios vacíos por el número 1.
+```
+Ahora en el vector del número base hay que reemplazar las "," por "":
+```{r}
+data3$numero = parse_number(data3$numero) # extraemos el numero sin ","
+```
+Ahora volvemos el multiplicador en numéricos:
+```{r}
+data3$mult = as.numeric(data3$mult)
+```
+Finalmente calculamos una nueva variable que sea la multiplicación entre el número base y el multiplicador (1, millón o billón)
+```{r}
+data3$final = (data3$numero*data3$mult)
+data3$final = (data3$final/1000000000)
+data3[,c(2:4)]=NULL
+subdata=data3
+```

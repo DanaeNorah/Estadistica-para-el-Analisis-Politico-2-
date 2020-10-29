@@ -1,0 +1,286 @@
+
+Análisis de Conglomerados: Estrategia Basada en Densidad
+PASO 0. PAQUETES
+```{r}
+library(htmltab) #para scrapear
+library(stringr) #para limpieza de columnas 
+library(readr) #para extraer un único numero de la columna
+library(rio) #para importar
+library(cluster) #clustering
+library(plyr) #aggregate, funcion each
+library(psych) #para hacer tablas comparadas
+library(knitr) #para generar tablas html
+library(kableExtra) #para generar tablas html
+library(factoextra) #visualización de clusters
+library(ggrepel) #para que las etiquetas de los graficos no se superpongan
+library(dplyr)
+library(car) #recodificacion
+library(magrittr)
+library(foreign)
+
+```
+
+```{r}
+# coleccion
+library(htmltab)
+demolink = "https://en.wikipedia.org/wiki/Democracy_Index"
+demopath = '//*[@id="mw-content-text"]/div/table[2]/tbody'
+demo<- htmltab(doc = demolink, which =demopath)
+
+# limpieza
+library(stringr)
+library(magrittr)
+names(demo)=str_split(names(demo),">>",simplify = T)[,1]%>%gsub('\\s','',.)
+demo[,-c(1,8,9)]=lapply(demo[,-c(1,8,9)], trimws,whitespace = "[\\h\\v]") # no blanks
+names(demo)=gsub("Â","",names(demo))
+demo$Country=gsub("Â","",demo$Country)
+demo$Country=trimws(demo$Country,whitespace = "[\\h\\v]") #PREGUNTAR CUAL ES LA DIFERENCIA ENTRE ESTE Y GSUB
+
+# preparación
+demo=demo[,-c(1)] #sin Rank
+demo=demo[,-10]
+demo[,-c(1,8,9)]=lapply(demo[,-c(1,8,9)], as.numeric) # a numerico
+names(demo)[9]= 'Continent'
+
+subdata=demo
+row.names(subdata)=subdata$Country
+subdata=na.omit(subdata)
+
+
+# veamos que tenemos:
+str(subdata)
+```
+
+Nuestro punto de partida clave siempre ha sido el cálculo de la matriz de distancias, añadamos la semilla aleatoria:
+```{r}
+set.seed(2020)
+g.dist = daisy(subdata[,c(2:6)], metric="gower")
+```
+
+#1. DETERMINANDO CANTIDAD DE CLUSTERS
+
+Existe la medida GAP, que sirve para determinar el mejor numero de clusters a pedir. 
+##Clusters recomendados para partición
+   - k.max es el nymero de grupos que quieres que aparezcas
+```{r}
+fviz_nbclust(subdata[,c(2:6)], pam,diss=g.dist,method = "gap_stat",k.max = 10,verbose = F)
+```
+##Clusters recomendados para jerarquización:
+```{r}
+fviz_nbclust(subdata[,c(2:6)], hcut,diss=g.dist,method = "gap_stat",k.max = 10,verbose = F)
+```
+El numero de clusters varía, pero quedemonos con 5 
+
+
+#2. EVALUANDO LOS CLUSTERS OBTENIDOS 
+
+##Clusterizemos:
+```{r}
+res.pam = pam(g.dist,5,cluster.only = F)
+res.agnes = hcut(g.dist, k = 5,hc_func='agnes',hc_method = "ward.D")
+res.diana = hcut(g.dist, k = 5,hc_func='diana')
+```
+
+Para evaluar, posubdatas analizar las SILUETAS (silhouettes), una medida que indica la calidad de asignación de un caso particular.
+
+##Evaluación gráfica pam:
+```{r}
+fviz_silhouette(res.pam)
+```
+
+
+##Evaluación gráfica para agnes:
+```{r}
+fviz_silhouette(res.agnes)
+```
+##Evaluación gráfica para diana:
+```{r}
+fviz_silhouette(res.diana)
+```
+quedarse con el mayor width
+
+#3. EVALUACION NUMERICA 
+- Identificar a los casos mal asignados: los que tienen silueta negativa. Para ello es bueno saber lo que cada resultado nos trajo:
+###el medoi el mas representativo, el id
+```{r}
+str(res.pam$silinfo)
+```
+El primero, los WIDTHS, es donde esta la información de cada uno de los casos:
+```{r}
+# veamos solo algunos.
+head(res.pam$silinfo$widths)
+```
+Creemos un data frame:
+```{r}
+poorPAM=data.frame(res.pam$silinfo$widths)
+poorPAM$country=row.names(poorPAM)
+```
+Nos interesa sólo sil_width negativos:
+```{r}
+poorPAMcases=poorPAM[poorPAM$sil_width<0,'country']#me quedo con los negativos porque son los mal clusterizados
+poorPAMcases
+```
+La cantidad de paises es:
+```{r}
+length(poorPAMcases)
+```
+Posubdatas hacer lo mismo para las demás estrategias:
+```{r}
+# agnes
+poorAGNES=data.frame(res.agnes$silinfo$widths)
+poorAGNES$country=row.names(poorAGNES)
+poorAGNEScases=poorAGNES[poorAGNES$sil_width<0,'country']
+poorAGNEScases
+#diana:
+poorDIANA=data.frame(res.diana$silinfo$widths)
+poorDIANA$country=row.names(poorDIANA)
+poorDIANAcases=poorDIANA[poorDIANA$sil_width<0,'country']
+poorDIANAcases
+```
+
+#4. Consultas usando Operaciones de Conjuntos
+Ahora que tenemos todos los paises mal asignados, podemos interrogar a los resultados usando teoría de conjuntos, por ejemplo:
+
+##Los paises mal asignados en agnes y en pam:
+```{r}
+intersect(poorAGNEScases,poorPAMcases)
+```
+Los paises mal asignados por agnes pero no por pam:
+```{r}
+setdiff(poorAGNEScases,poorPAMcases)
+```
+Los paises mal asignados por pam pero no por agnes:
+```{r}
+setdiff(poorPAMcases,poorAGNEScases)
+```
+Los paises mal asignados por pam o por agnes:
+```{r}
+union(poorPAMcases,poorAGNEScases)
+```
+
+##5. Density Based clustering
+  La estrategia basada en densidad sigue una estrategia muy sencilla: juntar a los casos cuya cercanía entre sí los 
+  diferencia de otros. 
+ - Eps (epson): maximo radio, saber vuantos hay en ese radio
+ - MintPts:menor numero de puntos
+ 
+  El algoritmo dbscan requiere dos parametros:
+      a.La distancia epsilon a usar para clusterizar los casos.
+      b.La cantidad k minima de puntos para formar un cluster. El valor k que se usará es al menos la cantidad de dimensiones 
+       (en el caso reciente de democracy infex usaríamos k=5).
+
+
+##6. Mapa de casos
+Sin embargo, el principal problema es que necesitamos un mapa de posiciones para todos los paises. Eso requiere una técnica que proyecte las dimensiones originales en un plano bidimensional. Para ello usaremos la técnica llamada escalamiento multidimensional:
+
+```{r}
+proyeccion = cmdscale(g.dist, k=2,add = T) # k is the number of dim
+```
+Habiendo calculado la proyeccción, recuperemos las coordenadas del mapa del mundo basado en nuestras dimensiones nuevas:
+```{r}
+# data frame prep:
+subdata$dim1 <- proyeccion$points[,1]
+subdata$dim2 <- proyeccion$points[,2]
+```
+Aquí puedes ver el mapa:
+```{r}
+base= ggplot(subdata,aes(x=dim1, y=dim2,label=row.names(subdata))) 
+base + geom_text(size=2)
+```
+
+Coloreemos el mapa anterior segun el cluster al que corresponden. Creemos esas columnas usando los resultados anteriores:
+```{r}
+subdata$pam=as.factor(res.pam$clustering)
+subdata$agnes=as.factor(res.agnes$cluster)
+subdata$diana=as.factor(res.diana$cluster)
+```
+Antes de graficar, calculemos los máximos y minimos para producir una gráfica cuadriculada:
+```{r}
+# Estimado limites:
+min(subdata[,c('dim1','dim2')]); max(subdata[,c('dim1','dim2')])
+```
+Procedeamos a gráficar:
+```{r}
+#PAM
+limites=c(-0.7,0.7)
+
+base= ggplot(subdata,aes(x=dim1, y=dim2)) + ylim(limites) + xlim(limites) + coord_fixed()
+base + geom_point(size=2, aes(color=pam))  + labs(title = "PAM") 
+
+```
+
+```{r}
+#AGNES
+base + geom_point(size=2, aes(color=agnes)) + labs(title = "AGNES")
+```
+
+```{r}
+#DIANA
+base + geom_point(size=2, aes(color=diana)) + labs(title = "DIANA")
+```
+
+Ahora calculemos usando dbscan:
+
+##a.Nuevas distancias: Las posiciones son la información para dbscan.
+```{r}
+#### euclidea!!
+g.dist.cmd = daisy(subdata[,c('dim1','dim2')], metric = 'euclidean')
+```
+
+###b.Calculo de epsilon
+```{r}
+library(dbscan)
+kNNdistplot(g.dist.cmd, k=5)
+```
+
+###c.Obteniendo clusters
+```{r}
+library(fpc)
+db.cmd = dbscan(g.dist.cmd, eps=0.06, MinPts=5,method = 'dist')
+
+```
+De lo anterior podemos saber:
+```{r}
+db.cmd
+```
+
+- Qué se han obtenido 2 clusters.
+- Que hay 11 elementos que no se pudieron clusterizar.
+
+
+Pongamos esos valores en otra columna:
+```{r}
+subdata$dbCMD=as.factor(db.cmd$cluster)
+```
+Graficando
+-Aquí sin texto:
+```{r}
+library(ggrepel)
+base= ggplot(subdata,aes(x=dim1, y=dim2)) + ylim(limites) + xlim(limites) + coord_fixed()
+dbplot= base + geom_point(aes(color=dbCMD)) 
+dbplot
+```
+Aquí con mucho texto:
+```{r}
+dbplot + geom_text_repel(size=5,aes(label=row.names(subdata)))
+```
+Aquí sólo los atípicos:
+```{r}
+LABEL=ifelse(subdata$dbCMD==0,row.names(subdata),"")
+dbplot + geom_text_repel(aes(label=LABEL),
+                         size=5, 
+                         direction = "y", ylim = 0.45,
+                         angle=45,
+                         segment.colour = "grey")
+```
+
+Nota que en esta técnica hay casos que no serán clusterizados; de ahí que hemos resaltado los atípico
+
+
+```{r}
+subdata[subdata$dbCMD==0,'Country']
+```
+
+
+
+

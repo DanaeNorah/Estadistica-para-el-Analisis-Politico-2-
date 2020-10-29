@@ -169,11 +169,12 @@ free=free[,-5] #eliminé dem index!
 
 names(free)=c("Country","freeMundo","freeEco","freePress")
 
+free$Country=gsub('Â','',free$Country)
+
 free$freeEco=gsub("n/a",NA,free$freeEco)
 free$freeMundo=gsub("n/a",NA,free$freeMundo)
 free$freePress=gsub("n/a",NA,free$freePress)
 free[,]=lapply(free[,], trimws,whitespace = "[\\h\\v]")
-# free[free$freeEco=='n/a','freeEco']=NA !!!ojo
 
 #write.csv(free,"free.csv", row.names = F)
 ```

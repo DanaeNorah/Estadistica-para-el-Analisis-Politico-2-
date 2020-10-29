@@ -1,0 +1,45 @@
+
+MERGING
+
+```{r}
+#para cambiar de nombre 
+#subdata[subdata$Country=='Cabo Verde',"Country"]="Cape Verde"
+
+```
+
+#MERGE ALL HACER LIMPIEZA DE NOMBRES FILAS
+   PASO 1: Primero decargas la base ylimpias
+   PASO 2: la otra base,limpias 
+   PASE 3: recien haces merge y limpia
+###MERGE: 
+###sE VA FUSIONANDO BASE POR BASE: Juntando bases de datos (urban y gdp)
+
+```{r}
+names(urban)
+names(gdp)
+#entonces le pedimos que nos fusione las datas en base a la variable común: país
+total1=merge(urban,gdp,by.x='Pais', by.y='Pais') 
+head(total1)
+```
+
+Este nuevo objeto creado qué peculiaridad tiene respecto de los objetos de insumo?
+
+Ojo, esto lo pueden usar en su trabajo (domingo)
+
+Manera alternativa de fusionar:
+```{r}
+total2=merge(urban,gdp,all.x=T,all.y=T) #nos aseguramos de incluir todos nuestros casos
+#esto signfica que estamos pidiendo que "todos los valores de X sean incluidos" y también "todos los valores de y". Presupone que la primera columna será la columna guía
+head(total2)
+```
+
+Chequeamos que no tengamos valores duplicados
+```{r}
+total1[duplicated(total1$Pais),]
+#verifica si en la columna país hay duplicados.
+```
+
+Filas incompletas
+```{r}
+total2[!complete.cases(total2),] #para verificar si hay casos en una base de datos que no hay en la otra
+```

@@ -1,0 +1,140 @@
+
+CLUSTER POR PARTICION:
+
+#PARTICION (S5(T)) Análisis de Conglomerados: Estrategia de Partición
+TECNICA:
+k medias: solo numericas, no util paraciecnias sociales
+k-medoides: para cc.ss. trabaja con las distancias euclideas, también con otras distancias como la Mahattan. K-medodides es alternativa a la K-means, que evita ser afectada por los DATOS ATIPICOS
+
+DEBATE ENTRE LA DISTNACIA EUCLEDIANA Y MAHATTAN:
+- EUCLEDIANA:la longitud del segmento o linea recta entre dos putos, solo para numericas
+- MAHATTAN: en la practica es mas real y es mayor que la euclediana. Es la suma de los catetos, una consecuencia del toerema de pitagoras
+
+DISTANCIA GOWE: útil para todos tipo de escalas.Gower Distance se usa popularmente para agrupar filas similares con atributos mixtos. La técnica de agrupación de K-Prototype, que es una modificación de la agrupación de K-Means para una combinación de atributos numéricos y categóricos, utiliza Gower Similarity.
+
+*El cluster agrupa, sin embargo las PARTICION Y JERARQUICA clusteriza todo los datos, la ultima DENSIDAD NO
+
+
+PASO 1: Traigamos nuevamente los datos del Democracy Index:
+
+```{r}
+# coleccion
+library(htmltab)
+demolink = "https://en.wikipedia.org/wiki/Democracy_Index"
+demopath = '//*[@id="mw-content-text"]/div/table[2]/tbody'
+demo <- htmltab(doc = demolink, which =demopath)
+
+# limpieza
+library(stringr)
+library(magrittr)
+names(demo)=str_split(names(demo),">>",simplify = T)[,1]%>%gsub('\\s','',.)
+demo[,-c(1,8,9)]=lapply(demo[,-c(1,8,9)], trimws,whitespace = "[\\h\\v]") # no blanks
+names(demo)=gsub("Â","",names(demo))
+demo$Country=gsub("Â","",demo$Country)
+demo$Country=trimws(demo$Country,whitespace = "[\\h\\v]") #PREGUNTAR CUAL ES LA DIFERENCIA ENTRE ESTE Y GSUB
+
+# preparación
+demo=demo[,-c(1)] #sin Rank
+demo=demo[,-10]
+demo[,-c(1,8,9)]=lapply(demo[,-c(1,8,9)], as.numeric) # a numerico
+names(demo)[9]= 'Continent'
+
+subdata=demo
+
+# veamos que tenemos:
+str(subdata)
+```
+Ya sabemos a qué grupo pertenece cada país segun The Economist. Ahora nos toca aplicar la técnica de clusterización para ver qué diferencias obtenemos.
+
+#a. Los nombres de cada caso aparezcan en las gráficas:
+```{r}
+row.names(subdata)=subdata$Country
+```
+
+#b.Solo trabajemos con data sin valores perdidos:
+```{r}
+# alternativa a complete.cases:
+subdata=na.omit(subdata)
+```
+
+1. Calcular distancias: Uno no puede realziar cluster si no tiene la matriz de distancia
+```{r}
+library(cluster)
+# usar en C() las dimensiones de interes:
+g.dist = daisy(subdata[,c(2:7)], metric="gower")
+```
+
+2. Proponer cantidad de clusters:
+
+PAM: calcula los clusters y recibe la matriz de distancias
+```{r}
+pam.resultado=pam(g.dist,4,cluster.only = F)
+subdata$clusterPT= pam.resultado$cluster
+```
+
+3. Explorar Resultados: función each (esta última está en la biblioteca plyr):
+
+```{r}
+library(plyr) # para funcion "each"..
+# nota el uso de as.matrix con cbind:
+aggregate(as.matrix(cbind(subdata[,c(3:7)]))~ clusterPT, data=subdata,
+          FUN=plyr::each(MD = median, Media = mean))
+```
+Posubdatas volver esa tabla resumen un data frame:
+```{r}
+# guardando resultado anterior en objeto "agg": 
+agg=aggregate(as.matrix(cbind(subdata[,c(3:7)]))~ clusterPT, 
+              data=subdata, # luego las funciones que deseas
+              FUN=plyr::each(median, Media = mean))
+
+# convertir en data frame, y 
+tablaResumen=t(as.data.frame(agg))
+tablaResumen
+```
+```{r}
+#o tmb
+describeBy(subdata[,c(3:7)]~ clusterPT)
+```
+
+
+4. Comparar
+Usemos una tabla de contingencia para verificar la asignación:
+```{r}
+table(subdata$clusterPT,subdata$Regimetype,dnn = c('clusterPT','TipoEconomist'))
+```
+Nótese que: * El cluster 1 ha juntado todas las subdatacracias plenas y ha admitido a 18 de las débiles. Así, dejó entrar a estos paises:
+```{r}
+subdata[subdata$clusterPT==1,'Country']
+```
+
+```{r}
+subdata[subdata$clusterPT==1 & subdata$Regimetype=="Flawed subdatacracy",'Country']
+```
+El cluster 2 tiene 32 subdatacracias débiles y a 8 de las híbridas.
+```{r}
+subdata[subdata$clusterPT==2 & subdata$Regimetype=="Hybrid regime",'Country']
+subdata[subdata$clusterPT==2 & subdata$Regimetype=="Hybrid regime",'Score']
+```
+El cluster 3 tiene 25 subdatacracias híbridas y a 4 de las subdatacracias debiles
+El cluster 4 tiene las 54 de las autoritarias y 4 e las hibridas
+
+
+5. Visualizar:
+Veamos lo obtenido:
+
+```{r}
+library(factoextra)
+## Loading required package: ggplot2
+## Welcome! Related Books: `Practical Guide To Cluster Analysis in R` at https://goo.gl/13EFCZ
+library(ggrepel)
+fviz_cluster(object = list(data=g.dist, cluster = subdata$clusterPT),
+             geom = c("text"), 
+             ellipse = FALSE,labelsize = 7,
+             repel = T)
+```
+```{r}
+#numero de cluster con combre especifico
+subdata[subdata$Country=='Norway','clusterPT']
+#nombres dentro de un cluster en especifico
+subdata[subdata$clusterPT==1,'Country']
+```

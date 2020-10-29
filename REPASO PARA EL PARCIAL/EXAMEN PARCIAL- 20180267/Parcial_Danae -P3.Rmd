@@ -1,0 +1,155 @@
+
+
+```{r}
+library(htmltab) #para scrapear
+library(stringr) #para limpieza de columnas 
+library(readr) #para extraer un único numero de la columna
+library(rio) #para importar
+library(cluster) #clustering
+library(plyr) #aggregate, funcion each
+library(psych) #para hacer tablas comparadas
+library(knitr) #para generar tablas html
+library(kableExtra) #para generar tablas html
+library(factoextra) #visualización de clusters
+library(ggrepel) #para que las etiquetas de los graficos no se superpongan
+library(dplyr)
+library(car) #recodificacion
+library(magrittr)
+library(foreign)
+```
+
+
+```{r}
+indice=import('https://github.com/PoliticayGobiernoPUCP/estadistica_anapol2/raw/master/DATA/ide.xlsx')
+subdata=indice
+```
+LIMPIEZA
+```{r}
+#elimino fila
+subdata=subdata[-c(1,2),]
+
+#cambio nombes
+names(subdata)=subdata[c(1),]
+
+#elimino fila
+subdata=subdata[-c(1),]
+
+#eliminar espacios
+subdata$`Nombre de Provincia`=trimws(subdata$`Nombre de Provincia`,whitespace = "[\\h\\v]")
+
+#cambiar de , a .
+subdata[,c(2:7)]=lapply(subdata[,c(2:7)],FUN = function(t) gsub(pattern = "\\,", replacement = "\\.",x=t))
+
+#numerica
+str(subdata)
+subdata[,c(2:7)]=lapply(subdata[,c(2:7)], as.numeric)
+str(subdata)
+
+##Los nombres de cada caso aparezcan en las gráficas:
+row.names(subdata)=subdata$`Nombre de Provincia`
+subdata=na.omit(subdata)
+```
+
+```{r}
+#redondear
+#round(subdata$`indice de densidad del estado`,3) 
+
+summary(subdata$`indice de densidad del estado`)
+```
+Determina maximos y minimos: 
+
+Crea los intervalos segun el ANCHO de cada intervalo.
+   - Aqui necesitas a cut():
+```{r}
+# puntos de corte (incluye min y max)
+CORTES=c(0.5,0.625,0.75,0.876,0.1) # 4 CORTES
+NOMBRES=c("BAJO","MEDIO BAJO","MEDIO ALTO","ALTO") # 4-1 NOMBRES (en orden)
+
+# corta y crea "nueva" variable:
+subdata$indicecut=cut(subdata$`indice de densidad del estado`, breaks = CORTES, labels=NOMBRES,ordered_result = TRUE)
+
+#Mira resultado nuevo:
+table(subdata$indicecut)
+```
+
+1. Calcular distancias: Uno no puede realziar cluster si no tiene la matriz de distancia
+```{r}
+library(cluster)
+# usar en C() las dimensiones de interes:
+g.dist = daisy(subdata[,c(2:7)], metric="gower")
+```
+
+2. Proponer cantidad de clusters:
+
+PAM: calcula los clusters y recibe la matriz de distancias
+```{r}
+pam.resultado=pam(g.dist,4,cluster.only = F)
+subdata$clusterPT= pam.resultado$cluster
+```
+
+3. Explorar Resultados: función each (esta última está en la biblioteca plyr):
+
+```{r}
+library(plyr) # para funcion "each"..
+# nota el uso de as.matrix con cbind:
+aggregate(as.matrix(cbind(subdata[,c(3:6)]))~ clusterPT, data=subdata,
+          FUN=plyr::each(MD = median, Media = mean))
+```
+Posubdatas volver esa tabla resumen un data frame:
+```{r}
+# guardando resultado anterior en objeto "agg": 
+agg=aggregate(as.matrix(cbind(subdata[,c(3:6)]))~ clusterPT, 
+              data=subdata, # luego las funciones que deseas
+              FUN=plyr::each(median, Media = mean))
+
+# convertir en data frame, y 
+tablaResumen=t(as.data.frame(agg))
+tablaResumen
+```
+```{r}
+#o tmb
+describeBy(subdata[,c(3:7)]~ clusterPT)
+```
+
+
+4. Comparar
+Usemos una tabla de contingencia para verificar la asignación:
+```{r}
+table(subdata$clusterPT,subdata$indicecut,dnn = c('clusterPT','indicecut'))
+```
+Nótese que: * El cluster 1 hay 34 bajo medio y 33 medio alto:
+```{r}
+subdata[subdata$clusterPT==1,'Nombre de Provincia']
+```
+
+```{r}
+subdata[subdata$clusterPT==1 & subdata$indicecut=="MEDIO BAJO",'Nombre de Provincia']
+```
+
+El cluster 2 tiene 11 BAJO, 41 MEDIO BAJO, 1 MEDIO ALTO
+```{r}
+subdata[subdata$clusterPT==2 & subdata$indicecut=="BAJO",'Nombre de Provincia']
+subdata[subdata$clusterPT==2 & subdata$indicecut=="BAJO",'medicos disponibles']
+```
+
+5. Visualizar:
+Veamos lo obtenido:
+
+```{r}
+library(factoextra)
+## Loading required package: ggplot2
+## Welcome! Related Books: `Practical Guide To Cluster Analysis in R` at https://goo.gl/13EFCZ
+library(ggrepel)
+fviz_cluster(object = list(data=g.dist, cluster = subdata$clusterPT),
+             geom = c("text"), 
+             ellipse = FALSE,labelsize = 7,
+             repel = T)
+```
+
+```{r}
+#numero de cluster con combre especifico
+subdata[subdata$`Nombre de Provincia`=='San Pablo','clusterPT']
+#nombres dentro de un cluster en especifico
+subdata[subdata$clusterPT==1,'Nombre de Provincia']
+```
+

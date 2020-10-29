@@ -36,7 +36,7 @@ democracia$Country= gsub("Â","",democracia$Country)
 
 ```{r}
 names(democracia)[4]='Electoral proces and pluralism'
-names(democracia)[5]='Political participation'
+names(democracia)[5]='Functioning'
 democracia$Rank=NULL
 head(democracia)
 ```
@@ -44,7 +44,7 @@ head(democracia)
 
 ```{r}
 
-write.csv(democracia,"democracia.csv",row.names = F)
+#write.csv(democracia,"democracia.csv",row.names = F)
 ```
 
 

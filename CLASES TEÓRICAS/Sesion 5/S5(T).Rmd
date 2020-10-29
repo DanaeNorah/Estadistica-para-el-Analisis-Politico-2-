@@ -36,9 +36,6 @@ Gower Distance se usa popularmente para agrupar filas similares con atributos mi
 
 
 
-
-
-
 PASO 1
 
 Traigamos nuevamente los datos del Democracy Index:
@@ -61,9 +58,9 @@ demo$Country=trimws(demo$Country,whitespace = "[\\h\\v]") #PREGUNTAR CUAL ES LA 
 
 # preparación
 demo=demo[,-c(1)] #sin Rank
+demo=demo[,-10]
 demo[,-c(1,8,9)]=lapply(demo[,-c(1,8,9)], as.numeric) # a numerico
 names(demo)[9]= 'Continent'
-demo=demo[,-10]
 
 # veamos que tenemos:
 str(demo)
@@ -130,6 +127,11 @@ agg=aggregate(as.matrix(cbind(demo[,c(3:7)]))~ clusterPT,
 tablaResumen=t(as.data.frame(agg))
 tablaResumen
 ```
+```{r}
+#o tmb
+describeBy(demo[,c(3:7)]~ clusterPT)
+```
+
 Para una mejor presentacion en la web, tienes la funcion kable(): 
 ```{r}
 library(knitr)

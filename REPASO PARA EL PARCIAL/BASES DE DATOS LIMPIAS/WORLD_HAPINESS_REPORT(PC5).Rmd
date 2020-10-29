@@ -1,0 +1,80 @@
+
+PASO 0: solicito paquetes
+```{r}
+library(htmltab) #para scrapear
+library(stringr) #para limpieza de columnas 
+library(readr) #para extraer un único numero de la columna
+library(rio) #para importar
+library(cluster) #clustering
+library(plyr) #aggregate, funcion each
+library(psych) #para hacer tablas comparadas
+library(knitr) #para generar tablas html
+library(kableExtra) #para generar tablas html
+library(factoextra) #visualización de clusters
+library(ggrepel) #para que las etiquetas de los graficos no se superpongan
+library(dplyr)
+library(car) #recodificacion
+library(magrittr)
+library(foreign)
+```
+
+PASO 1: scrapeo la data WORLD HAPPINESS REPORT
+
+```{r}
+url1= "https://en.wikipedia.org/wiki/World_Happiness_Report" 
+
+happiness =htmltab(doc = url1, 
+              which = '//*[@id="mw-content-text"]/div[1]/table',
+              encoding = "UTF-8") 
+```
+
+PASO 2: limpiamos y preparamos la base de datos "happines"
+```{r}
+#a.Eliminamoslas columnas Overall y Score
+happiness[1]=NULL #overall
+happiness[2]=NULL #score
+
+#Limpio columna Country or region
+happiness$`Country or region`=gsub('Â','',happiness$`Country or region`)
+happiness$`Country or region`=trimws(happiness$`Country or region`,whitespace = "[\\h\\v]")
+
+head(happiness$`Country or region`)
+```
+
+
+```{r}
+#b.Cambio los nombres para hacer la data más sencilla
+names(happiness)[1]='Country'
+names(happiness)[2]='GDP'
+names(happiness)[3]='SSupport'
+names(happiness)[4]='Healthy'
+names(happiness)[5]='Freedom'
+names(happiness)[7]='Corruption'
+
+#c. compruebo qeu no existen espacios en blanco
+head(names(happiness))
+```
+
+
+```{r}
+#d.compruebo que sean numericos
+str(happiness)
+happiness[,c(2:7)]=lapply(happiness[,c(2:7)], as.numeric)
+str(happiness)
+```
+
+
+```{r}
+#cambio a row.names y elimino la columna country
+row.names(happiness)=happiness$Country
+happiness$Country= NULL
+str(happiness)
+```
+
+
+```{r}
+##para agilizar copio y la nombro "subdata"
+subdata<-happiness
+#e. omito los valores perdido
+subdata<-na.omit(subdata)
+```

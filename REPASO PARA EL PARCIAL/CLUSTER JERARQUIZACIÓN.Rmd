@@ -1,0 +1,109 @@
+
+
+Análisis de Conglomerados: Estrategia de Jerarquizacion
+
+PASO 1: Traigamos nuevamente los datos del Democracy Index:
+
+```{r}
+# coleccion
+library(htmltab)
+demolink = "https://en.wikipedia.org/wiki/Democracy_Index"
+demopath = '//*[@id="mw-content-text"]/div/table[2]/tbody'
+demo <- htmltab(doc = demolink, which =demopath)
+
+# limpieza
+library(stringr)
+library(magrittr)
+names(demo)=str_split(names(demo),">>",simplify = T)[,1]%>%gsub('\\s','',.)
+demo[,-c(1,8,9)]=lapply(demo[,-c(1,8,9)], trimws,whitespace = "[\\h\\v]") # no blanks
+names(demo)=gsub("Â","",names(demo))
+demo$Country=gsub("Â","",demo$Country)
+demo$Country=trimws(demo$Country,whitespace = "[\\h\\v]") #PREGUNTAR CUAL ES LA DIFERENCIA ENTRE ESTE Y GSUB
+
+# preparación
+demo=demo[,-c(1)] #sin Rank
+demo=demo[,-10]
+demo[,-c(1,8,9)]=lapply(demo[,-c(1,8,9)], as.numeric) # a numerico
+names(demo)[9]= 'Continent'
+
+subdata=demo
+
+# veamos que tenemos:
+str(subdata)
+```
+
+#ESTRATETGIA AGLOMERATIVA 
+  - Se parte por considerar cada caso(fila) como un CLUSTER, para de ahi ir creando MINICLUSTERS hasta 
+    que todos los casos sean un solo ABAJO HACIA ARRIVA 
+
+Antes de proseguir, nos aseguramos que:
+```{r}
+#Los nombres de cada caso aparezcan en las gráficas:
+row.names(subdata)=subdata$Country
+```
+Solo trabajemos con data sin valores perdidos:
+```{r}
+# alternativa a complete.cases:
+subdata=na.omit(subdata)
+```
+
+1. Calcular distanas
+
+PASO 1: calcular distancias
+```{r}
+library(cluster)
+g.dist = daisy(subdata[,c(3:7)], metric="gower")
+```
+
+2. Decidir linkages
+  - Linkage tipo SINGLE. (cercanos)
+  - Linkage tipo COMPLETE.(lejanos)
+  - Linkage tipo AVERAGE (ver distancia de todos los pares y promedios de todas las distnacias)(sumas y divides)
+  - Otro metodo muy eficiente, es el de WARD. 
+
+3. Calcular clusters
+La función hcut es la que usaremos para el método jerarquico, y el algoritmo aglomerativo se emplea usando agnes. El linkage será ward (aquí ward.D):
+```{r}
+library(factoextra)
+res.agnes <- hcut(g.dist, k =4,hc_func='agnes',hc_method = "ward.D")
+
+subdata$clustAG=res.agnes$cluster
+```
+
+4. Comparar
+Veamos qué tanto se parece a la clasificación de The Economist:
+```{r}
+table(subdata$Regimetype,subdata$clustAG,dnn = c('TheEconomist','clustAg'))
+```
+5. Visualizar
+
+El dendograma nos muestra el proceso de conglomeración:
+```{r}
+# Visualize
+fviz_dend(res.agnes,k=4, cex = 0.7, horiz = T)
+```
+El eje ‘Height’ nos muestra el “costo” de conglomerar.
+
+
+#ESTATREGIA DVISIVA 
+ - Esta estrategia comienza con todos los casos como un gran cluster; para de ahi dividir en clusters más pequeños.
+ - Comparando con el proceso anterior, el paso 1 no es necesario repetirlo, el paso 2 no corresponde a esta técnica, por lo que      vamos directo al paso 3:
+
+3. Calcular clusters
+La función hcut es la que usaremos para el método jerarquico, y el algoritmo divisivo se emplea usando diana:
+```{r}
+res.diana <- hcut(g.dist, k = 4,hc_func='diana')
+subdata$clustDIV=res.diana$cluster
+```
+4. Comparar
+- Veamos qué tanto se parece a la clasificación de The Economist:
+```{r}
+table(subdata$Regimetype,subdata$clustDIV,dnn = c('TheEconomist','clustDiv'))
+```
+5. Visualizar
+- El dendograma nos muestra el proceso de conglomeración:
+```{r}
+fviz_dend(res.diana, cex = 0.7,horiz = T) #cex es para tamaño o expansion
+```
+Nota que en esta técnica se ve a todos los elementos (casos) asignados a algun cluster.
+

@@ -1,0 +1,45 @@
+title: "Limpieza general"
+
+#2.LIMPIEZA DE DATOS
+  a. Eliminamos las columnas que no vamos a usar 
+```{r}
+data$=NULL
+data= data[,-c(2)]
+data= data[,c(2)]
+```
+
+  b. Renombramos la variables
+```{r}
+names(data)[]= ''
+```
+Entre corchetes va el número de columna
+
+  c. Quitamos los simbolos raros al inicio de los paises
+```{r}
+data$= gsub('Â','', data$)
+```
+
+  d. Quitamos los espacios en blanco
+```{r}
+data[,]= lapply(data[,], trimws, whitespace = "[\\h\\v]")
+```
+
+  e.Verificamos que este en númerica y si no cambiamos
+```{r}
+str(REP)
+data$= as.numeric(data$)
+data[,c(:,)]= lapply(data[,c(:,)], as.numeric)
+```
+
+  f.Omitimos los valores perdidos 
+```{r}
+data=na.omit(data)
+```
+
+  g.Nos quedamos con las numericas
+```{r}
+row.names(data)=data$
+data$= NULL
+```
+
+  

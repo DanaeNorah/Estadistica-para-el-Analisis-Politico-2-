@@ -19,20 +19,21 @@ library(dplyr)
 library(car) #recodificacion
 library(magrittr)
 library(foreign)
-library(cluster)
-library(ggrepel)
-library(foreign)
+
 ```
 
-PASO 1: SCRAPEO
+a. SCRAPEO
 ```{r}
 link= "https://www.cia.gov/library/publications/resources/the-world-factbook/fields/274.html"
 linkPath='//*[@id="fieldListing"]'
 
-data = htmltab(doc = link, which =linkPath)
-```
+carbon = htmltab(doc = link, which =linkPath)
 
-PASO 2: LIMPIAR
+#convierto a data para agilizar uso de codigos
+data= carbon
+```
+b. LIMPIAR
+
 ```{r}
 #Cambiar nombre de las columnas
 names(data)[2]='CarbonEmission'
@@ -42,7 +43,7 @@ data$CarbonEmission=str_extract_all(string = data$CarbonEmission, pattern= "(\\-
 head(data)
 ```
 
-#1. EXPRESIONES REGULARES
+#EXPRESIONES REGULARES
 ```{r}
 #Me trae cada numero
 str_extract_all(string = '25.3%,0% y 23.5% 13 34 hola',pattern="\\d")
@@ -72,100 +73,219 @@ str_extract_all('25%, 0% y 23.5%',
 ```
 Apliquemoslo a la columna:```{r}
 ```{r}
-str_extract_all(urban$Urbanization,
-                "(\\-*\\d+\\.*\\d*)(?=\\%)", simplify = T)
-```
-Esa matriz anterior me permite acceder a cada columna:
-```{r}
-PATRON="(\\-*\\d+\\.*\\d*)(?=\\%)"
-COLSUCIA=urban$Urbanization
-
-# UNA COLUMNA
-urban$pop_urb=str_extract_all(string = COLSUCIA,
-                              pattern= PATRON,
-                              simplify = T)[,1]
-
-# OTRA COLUMNA
-urban$rate_urb=str_extract_all(string = COLSUCIA,
-                               pattern=PATRON,
-                               simplify = T)[,2]
-```
-Veamos: #sin mostrar la columna 'sucia'
-```{r}
-head(urban[,-2]) 
+#porcentaje sin el simbolo pero con signo negativo, si hubiese
+data$pop_urb= str_extract_all(data$Urbanization, "(\\-*\\d+\\.*\\d*)(?=\\%)", simplify = T)
 ```
 
-#2. Uso de particiones
-Aqui busco un texto que me permita dividir esa cadena de texto:
--pattern: patron
--string:cadena, cuerda
+c. Uso de particiones: Aqui busco un texto que me permita dividir esa cadena de texto 
+   -pattern: patron
+   -string:cadena, cuerda
 ```{r}
-urban$pop_urb2=str_split(string = urban$Urbanization, pattern = 'rate of urbanization:', simplify = T)[,1] #el numero de la parte con la que me quedo 
+data$pop_urb2=str_split(string = data$Urbanization, pattern = ':', simplify = T)[,1] #el numero de la parte con la que me quedo 
 ```
-#3. Parsers
+d.Parsers: volver a numeros, pero cuidado que vuelve todo NA
 ```{r}
-parse_number(urban$Urbanization)
+parse_number(data$Urbanization)
 ```
-En ese sentido, podemos usarlo combinado con la estrategia separadora:
+
+e. En ese sentido, podemos usarlo combinado con la estrategia separadora:
 ```{r}
 library(magrittr) # para %>%
-str_split(string = urban$Urbanization, pattern = ':', simplify = T)[,1]%>%parse_number()
+str_split(string = data$Urbanization, pattern = ':', simplify = T)[,1]%>%parse_number()
 
 #Extraer el porcentaje que corresponde a SERVICE
-data1$service=str_split(string = data1$Labor, pattern = '%', simplify = T)[,3]
-data1$service=str_split(string = data1$service, pattern = ':', simplify = T)[,2]%>%parse_number()
+data$service=str_split(string = data$Labor, pattern = '%', simplify = T)[,3]
+data$service=str_split(string = data$service, pattern = ':', simplify = T)[,2]%>%parse_number()
 
 ```
-#4. gsub, que busca un character y lo reemplaza:
+f. gsub, que busca un character y lo reemplaza:
 ```{r}
-happiness$`Country`=gsub('Â','',happiness$`Country or region`)
+data$`Country`=gsub('Â','',data$`Country or region`)
+```
+g. Eliminemos las columnas repetidas y la original sucia usando NULL:
+```{r}
+data[,c(2,5,6)]=NULL
+```
+h. Y ahora sí llevemosla a número, usando lapply que permite aplicar una funcion a varias columnas:
+```{r}
+data[,-1]=lapply(data[,-1], as.numeric)
+data[,c(2:8)]=lapply(data[,c(2:8)], as.numeric)
+```
+i. trimws(), que elimina espacios en blanco antes y despues de texto.Es recomendable hacerlo con la columna de texto:
+```{r}
+data$Country=trimws(data$Country,whitespace = "[\\h\\v]")
+data[,]=lapply(data[,], trimws,whitespace = "[\\h\\v]")
+
+#gsub (usarm mejor trimws)
+names(data)=gsub('\\s','',names(data))#para espacio
 ```
 
-Eliminemos las columnas repetidas y la original sucia usando NULL:
+j. Casos incompletos
 ```{r}
-urban[,c(2,5,6)]=NULL
-```
-Y ahora sí llevemosla a número, usando lapply que permite aplicar una funcion a varias columnas:
-```{r}
-urban[,-1]=lapply(urban[,-1], as.numeric)
-feliz[,c(2:8)]=lapply(feliz[,c(2:8)], as.numeric)
-```
-#5. trimws(), que elimina espacios en blanco antes y despues de texto
-Es recomendable hacer eso con la columna de texto:
-```{r}
-urban$Country=trimws(urban$Country,whitespace = "[\\h\\v]")
-feliz[,]=lapply(feliz[,], trimws,whitespace = "[\\h\\v]")
-names(feliz)=gsub('\\s','',names(feliz))#para espacio
-
-```
-#incompletos casos
-```{r}
-feliz[!complete.cases(feliz),]
+data[!complete.cases(data),]
 #data sin perdidos:
-feliz=feliz[complete.cases(feliz),] # un pais menos
+data=data[complete.cases(data),] # un pais menos
 
 ```
-
-#6. Crea los intervalos segun el ANCHO de cada intervalo.
-Aqui necesitas a cut():
+k.Crea los intervalos segun el ANCHO de cada intervalo.
+     Aqui necesitas a cut():
+     
 ```{r}
 # puntos de corte (incluye min y max)
 CORTES2=c(0,3.3,6.6,10) # 4 CORTES
 NOMBRES2=c("BAJO","MEDIO","ALTO") # 4-1 NOMBRES (en orden)
 
 # corta y crea "nueva" variable:
-feliz$ScoreCut2=cut(feliz$Score,breaks = CORTES2, 
-                    labels = NOMBRES2,
-                    ordered_result = TRUE)
-#Mira resultado nuevo:
+data$ScoreCut2=cut(data$Score,breaks = CORTES2, labels = NOMBRES2,ordered_result = TRUE)
 
-table(feliz$ScoreCut2)
+#Mira resultado nuevo:
+table(data$ScoreCut2)
 ```
 
-#/ MERGE ALL HACER LIMPIEZA DE NOMBRES FILAS
-merge, primero decargas la ves, limpias y despues la otravase limpias y recien haces merge y limpias 
-```{r}
-co[co$Country=='Cabo Verde',"Country"]="Cape Verde"
+#MERGE ALL HACER LIMPIEZA DE NOMBRES FILAS
 
+h. MERGE, primero decargas la ves, limpias y despues la otravase limpias y recien haces merge y limpias 
+```{r}
+data[data$Country=='Cabo Verde',"Country"]="Cape Verde"
+
+```
+
+
+#PARTICION (S5(T)) Análisis de Conglomerados: Estrategia de Partición
+TECNICA:
+k medias: solo numericas, no util paraciecnias sociales
+k-medoides: para cc.ss. trabaja con las distancias euclideas, también con otras distancias como la Mahattan. K-medodides es alternativa a la K-means, que evita ser afectada por los DATOS ATIPICOS
+
+DEBATE ENTRE LA DISTNACIA EUCLEDIANA Y MAHATTAN:
+- EUCLEDIANA:la longitud del segmento o linea recta entre dos putos, solo para numericas
+- MAHATTAN: en la practica es mas real y es mayor que la euclediana. Es la suma de los catetos, una consecuencia del toerema de pitagoras
+
+DISTANCIA GOWE: útil para todos tipo de escalas.Gower Distance se usa popularmente para agrupar filas similares con atributos mixtos. La técnica de agrupación de K-Prototype, que es una modificación de la agrupación de K-Means para una combinación de atributos numéricos y categóricos, utiliza Gower Similarity.
+
+*El cluster agrupa, sin embargo las PARTICION Y JERARQUICA clusteriza todo los datos, la ultima DENSIDAD NO
+
+
+PASO 1: Traigamos nuevamente los datos del Democracy Index:
+
+```{r}
+# coleccion
+library(htmltab)
+demolink = "https://en.wikipedia.org/wiki/Democracy_Index"
+demopath = '//*[@id="mw-content-text"]/div/table[2]/tbody'
+demo <- htmltab(doc = demolink, which =demopath)
+
+# limpieza
+library(stringr)
+library(magrittr)
+names(demo)=str_split(names(demo),">>",simplify = T)[,1]%>%gsub('\\s','',.)
+demo[,-c(1,8,9)]=lapply(demo[,-c(1,8,9)], trimws,whitespace = "[\\h\\v]") # no blanks
+names(demo)=gsub("Â","",names(demo))
+demo$Country=gsub("Â","",demo$Country)
+demo$Country=trimws(demo$Country,whitespace = "[\\h\\v]") #PREGUNTAR CUAL ES LA DIFERENCIA ENTRE ESTE Y GSUB
+
+# preparación
+demo=demo[,-c(1)] #sin Rank
+demo=demo[,-10]
+demo[,-c(1,8,9)]=lapply(demo[,-c(1,8,9)], as.numeric) # a numerico
+names(demo)[9]= 'Continent'
+
+subdata=demo
+
+# veamos que tenemos:
+str(subdata)
+```
+Ya sabemos a qué grupo pertenece cada país segun The Economist. Ahora nos toca aplicar la técnica de clusterización para ver qué diferencias obtenemos.
+
+#a. Los nombres de cada caso aparezcan en las gráficas:
+```{r}
+row.names(subdata)=subdata$Country
+```
+
+#b.Solo trabajemos con data sin valores perdidos:
+```{r}
+# alternativa a complete.cases:
+subdata=na.omit(subdata)
+```
+
+1. Calcular distancias: Uno no puede realziar cluster si no tiene la matriz de distancia
+```{r}
+library(cluster)
+# usar en C() las dimensiones de interes:
+g.dist = daisy(subdata[,c(3:7)], metric="gower")
+```
+
+2. Proponer cantidad de clusters:
+
+PAM: calcula los clusters y recibe la matriz de distancias
+```{r}
+pam.resultado=pam(g.dist,4,cluster.only = F)
+subdata$clusterPT= pam.resultado$cluster
+```
+
+3. Explorar Resultados: función each (esta última está en la biblioteca plyr):
+
+```{r}
+library(plyr) # para funcion "each"..
+# nota el uso de as.matrix con cbind:
+aggregate(as.matrix(cbind(subdata[,c(3:7)]))~ clusterPT, data=subdata,
+          FUN=plyr::each(MD = median, Media = mean))
+```
+Posubdatas volver esa tabla resumen un data frame:
+```{r}
+# guardando resultado anterior en objeto "agg": 
+agg=aggregate(as.matrix(cbind(subdata[,c(3:7)]))~ clusterPT, 
+              data=subdata, # luego las funciones que deseas
+              FUN=plyr::each(median, Media = mean))
+
+# convertir en data frame, y 
+tablaResumen=t(as.data.frame(agg))
+tablaResumen
+```
+```{r}
+#o tmb
+describeBy(subdata[,c(3:7)]~ clusterPT)
+```
+
+
+4. Comparar
+Usemos una tabla de contingencia para verificar la asignación:
+```{r}
+table(subdata$clusterPT,subdata$Regimetype,dnn = c('clusterPT','TipoEconomist'))
+```
+Nótese que: * El cluster 1 ha juntado todas las subdatacracias plenas y ha admitido a 18 de las débiles. Así, dejó entrar a estos paises:
+```{r}
+subdata[subdata$clusterPT==1,'Country']
+```
+
+```{r}
+subdata[subdata$clusterPT==1 & subdata$Regimetype=="Flawed subdatacracy",'Country']
+```
+El cluster 2 tiene 32 subdatacracias débiles y a 8 de las híbridas.
+```{r}
+subdata[subdata$clusterPT==2 & subdata$Regimetype=="Hybrid regime",'Country']
+subdata[subdata$clusterPT==2 & subdata$Regimetype=="Hybrid regime",'Score']
+```
+El cluster 3 tiene 25 subdatacracias híbridas y a 4 de las subdatacracias debiles
+El cluster 4 tiene las 54 de las autoritarias y 4 e las hibridas
+
+
+5. Visualizar:
+Veamos lo obtenido:
+
+```{r}
+library(factoextra)
+## Loading required package: ggplot2
+## Welcome! Related Books: `Practical Guide To Cluster Analysis in R` at https://goo.gl/13EFCZ
+library(ggrepel)
+fviz_cluster(object = list(data=g.dist, cluster = subdata$clusterPT),
+             geom = c("text"), 
+             ellipse = FALSE,labelsize = 7,
+             repel = T)
+```
+```{r}
+#numero de cluster con combre especifico
+subdata[subdata$Country=='Norway','clusterPT']
+#nombres dentro de un cluster en especifico
+subdata[subdata$clusterPT==1,'Country']
 ```
 

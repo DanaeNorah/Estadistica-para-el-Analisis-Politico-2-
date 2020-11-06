@@ -103,10 +103,6 @@ PASO 2;:VARIABLE ORDINAL Autonomia reproductiva
 summary(data$Autonomia)
 ```
 
-```{r}
-#o tambien se puede utilizar:
-describe.by(data$Autonomia)
-```
 
 -Analisis grafico de variable
 ```{r}
@@ -121,10 +117,6 @@ PASO 3: VARIABLE ORDINAL Violencia contra la mujer
 summary(data$Violencia)
 ```
 
-```{r}
-#o tambien se puede utilizar:
-describe.by(data$Violencia)
-```
 
 -Analisis grafico de variable
 ```{r}

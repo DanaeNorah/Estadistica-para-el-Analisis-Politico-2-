@@ -1,0 +1,156 @@
+
+
+SEMANA 10 - Análisis Factorial II: Confirmación
+
+La data la colectamos y preparamos así:
+```{r}
+library(htmltab)
+
+# links
+happyL=c("https://en.wikipedia.org/wiki/World_Happiness_Report",
+         '//*[@id="mw-content-text"]/div/table/tbody')
+demoL=c("https://en.wikipedia.org/wiki/Democracy_Index", 
+        '//*[@id="mw-content-text"]/div/table[2]/tbody')
+
+# carga
+happy = htmltab(doc = happyL[1],which  = happyL[2],encoding = "UTF-8")
+demo  = htmltab(doc = demoL[1], which  = demoL[2], encoding = "UTF-8")
+
+# limpieza
+
+happy[,]=lapply(happy[,], trimws,whitespace = "[\\h\\v]") # no blanks
+demo[,]=lapply(demo[,], trimws,whitespace = "[\\h\\v]") # no blanks
+
+library(stringr) # nombres simples
+names(happy)=str_split(names(happy)," ",simplify = T)[,1]
+names(demo)=str_split(names(demo)," ",simplify = T)[,1]
+
+
+## Formateo
+
+# Eliminemos columnas que no usaremos esta vez:
+happy$Overall=NULL
+demo[,c(1,9,10)]=NULL
+happy$Score=NULL
+demo$Score=NULL
+
+#eliminar la Â
+names(demo)=gsub("Â","",names(demo))
+demo$Country=gsub("Â","",demo$Country)
+happy$Country=gsub("Â","",happy$Country)
+```
+
+
+```{r}
+# Tipo de variables:
+
+## En demo:
+demo[,-c(1)]=lapply(demo[,-c(1)],as.numeric)
+demo[,7]=NULL
+# En happy:
+happy[,-c(1)]=lapply(happy[,-c(1)],as.numeric)
+
+# sin perdidos:
+happy=na.omit(happy)
+demo =na.omit(demo)
+
+HappyDemo=merge(happy,demo)
+str(HappyDemo)
+```
+
+1. Encontrando indices a partir de indicadores
+
+- Usando EFA obtuvimos:
+```{r}
+library(psych)
+theData=HappyDemo[,-c(1,2,9)] # sin los Scores ni nombre de país
+
+library(GPArotation)
+resfa <- fa(theData, nfactors = 3, cor = 'mixed',rotate = "varimax",fm="minres")
+
+```
+## mixed.cor is deprecated, please use mixedCor.
+```{r}
+fa.diagram(resfa)
+```
+
+2. Confirmando modelo teórico
+- Si la exploración apoyaba nuestro marco teórico, podemos proponer cómo construir los indices:
+```{r}
+model <- ' democracia  =~ Electoral + Functioning + Politicalparticipation + Politicalculture + Civilliberties
+           tranquilidad =~ Freedom + Generosity + Perceptions
+           bienestar   =~ GDP + Social + Healthy'
+```
+
+Ahora vemos qué arroja el modelo:
+```{r}
+# normalizar las variables:
+
+
+HappyDemo=scale(HappyDemo[,-1])
+library(lavaan)
+```
+
+```{r}
+cfa_fit <- cfa(model, data=HappyDemo, 
+           std.lv=TRUE,  
+           missing="fiml")
+```
+
+Preparo los tests:
+```{r}
+allParamCFA=parameterEstimates(cfa_fit,standardized = T)
+allFitCFA=as.list(fitMeasures(cfa_fit))
+
+```
+
+Veamos resultados:
+- Si cada indicador tiene una buena conexión con su latente (ver p valor):
+```{r}
+library(knitr)
+kable(allParamCFA[allParamCFA$op=="=~",])
+
+```
+
+Averigüemos qué tan bien salió el modelo:
+- El ChiSquare es NO significativo (p_value debe ser mayor a 0.05 para que sea bueno)?
+```{r}
+allFitCFA[c("chisq", "df", "pvalue")] # pvalue>0.05
+```
+
+El Índice Tucker Lewi es mayor a 0.9?
+```{r}
+allFitCFA$tli # > 0.90
+```
+
+La Raíz del error cuadrático medio de aproximación es menor a 0.05?
+```{r}
+allFitCFA[c('rmsea.ci.lower','rmsea' ,'rmsea.ci.upper')] # 0.05 en el Int de Conf?
+
+```
+Ya sabemos que no hay buen augurio.
+
+Añadimos los índices a la data de indicadores:
+```{r}
+HappyDemo=as.data.frame(cbind(HappyDemo,lavPredict(cfa_fit)))
+```
+
+Veamos un resumen:
+```{r}
+summary(HappyDemo)
+```
+
+Ahora podemos correr una regresión con los índices:
+```{r}
+summary(lm(democracia~tranquilidad+bienestar,data = HappyDemo))
+```
+Sólo para verificar:
+```{r}
+old=apply(HappyDemo[,c("Electoral","Functioning","Politicalparticipation","Politicalculture","Civilliberties")],1,mean)
+new=HappyDemo$democracia
+plot(old,new)
+```
+
+```{r}
+cor(old,new)
+```

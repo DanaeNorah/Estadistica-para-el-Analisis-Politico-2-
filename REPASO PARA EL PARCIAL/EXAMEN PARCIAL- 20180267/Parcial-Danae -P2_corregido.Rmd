@@ -30,7 +30,7 @@ subdata=indice
 ```
 
 ```{r}
-LIMPIEZA
+#LIMPIEZA
 #elimino fila
 subdata=subdata[-c(1:4,6,7),]
 
@@ -41,14 +41,14 @@ names(subdata)=subdata[c(1),]
 subdata=subdata[-c(1),]
 
 #elimino fila
-subdata=subdata[,-c(1,4,6,8,10,11,12,13,14,15)]
+subdata=subdata[,-c(1,4,6,8,10,11,12,14,15)]
 
 #eliminar espacios
 subdata$Country=trimws(subdata$Country,whitespace = "[\\h\\v]")
 
 #numerica
 str(subdata)
-subdata[,c(2:5)]=lapply(subdata[,c(2:5)], as.numeric)
+subdata[,c(2:6)]=lapply(subdata[,c(2:6)], as.numeric)
 str(subdata)
 subdata=na.omit(subdata)
 
@@ -65,7 +65,7 @@ row.names(subdata)=subdata$Country
 set.seed(2020)
 library(cluster)
 # usar en C() las dimensiones de interes:
-g.dist = daisy(subdata[,c(2:5)], metric="gower")
+g.dist = daisy(subdata[,c(2:6)], metric="gower")
 ```
 
 ```{r}
@@ -73,10 +73,10 @@ g.dist = daisy(subdata[,c(2:5)], metric="gower")
 #CALCULAMOS LAS DISTANCIAS CON DAYS
 
 #NÚMERO DE CLUSTER PARA PARTICIÓN (colocamos pam)
-fviz_nbclust(subdata[,c(2:5)], pam,diss=g.dist,method = "gap_stat",k.max = 10,verbose = F)
+fviz_nbclust(subdata[,c(2:6)], pam,diss=g.dist,method = "gap_stat",k.max = 10,verbose = F)
 
 #Número de clusters para jerarquización (colocamos hcut) #solo uno para jerarquico
-fviz_nbclust(subdata[,c(2:5)], hcut,diss=g.dist,method = "gap_stat",k.max = 10,verbose = F)
+fviz_nbclust(subdata[,c(2:6)], hcut,diss=g.dist,method = "gap_stat",k.max = 10,verbose = F)
 ```
 
 #normalemnte quedarse con el menor numero de clusters

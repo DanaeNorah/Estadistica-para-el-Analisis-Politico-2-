@@ -42,6 +42,8 @@ IDENTIFICAR EL NÚMERO DE CLUSTER ADECUADO (EN PARTICIÓN Y JERÁRQUICO)
 Realizamos los cálculos con la subdata creada. 
 
 ```{r}
+set.seed(2019)
+
 #CALCULAMOS LAS DISTANCIAS CON DAYSY
 g.dist = daisy(subdata, metric="gower")
 
@@ -241,7 +243,7 @@ dbplot + geom_text_repel(aes(label=LABEL),
 ##el no clusterizado era LIMA
 
 
-#EJEMPLI
+#EJEMPLO
 ##si queremos hacer por ejemolo sacar el promedio del PBI segun los grupo 1,2,3 de particion, divsivo o aglomerativo
 ##para ello, hay que crear el cluster que se pide y de ahi sacarle el descrybe.by
 ```{r}

@@ -75,6 +75,7 @@ PARA RESPONDER LA PREGUNTA 2
 
 PASO 3: IDENTIFICAR EL NUMERO DE CLUSTER
 ```{r}
+set.seed(2019)
 #CALCULAMOS LAS DISTANCIAS CON DAYSY
 g.dist = daisy(subdata, metric="gower")
 

@@ -1,0 +1,85 @@
+##LIBERTAD EN LOS ESTADOS
+
+
+
+```{r}
+library(htmltab) #para scrapear
+library(stringr) #para limpieza de columnas 
+library(readr) #para extraer un único numero de la columna
+library(rio) #para importar
+library(cluster) #clustering
+library(plyr) #aggregate, funcion each
+library(psych) #para hacer tablas comparadas
+library(knitr) #para generar tablas html
+library(kableExtra) #para generar tablas html
+library(factoextra) #visualización de clusters
+library(ggrepel) #para que las etiquetas de los graficos no se superpongan
+library(dplyr)
+library(car) #recodificacion
+library(magrittr)
+library(foreign)
+```
+
+1. ABRIMOS LA DATA DE INTERÉS 
+```{r}
+LIBlink = "https://en.wikipedia.org/wiki/List_of_freedom_indices"
+LIBpath = '/html/body/div[3]/div[3]/div[5]/div[1]/table[2]'
+lib <- htmltab(doc = LIBlink, which =LIBpath)
+```
+
+Y LA LIMPIAMOS
+```{r}
+names(lib)=c("Pais","Lmundial","Leconomica","Lprensa","Idemocracia")
+lib$Pais = str_split(lib$Pais, "Â", n = 2, simplify = T)[,2]
+
+##limpiamos variable por variable
+#Libertad mundial
+table(lib$Lmundial)
+lib$Lmundial = as.factor(lib$Lmundial)
+lib$Lmundial = as.numeric(lib$Lmundial)
+table(lib$Lmundial)
+
+lib$Lmundial = recode(lib$Lmundial, "3=1 ; 4=2 ; 1=3 ; 2=NA", as.factor = T)
+levels(lib$Lmundial) = c("No libre" , "Parcialmente libre" , "Libre")
+lib$Lmundial = ordered(lib$Lmundial)
+table(lib$Lmundial)
+str(lib$Lmundial)
+
+#Libertad economica
+table(lib$Leconomica)
+lib$Leconomica = as.factor(lib$Leconomica)
+lib$Leconomica = as.numeric(lib$Leconomica)
+table(lib$Leconomica)
+
+lib$Leconomica = recode(lib$Leconomica, "6=1 ; 4=2 ; 2=3 ; 3=4 ; 1=5 ; 5=NA", as.factor = T)
+levels(lib$Leconomica) = c("Reprimido" , "Mayormente no libre" , "Moderadamente libre" ,
+                           "Mayormente libre" , "Libre")
+lib$Leconomica = ordered(lib$Leconomica)
+table(lib$Leconomica)
+str(lib$Leconomica)
+
+#Libertad de prensa
+table(lib$Lprensa)
+lib$Lprensa = as.factor(lib$Lprensa)
+lib$Lprensa = as.numeric(lib$Lprensa)
+table(lib$Lprensa)
+
+lib$Lprensa = recode(lib$Lprensa, "6=1 ; 1=2 ; 4=3 ; 5=4 ; 2=5 ; 3=NA", as.factor = T)
+levels(lib$Lprensa) = c("Muy seria" , "Dificil" , "Moderada" , "Satisfactoria" , "Buena")
+lib$Lprensa = ordered(lib$Lprensa)
+table(lib$Lprensa)
+str(lib$Lprensa)
+
+#Democracia
+table(lib$Idemocracia)
+lib$Idemocracia = as.factor(lib$Idemocracia)
+lib$Idemocracia = as.numeric(lib$Idemocracia)
+table(lib$Idemocracia)
+
+lib$Idemocracia = recode(lib$Idemocracia, "1=1 ; 4=2 ; 2=3 ; 3=4 ; 5=NA", as.factor = T)
+levels(lib$Idemocracia) = c("Autoritario" , "Hibrido" , "Endeble" , "Democracia")
+lib$Idemocracia = ordered(lib$Idemocracia)
+table(lib$Idemocracia)
+str(lib$Idemocracia)
+```
+

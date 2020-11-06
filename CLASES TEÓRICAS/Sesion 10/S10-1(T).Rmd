@@ -1,0 +1,283 @@
+
+SESION 10 - ANALISIS FACTORIAL 1: EXPLORACION
+
+Para reducir las variables en otras variables resumen. Mientras la clusterización agrupaba filas, la factorización AGRUPA COLUMNAS. Pero, al igual que en clusterización, queremos saber si las nuevas variables tienen un nombre, al cual se le denomina técnicamente variable LATENTE. 
+
+
+1. Preparación de Datos:
+```{r}
+library(htmltab)
+
+# links
+happyL=c("https://en.wikipedia.org/wiki/World_Happiness_Report",
+         '//*[@id="mw-content-text"]/div/table/tbody')
+demoL=c("https://en.wikipedia.org/wiki/Democracy_Index", 
+        '//*[@id="mw-content-text"]/div/table[2]/tbody')
+
+# carga
+happy = htmltab(doc = happyL[1],which  = happyL[2],encoding = "UTF-8")
+demo  = htmltab(doc = demoL[1], which  = demoL[2], encoding = "UTF-8")
+
+# limpieza
+happy[,]=lapply(happy[,], trimws,whitespace = "[\\h\\v]") # no blanks
+demo[,]=lapply(demo[,], trimws,whitespace = "[\\h\\v]") # no blanks
+
+library(stringr) # nombres simples
+names(happy)=str_split(names(happy)," ",simplify = T)[,1]
+names(demo)=str_split(names(demo)," ",simplify = T)[,1]
+```
+
+
+```{r}
+## Formateo
+
+# Eliminemos columnas que no usaremos esta vez:
+happy[,c('Overall','Rank')]=NULL
+demo[,c('Changes','Rank')]=NULL
+
+# También debemos tener nombres diferentes en los scores antes del merge:
+
+names(happy)[names(happy)=="Score"]="ScoreHappy" 
+names(demo)[names(demo)=="Score"]="ScoreDemo"
+
+
+# Tipo de variables:
+
+## En demo:
+demo[,-c(1,8,9)]=lapply(demo[,-c(1,8,9)],as.numeric)
+
+# En happy:
+happy[,-c(1)]=lapply(happy[,-c(1)],as.numeric)
+
+# sin perdidos:
+happy=na.omit(happy)
+demo=na.omit(demo)
+```
+
+Presta atención al merge. Usualmente hacemos merge por default y luego perdemos varias filas:
+```{r}
+nrow(merge(happy,demo))
+```
+Hagamos un nuevo merge, donde nos quedemos con TODOS los paises que no estaban en uno u otro data frame:
+```{r}
+HappyDemo=merge(happy,demo,all.x=T, all.y=T)
+
+#eliminar la Â
+names(HappyDemo)=gsub("Â","",names(HappyDemo))
+HappyDemo$Country=gsub("Â","",HappyDemo$Country)
+```
+Esta vez HappyDemo tiene varios paises de más, pero con valores perdidos y nombres que no pudieron coincidir. Veamos:
+```{r}
+# formateando a 
+# HappyDemo[!complete.cases(HappyDemo),]
+
+library(knitr)
+library(kableExtra)
+kable(HappyDemo[!complete.cases(HappyDemo),],type='html')%>%
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                  font_size = 10)
+#¿que signficica striped, hover, condenses y responsive?
+```
+```{r}
+# cambiemos a nombres usados por otra tabla:
+## en demo por happy
+demo[demo$Country=="Democratic Republic of the Congo",'Country']="Congo (Kinshasa)"
+demo[demo$Country=="Republic of the Congo",'Country']="Congo (Brazzaville)"
+demo[demo$Country=="Trinidad and Tobago",'Country']="Trinidad & Tobago"
+demo[demo$Country=="North Macedonia",'Country']="Macedonia"
+
+demo[demo$Country=="United States",'Country']="United States of America"
+
+## en happy por demo
+happy[happy$Country=="Palestinian Territories",'Country']="Palestine"
+```
+
+
+```{r}
+#Luego de esos ajustes veamos:
+HappyDemo=merge(happy,demo) # re creando HappyDemo
+nrow(HappyDemo)
+```
+## [1] 151 ¿?
+
+
+Proceso del Analisis Factorial Exploratorio (EFA)
+ - 3 pasos: extraccion, rotacion e interpretacion
+ - El análisis factorial exploratorio requiere que hagamos algunas observaciones previas.
+
+1. Calculemos matriz de correlación:
+
+```{r}
+dontselect=c("Country","ScoreHappy","ScoreDemo","Regimetype","Region")
+select=setdiff(names(HappyDemo),dontselect) 
+theData=HappyDemo[,select] # sin los Scores ni nombre de país.
+
+# esta es:
+library(polycor)
+corMatrix=polycor::hetcor(theData)$correlations
+```
+
+2. Explorar correlaciones:
+```{r}
+#Sin evaluar significancia:
+library(ggcorrplot)
+ggcorrplot(corMatrix)
+```
+
+
+```{r}
+#Evaluando significancia:
+ggcorrplot(corMatrix,
+          p.mat = cor_pmat(corMatrix),
+          insig = "blank")
+```
+Si puedes ver bloques correlacionados, hay esperanza de un buen analisis factorial.
+
+3. Verificar si datos permiten factorizar:
+```{r}
+library(psych)
+psych::KMO(corMatrix)
+```
+4. Verificar si la matriz de correlaciones es adecuada
+    - Aqui hay dos pruebas:
+
+ a. Hnula: La matriz de correlacion es una matriz identidad
+```{r}
+cortest.bartlett(corMatrix,n=nrow(theData))$p.value>0.05
+```
+ b. Hnula: La matriz de correlacion es una matriz singular.
+```{r}
+library(matrixcalc)
+is.singular.matrix(corMatrix)
+```
+
+5, Determinar en cuantos factores o variables latentes podríamos redimensionar la data:
+```{r}
+fa.parallel(theData,fm = 'ML', fa = 'fa')
+```
+# Parallel analysis suggests that the number of factors =  3  and the number of components =  NA
+Se sugieren 3
+
+6. Redimensionar a numero menor de factores
+
+Resultado inicial:
+```{r}
+library(GPArotation)
+resfa <- fa(theData,nfactors = 3,cor = 'mixed',rotate = "varimax",fm="minres")
+```
+## mixed.cor is deprecated, please use mixedCor.
+
+```{r}
+print(resfa$loadings)
+```
+
+Resultado mejorado:
+```{r}
+print(resfa$loadings,cutoff = 0.5)
+```
+Cuando logramos que cada variable se vaya a un factor, tenemos una estructura simple.
+
+Resultado visual:
+```{r}
+fa.diagram(resfa)
+```
+
+7. 0Evaluando Resultado obtenido:
+```{r}
+#¿La Raíz del error cuadrático medio corregida está cerca a cero?
+resfa$crms
+```
+```{r}
+#¿La Raíz del error cuadrático medio de aproximación es menor a 0.05?
+resfa$RMSEA
+```
+```{r}
+#¿El índice de Tucker-Lewis es mayor a 0.9?
+resfa$TLI
+```
+```{r}
+#¿Qué variables aportaron mas a los factores?
+sort(resfa$communality)
+```
+```{r}
+#¿Qué variables contribuyen a mas de un factor?
+sort(resfa$complexity)
+```
+
+8.Posibles valores proyectados:
+```{r}
+#¿Qué nombres les darías?
+as.data.frame(resfa$scores)%>%head()
+```
+
+```{r}
+HappyDemoFA=cbind(HappyDemo[1],as.data.frame(resfa$scores))
+
+library(plotly)
+
+
+plot_ly(data=HappyDemoFA, x = ~MR1, y = ~MR2, z = ~MR3, text=~Country) %>%
+  add_markers() %>%
+  layout(scene = list(xaxis = list(title = 'Demo'),
+                     yaxis = list(title = 'Tranquilidad'),
+                     zaxis = list(title = 'Bienestar')))
+
+```
+
+RECORDANDO:
+
+```{r}
+library(fpc)
+library(cluster)
+library(dbscan)
+
+# YA NO NECESITAS CMD para HappyDemoFA[,c(2:4)]
+
+g.dist.cmd = daisy(HappyDemoFA[,c(2:4)], metric = 'euclidean')
+kNNdistplot(g.dist.cmd, k=3)
+abline(h=0.63,col='red')
+```
+
+Para tener una idea de cada quien:
+```{r}
+resDB=fpc::dbscan(g.dist.cmd, eps=0.63, MinPts=3,method = 'dist')
+HappyDemoFA$clustDB=as.factor(resDB$cluster)
+aggregate(cbind(MR1, MR2,MR3) # dependientes
+          ~ clustDB, # nivel
+          data = HappyDemoFA,    # data
+          max)            # operacion
+```
+
+```{r}
+plot_ly(data=HappyDemoFA, x = ~MR1, y = ~MR2, z = ~MR3, text=~Country, color = ~clustDB) %>%
+  add_markers() %>%
+  layout(scene = list(xaxis = list(title = 'Demo'),
+                     yaxis = list(title = 'Tranquilidad'),
+                     zaxis = list(title = 'Bienestar')))
+```
+
+Finalmente, veamos relaciones:
+```{r}
+library(BBmisc)
+HappyDemo$faDemo=normalize(HappyDemoFA$MR1, 
+                       method = "range", 
+                       margin=2, # by column
+                       range = c(0, 10))
+
+HappyDemo$faHappyInd=normalize(HappyDemoFA$MR2, 
+                       method = "range", 
+                       margin=2, # by column
+                       range = c(0, 10))
+
+HappyDemo$faHappySoc=normalize(HappyDemoFA$MR3, 
+                       method = "range", 
+                       margin=2, # by column
+                       range = c(0, 10))
+```
+
+You can see them all here:
+```{r}
+plot(HappyDemo[,c("ScoreDemo","ScoreHappy","faDemo","faHappyInd",
+                  "faHappySoc")])
+
+```

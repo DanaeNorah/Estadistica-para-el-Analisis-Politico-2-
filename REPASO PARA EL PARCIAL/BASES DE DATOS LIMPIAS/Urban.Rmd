@@ -1,0 +1,31 @@
+
+
+```{r}
+library(htmltab) 
+library(magrittr) 
+library(readr) 
+linkCIA_urb = "https://www.cia.gov/library/publications/resources/the-world-factbook/fields/349.html"
+linkPath_urb='//*[@id="fieldListing"]'
+
+urban = htmltab(doc = linkCIA_urb, 
+                which =linkPath_urb)
+
+PATRON="(\\-*\\d+\\.*\\d*)(?=\\%)"
+COLSUCIA=urban$Urbanization
+
+# UNA COLUMNA
+urban$pop_urb=str_extract_all(string = COLSUCIA,
+                              pattern= PATRON,
+                              simplify = T)[,1]%>%parse_number()
+
+
+# OTRA COLUMNA
+urban$rate_urb=str_extract_all(string = COLSUCIA,
+                               pattern=PATRON,
+                               simplify = T)[,2]%>%parse_number()
+
+
+row.names(urban)=urban$Country
+urban$Urbanization=NULL
+```
+

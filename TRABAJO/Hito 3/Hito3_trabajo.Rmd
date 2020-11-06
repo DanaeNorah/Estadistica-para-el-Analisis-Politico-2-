@@ -87,12 +87,13 @@ summary(data$DesigualdadGenero)
 ```{r}
 library(psych)
 describe.by(data$DesigualdadGenero)
+str(data)
 ```
 
 -Analisis grafico de variable
 ```{r}
 #Solicitamos histograma
-hist(data$Violencia, main = "Desigualdad de genero")
+hist(data$DesigualdadGenero, main = "Desigualdad de genero")
 ```
 
 PASO 2;:VARIABLE ORDINAL Autonomia reproductiva

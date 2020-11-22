@@ -1,0 +1,59 @@
+
+- CORRELACION DE PEARSON es de -1 a 1 , más cerca a -1 o 1 la correlaicon ser muy fuerte y su asociacion es mayor
+- RESIDUOS: es error, son la distntaica entre el valor OBSERVADO y el valor ESPERADO
+
+- AJUSTE: ajuste a lo obsercaod, pero si sirve o no
+- LA DATA NO DEBE TENER ATIPICOS O OUTLIERS
+
+
+
+```{r}
+library(rio)
+data=import("trabajadores.sav")
+```
+1. diagrama de dispercion
+```{r}
+plot(data$salario_actual, data$salario_inicial)
+```
+2. COR. TEST
+```{r}
+cor.test(data$salario_actual, data$salario_inicial)
+```
+
+```{r}
+f1=formula(~salario_actual+salario_inicial)
+pearsonf1=cor.test(f1,data=data)[c('estimate','p.value')]
+pearsonf1
+```
+
+```{r}
+modelo1=lm(data = data, salario_actual ~ salario_inicial)
+summary(modelo1)
+#interpretar: modelo es valido o no, o los coeficicentes son distintos a 0
+#existe un 77% que de la vairabilidad de la v. salario actual que es explicado por la v. salario inicial
+#la v slario incia si aporta al modelo
+```
+MODELO
+```{r}
+modelo1$coefficients
+```
+modelo1= 1928.20576 +  (1.90945*80000) 
+```{r}
+prediccion1= 1928.20576 +(1.90945*8000) 
+prediccion1
+```
+
+```{r}
+library(stargazer)
+stargazer(modelo1,type = "text")
+
+```
+
+#en parentesis es el error stand
+
+#grados de libertad en Residual, grado de aplicabilidad: importnate el grado de lbiertad porque nos dice cual son nuestros isnsumos y cambia el indicador, y cambia hasta el modelo
+
+```{r}
+supuestos, aplicar el codigo identifciar y despues data = data [-c(,)]
+```
+

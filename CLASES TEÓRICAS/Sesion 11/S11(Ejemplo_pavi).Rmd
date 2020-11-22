@@ -1,0 +1,26 @@
+
+
+```{r}
+library(rio)
+link='https://github.com/DanaeNorah/Estadistica-para-el-Analisis-Politico-2-/raw/master/CLASES%20TE%C3%93RICAS/Sesion%2011/pavimentando_con_votos.sav'
+pavi=import(link)
+summary(pavi)
+```
+
+```{r}
+pavi[,c(3:6)]=lapply(pavi[c(3:6)],as.factor)
+```
+
+```{r}
+pavi= pavi[c(7,4,8,5,3,6,1,2)]
+
+hipotesis=formula(apropiaciondolar~.)
+#como son todas las demas las v. independientes se pone "."
+
+regre=lm(hipotesis,data=pavi)
+summary(regre)
+
+regre1=lm(hipotesis,data=pavi[,-c(7,8)])
+summary(regre1)
+```
+

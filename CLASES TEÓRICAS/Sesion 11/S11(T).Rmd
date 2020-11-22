@@ -1,3 +1,10 @@
+---
+output:
+  html_document: default
+  word_document: default
+editor_options: 
+  chunk_output_type: inline
+---
 
 SESION 11 - Introducción a la Regresión Lineal Multivariada
 
@@ -184,283 +191,221 @@ Veamos como representar al sexo en nuestra gráfica entre WRTG, SCI y MATH:
 base + geom_point(aes(size = SCI, color=SEX,shape=SEX)) + scale_shape_manual(values=c(3, 2))
 ```
 
-
-
 Otra alternativa puede ser:
-
+```{r}
 base + geom_point(aes(color = SCI)) + facet_grid(~SEX)
-
+```
 
 Y claro:
-
+```{r}
 paleta <- c("coral1","cyan" )
 colors <- paleta[as.numeric(hsb$SEX)]
 scatterplot3d(hsb[,c('SCI','WRTG','MATH')],color=colors)
 
+```
 
-En todos los gráficos vemos que los hombres y las mujeres están distribuidos por todo el gráfico, lo cual nos sugiere que no hay diferencias aun en dimensiones mayores a dos. Sin embargo, no tenemos una medida de cuanto cada uno afecta a nuestra dependiente.
+En todos los gráficos vemos que los hombres y las mujeres están distribuidos por todo el gráfico, lo cual nos sugiere que no hay diferencias aun en dimensiones mayores a dos. Sin embargo, no tenemos una medida de CÚANTO cada uno afecta a nuestra dependiente.
 
-De ahi que necesitamos la regresión.
+#De ahi que necesitamos la REGRESIÓN:
 
+1. Regresión Lineal
 
-Regresión Lineal
-La regresión es una técnica donde hay que definir una variable dependiente y una o más independientes. Las independientes pueden tener rol predictor, dependiendo del diseño de investigación, aunque por defecto tiene un rol explicativo.
+    -La regresión es una técnica donde hay que definir una variable dependiente y una o más independientes. 
+     Las independientes pueden tener rol predictor, dependiendo del diseño de investigación, aunque por defecto tiene 
+     un rol explicativo.
 
-La regresión sí quiere informar cuánto una variable (independiente) puede explicar la variación de otra (dependiente), de ahí que es una técnica para probar hipótesis direccionales o asimétricas (las correlaciones tiene hipótesis simétricas).
+    -La regresión sí quiere informar cuánto una variable (independiente) puede explicar la variación de otra (dependiente), 
+     de ahí que es una técnica para probar hipótesis direccionales o asimétricas (las correlaciones tiene hipótesis simétricas).
 
 La regresión busca proponer un modelo, es decir una ecuación, que recoja como una variable explicaría a otra.Para nuestro caso la variable dependiente es MATH, y tendriamos hasta ahora tres modelos:
-
+```{r}
 modelo1=formula(MATH~WRTG)
 modelo2=formula(MATH ~ WRTG + SCI)
 modelo3= formula(MATH ~ WRTG + SCI + SEX)
+```
 Por ejemplo, para la hipótesis ‘el nivel de desempeño en escritura afecta el desempeño en matemáticas’, la regresión arrojaría este resultado:
-
-
-
+```{r}
 library(stargazer)
 reg1=lm(modelo1,data=hsb)
-stargazer(reg1,type = "html",intercept.bottom = FALSE)
-Dependent variable:
-MATH
-Constant	19.769***
-(1.633)
-WRTG	0.612***
-(0.031)
-Observations	600
-R2	0.400
-Adjusted R2	0.399
-Residual Std. Error	7.297 (df = 598)
-F Statistic	399.110*** (df = 1; 598)
-Note:	p<0.1; p<0.05; p<0.01
+summary(reg1)
+```
+```{r}
+reg1$coefficients
+```
 
+```{r}
+#extra de la clase de Estadistica 1
+library(jtools)
+summ(reg1)
+export_summs(reg1)
+
+#te permite ver los estandarizados con todos los digitos
+library(lm.beta)
+lm.beta (reg1)
+```
+
+```{r}
+stargazer(reg1, type = "text",intercept.bottom = FALSE)
+```
 
 Aquí ya sabemos algo interesante, primero que WRTG tiene efecto, pues es significativo (indicado por los dos asteriscos); segundo, que ese efecto es directo, pues el coeficiente calculado es positivo; y tercero que la magnitud de ese efecto es 0.612, lo que indica cuanto aumenta MATH en promedio cuando WRTG se incremente en una unidad.
 
 Esto es información suficiente para representar esa relación con una ecuación. Como la ecuación sólo tiene una variable independiente podemos producir una recta sobre el gráfico de correlación:
-
+```{r}
 ggplot(hsb, aes(x=WRTG, y=MATH)) + 
   geom_point()+
   geom_smooth(method=lm)
+```
 
 
 Esa recta podemos representarla así:
 
-MATH=19.7690323+0.6123904⋅WRTG+ϵ
+  - MATH =19.7690323 + 0.6123904⋅WRTG+ϵ
 
 El Y verdadero es MATH, pero la regresión produce un MATH^ estimado, de ahi la presencia del ϵ. Justamente el R cuadrado ajustado (0.4002668) nos brinda un porcentaje (multiplicalo por 100) que da una pista de nuestra cercanía a una situación perfecta (cuando vale 1).
 
 Y sí queremos ver el efecto de SCI?
-
+```{r}
 reg2=lm(modelo2,data=hsb)
-stargazer(reg2,type = "html",intercept.bottom = FALSE)
-Dependent variable:
-MATH
-Constant	10.629***
-(1.630)
-WRTG	0.377***
-(0.033)
-SCI	0.415***
-(0.033)
-Observations	600
-R2	0.524
-Adjusted R2	0.523
-Residual Std. Error	6.505 (df = 597)
-F Statistic	328.846*** (df = 2; 597)
-Note:	p<0.1; p<0.05; p<0.01
+summary(reg2)
+stargazer(reg2,type = "text",intercept.bottom = FALSE)
+```
 En este caso, la regresión tendrá una formula con dos variables explicando la dependiente, así que en vez de producir una línea buscará producir un plano:
-
+```{r}
 library(scatterplot3d)
 G  <- scatterplot3d(hsb[,c('SCI','WRTG','MATH')])
 G$plane3d(reg2, draw_polygon = TRUE, draw_lines = FALSE)
 
-
+```
 Este plano podemos representarlo así:
 
-MATH=10.6285904+0.3765304⋅WRTG+0.4152733⋅SCI+ϵ
+  - MATH = 10.6285904 + 0.3765304⋅WRTG + 0.4152733⋅SC I +ϵ
 
-Nuevamente, el Y verdadero es MATH, pero la regresión produce un MATH^ estimado en forma de plano. De igual manera el R cuadrado ajustado (0.5241861) nos da una pista de nuestra lejanía a una situación perfecta.
+Nuevamente, el Y verdadero es MATH, pero la regresión produce un MATH^ estimado en forma de plano. De igual manera el R cuadrado ajustado (0.5241861) nos da una pista de nuestra lejanía a una situación perfecta
 
-Es clave darse cuenta de otro detalle, que el coeficiente de WRTG ha variado en la fórmula ahora que está presente SCI ¿Por qué sucede esto? Veamoslo así: en el primer caso, WRTG y ϵ buscaban representar la variabilidad en MATH, y ahora, en el segundo caso, viene SCI para mejorar esa explicación; es así que el peso de la explicación ahora se recalcula y el coeficiente de WRTG deja de explicar lo que le corresponde a SCI, y ϵ también le entrega algo a SCI.
+Es clave darse cuenta de otro detalle, que el coeficiente de WRTG ha variado en la fórmula ahora que está presente SCI ¿Por qué sucede esto? 
+     Veamoslo así: en el primer caso, WRTG y ϵ buscaban representar la variabilidad en MATH, y ahora, en el segundo caso, 
+     viene SCI para mejorar esa explicación; es así que el peso de la explicación ahora se recalcula y el coeficiente de 
+     WRTG deja de explicar lo que le corresponde a SCI, y ϵ también le entrega algo a SCI.
 
-Como ϵ no tiene coeficiente, representamos su variación usando el error típico de los residuos o residual standard error (RSE). Nótese que éste ha variado de un modelo ha otro, ahora tenemos un RSE menor. Aquí vale la pena preguntarse si esta disminución del error es significativa, obteniendo:
-
-
-
+     Como ϵ no tiene coeficiente, representamos su variación usando el error típico de los residuos o residual standard error
+     (RSE). Nótese que éste ha variado de un modelo ha otro, ahora tenemos un RSE menor. Aquí vale la pena preguntarse si esta
+     disminución del error es significativa, obteniendo:
+```{r}
 tanova=anova(reg1,reg2)
-stargazer(tanova,type = 'html',summary = F,title = "Table de Análisis de Varianza")
-Table de Análisis de Varianza
-Res.Df	RSS	Df	Sum of Sq	F	Pr(> F)
-1	598	31,842.070				
-2	597	25,262.730	1	6,579.335	155.481	0
-
+stargazer(tanova,type = 'text',summary = F,title = "Table de Análisis de Varianza")
+```
 
 La comparación de modelos usando la tabla de análisis de varianza (anova) propone como hipótesis nula que los modelos no difieren (no se ha reducido el error al pasar de un modelo a otro). Como la comparación es significativa (vea el P), rechazamos igualdad de modelos: el modelo 2 sí reduce el error al incluir una variable más.
 
 Finalmente, veamos el rol de sexo:
-
+```{r}
 reg3=lm(modelo3,data=hsb)
-stargazer(reg3,type = "html",intercept.bottom = FALSE)
-Dependent variable:
-MATH
-Constant	11.306***
-(1.630)
-WRTG	0.424***
-(0.036)
-SCI	0.375***
-(0.035)
-SEXFemale	-1.922***
-(0.582)
-Observations	600
-R2	0.533
-Adjusted R2	0.530
-Residual Std. Error	6.452 (df = 596)
-F Statistic	226.510*** (df = 3; 596)
-Note:	p<0.1; p<0.05; p<0.01
+stargazer(reg3,type = "text",intercept.bottom = FALSE)
+summary(reg3)
+```
 Aunque no podemos graficar cuatro coordenadas, podemos usar elementos visuales:
-
+```{r}
 library(scatterplot3d)
 colors <- paleta[as.numeric(hsb$SEX)]
 G  <- scatterplot3d(hsb[,c('SCI','WRTG','MATH')],color=colors)
 G$plane3d(reg2, draw_polygon = TRUE, draw_lines = FALSE)
 
-
+```
 Nuestra nueva ecuación sería:
 
-MATH=11.306349+0.4235786⋅WRTG+0.3748025⋅SCI+−1.9219692⋅SEX+ϵ
+MATH = 11.306349 + 0.4235786⋅WRTG + 0.3748025⋅SCI − 1.9219692⋅SEX +ϵ
 
 Nuevamente podemos ver si añadir SEXO en este modelo representa una mejora al anterior:
 
+```{r}
 tanova=anova(reg1,reg2,reg3)
-stargazer(tanova,type = 'html',summary = F,title = "Table de Análisis de Varianza")
-Table de Análisis de Varianza
-Res.Df	RSS	Df	Sum of Sq	F	Pr(> F)
-1	598	31,842.070				
-2	597	25,262.730	1	6,579.335	158.063	0
-3	596	24,808.420	1	454.308	10.914	0.001
-
-
+stargazer(tanova,type = 'text',summary = F, title = "Table de Análisis de Varianza")
+```
 
 Finalmente, podemos resumir todo en esta tabla:
-
-
-
+```{r}
 library(stargazer)
-stargazer(reg1,reg2,reg3, type = "html", title = "Modelos planteadas",digits = 2, single.row = F,no.space = F,intercept.bottom = FALSE,
+stargazer(reg1,reg2,reg3, type = "text", title = "Modelos planteadas",digits = 2, single.row = F,no.space = F,intercept.bottom = FALSE,
           dep.var.caption="Variable dependiente:",
           dep.var.labels="Desempeño en Matemáticas",
           covariate.labels=c("Constante","Desempeño en Escritura","Desempeño en Ciencias","SEXO (mujer)"),
-          keep.stat = c("n","adj.rsq","ser"),df = F,
+          keep.stat = c("n","adj.rsq","ser"),df = FALSE,
           notes.label = "Notas:")
-Modelos planteadas
-Variable dependiente:
-Desempeño en Matemáticas
-(1)	(2)	(3)
-Constante	19.77***	10.63***	11.31***
-(1.63)	(1.63)	(1.63)
-Desempeño en Escritura	0.61***	0.38***	0.42***
-(0.03)	(0.03)	(0.04)
-Desempeño en Ciencias		0.42***	0.37***
-(0.03)	(0.04)
-SEXO (mujer)			-1.92***
-(0.58)
-Observations	600	600	600
-Adjusted R2	0.40	0.52	0.53
-Residual Std. Error	7.30	6.51	6.45
-Notas:	p<0.1; p<0.05; p<0.01
-Graficamente:
 
+```
+
+```{r}
+export_summs(reg1,reg2,reg3) #¿como poner el residual error?
+```
+Graficamente:
+```{r}
 library(ggplot2)
 library(sjPlot)
 ## Install package "strengejacke" from GitHub (`devtools::install_github("strengejacke/strengejacke")`) to load all sj-packages at once!
 plot_models(reg1,reg2,reg3,vline.color = "grey",m.labels=c("Modelo 1","Modelo 2","Modelo 3"))
 
+```
 
+DIAGNOSTICO DE LA REGRESION
 
-Diagnósticos de la Regresión
-Para que se considere que el modelo de regresión elegido es el adecuado, debemos verificar algunos requisitos a posteriori:
+  - Para que se considere que el modelo de regresión elegido es el adecuado, debemos verificar algunos requisitos a posteriori:
 
 1. Linealidad:
 
-Se asume relación lineal entre Y y Xs:
-
-# linea roja debe tender a horizontal
-plot(reg3, 1)
-
-
-2. Homocedasticidad
-
-Se asume que el error del modelo de regresión no afecta la varianza o dispersión de la estimación (MATH^):
-
+   - Se asume relación lineal entre Y y Xs:
+```{r}
 # linea roja debe tender a horizontal
 plot(reg3, 3)
 
+```
+2. Homocedasticidad
+
+  - Se asume que el error del modelo de regresión no afecta la varianza o dispersión de la estimación (MATH^):
+```{r}
+# linea roja debe tender a horizontal
+plot(reg3, 3)
+
+```
 
 También podemos utilizar el test de Breusch-Pagan:
-
+```{r}
 library(lmtest)
-## Loading required package: zoo
-## 
-## Attaching package: 'zoo'
-## The following objects are masked from 'package:base':
-## 
-##     as.Date, as.Date.numeric
 # null: modelo homocedastico
 bptest(reg3)
-## 
-##  studentized Breusch-Pagan test
-## 
-## data:  reg3
-## BP = 10.05, df = 3, p-value = 0.01815
-La probabilidad de homocedasticidad es muy baja (p-value menor a 0.05), de ahi que se rechaza que el modelo muestre homocedasticidad.
+```
+
+  - La probabilidad de homocedasticidad es muy baja (p-value menor a 0.05), de ahi que se rechaza que el modelo
+    muestre homocedasticidad.
 
 3. Normalidad de los residuos
 
 Los residuos, la diferencia entre MATH y MATH^, debe distribuirse de manera normal:
-
+```{r}
 # puntos cerca a la diagonal
 plot(reg3, 2)
 
+```
 
 Podemos aplicar el test de Shapiro a los residuos:
-
+```{r}
 shapiro.test(reg3$residuals)
-## 
-##  Shapiro-Wilk normality test
-## 
-## data:  reg3$residuals
-## W = 0.9989, p-value = 0.9776
+```
+
 4. No multicolinelidad
 
-Si los predictores tienen una correlación muy alta entre sí, hay multicolinealidad, lo cual no es deseable:
-
+  - Si los predictores tienen una correlación muy alta entre sí, hay multicolinealidad, lo cual no es deseable:
+```{r}
 library(DescTools)
 VIF(reg3) # > 5 es problematico
-##     WRTG      SCI      SEX 
-## 1.755244 1.682589 1.209766
-5. Valores influyentes:
 
-Hay casos particulares, que tienen la capacidad de trastocar lo que casi todos puntos representan. A veces detectandolos y suprimiendolos, podemos ver un mejor modelo:
-
-plot(reg3, 5)
-
-
-Asi podemos recuperar los casos influyentes:
-
-checkReg3=as.data.frame(influence.measures(reg3)$is.inf)
-head(checkReg3)
-##   dfb.1_ dfb.WRTG dfb.SCI dfb.SEXF dffit cov.r cook.d   hat
-## 1  FALSE    FALSE   FALSE    FALSE FALSE FALSE  FALSE FALSE
-## 2  FALSE    FALSE   FALSE    FALSE FALSE FALSE  FALSE FALSE
-## 3  FALSE    FALSE   FALSE    FALSE FALSE FALSE  FALSE FALSE
-## 4  FALSE    FALSE   FALSE    FALSE FALSE FALSE  FALSE FALSE
-## 5  FALSE    FALSE   FALSE    FALSE FALSE FALSE  FALSE FALSE
-## 6  FALSE    FALSE   FALSE    FALSE FALSE FALSE  FALSE FALSE
+```
 Normalmente le prestamos atencion al indice de Cook y a los valores predecidos (los hat values):
+```{r}
+checkReg3[checkReg3$cook.d |checkReg3$hat]
+```
 
-checkReg3[checkReg3$cook.d | checkReg3$hat,]
-##     dfb.1_ dfb.WRTG dfb.SCI dfb.SEXF dffit cov.r cook.d  hat
-## 112  FALSE    FALSE   FALSE    FALSE FALSE  TRUE  FALSE TRUE
-## 448  FALSE    FALSE   FALSE    FALSE FALSE  TRUE  FALSE TRUE
+
 Tarea para la casa:
 
 Vaya al http://ineidw.inei.gob.pe/ineidw/ y pruebe esta hipotesis:

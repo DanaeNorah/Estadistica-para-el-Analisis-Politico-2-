@@ -243,7 +243,7 @@ data$Autonomia   4.26e-09 ***
 
 ```{r}
 #Prueba de comparaciones múltiples (Tukey)
-TukeyHSD(anovaautonomia)
+TukeyHSD(anovaautonomia) 
 ```
 RESPUESTA:
                      p adj

@@ -1,4 +1,10 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
 
+HITO4 - GRUPO 2 - ANALISIS FACTORIAL EXPLORATORIO
 
 ```{r}
 library(rio)
@@ -8,6 +14,7 @@ summary(data)
 row.names(data)=data$Pais
 data=na.omit(data)
 ```
+PASO 0: ALISTAR BASE DE DATOS
 
 ###variable numerica
 ```{r}

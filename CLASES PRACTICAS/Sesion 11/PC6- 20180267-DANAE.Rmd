@@ -1,0 +1,189 @@
+
+PRACTICA CALIFICADA 6 - 20180267 - DANAE BALLENA VARGAS
+
+#PREGUNTA 1
+
+## Paso 0: Abrimos la base de datos
+```{r}
+library(rio)
+link='https://github.com/DataPolitica/salidas/raw/master/Data/Cajamarca.sav'
+cajamarca = import(link)
+head(cajamarca)
+```
+
+- Realizamos un subset y nos quedamos con las variables que utilizaremos. Lo llamaremos **subdata**:
+
+```{r}
+subdata<- cajamarca[,c(2,3,4,5,6,7,8,9,10)]
+```
+
+--------------------------------------------------------------------
+
+#PREGUNTA 2
+
+## PREGUNTA 2.1: Matriz de correlaciones
+
+Generamos la matriz de correlaciones para identificar qué variables de nuestra subdata están correlacionadas. 
+```{r}
+library(polycor)
+matriz<-hetcor(subdata)
+matriz_corr<- matriz$correlations
+library(ggcorrplot)
+ggcorrplot(matriz_corr)
+```
+
+Vemos las correlaciones significativas: Si puedes ver bloques correlacionados hay esperanza de un buen analisis factorial.
+```{r}
+ggcorrplot(matriz_corr,
+           p.mat = cor_pmat(matriz_corr),
+           insig = "blank")
+```
+##RESPUESTA PREGUNTA 2.1
+ - Al realizar la matriz de correlaciones se ve que hat varios bloques que
+   estan correlacionados.Por ejemplo entre la variable P.rural y Desnutricion. 
+   Entre P.rural y Sin agua y Sin desague, entre otros. Sin embargo,
+   al hacer la matriz de correlaciones con SIGNIFICANCIA
+   observamos que hay un bloque entre Inasistencia Escolar %de niños que trabajan.
+   Asimismo, hay correlación significativa entre %viviendas sin agua y %viviendas 
+   sin desague.
+
+```{r}
+#te sirve para redondear a dos decimales, pero si se corresolo "matriz_corr" es para sacar
+round(matriz_corr, 2)
+```
+
+## PREGUNTA 2.2: Diagnóstico de nuestra matríz de correlaciones
+
+##Primero, verificar si datos permiten factorizar:
+  -Test KMO: cuanto mas cerca a 1 implica relacion es alta. Tiene que ser mayor
+  que 0.5 (FIJARTE EN EL OVERALL MSA)
+```{r}
+library(psych)
+KMO(matriz_corr) 
+```
+##RESPUESTA 2.2.1: 
+- Segun el Test de KMO, la relacion es baja,los datos no permitirian facotriza 
+porque es 0.4, deberia ser mayor a 0.5
+
+
+##Segundo, verificar si la matriz de correlaciones es adecuada. Para ello, se tienen dos funciones:
+##Test de Bartlett: H0: La matriz de correlacion es una matriz identidad.
+Buscamos rechazar la H0, por eso esperamos que sea signifitivo (False). Matriz identidad (diagonal es 1, y lo demas es 0), solo una vairable se correlaciona consigo misma.
+
+```{r}
+cortest.bartlett(matriz_corr,n=nrow(subdata))$p.value>0.05
+```
+##RESPUESTA 2.2.2
+- segun el Test Barlett, nos sale FALSE Rechazamos la H0 y es significativo.
+
+
+##Test For Singular Square Matrix: H0: La matriz de correlacion es una matriz singular. Una matriz que no sea inversa
+Buscamos que sea False. SI sale TRUE no seguir
+
+```{r}
+library(matrixcalc)
+is.singular.matrix(matriz_corr)
+```
+##RESPUESTA 2.2.3
+- Segun el Test for Singular Square Matriz es FALSE; por lo tanto, nuestro analisis factorial esta bien.
+
+
+
+## PREGUNTA 2.3: Identificamos el número recomendado de factores y solicitamos el EFA
+- Vemos el número sugerido y también el gráfico. 
+
+```{r}
+fa.parallel(subdata, fm = 'ML', fa = 'fa')
+```
+
+```{r}
+library(GPArotation)
+factorial <- fa(subdata,nfactors = 2, cor = 'mixed', rotate = "varimax",fm="minres")
+#correlacion mixta, rotacion
+```
+
+##RESPUESTA 2.3
+- El numero de factores recomendado es 2. Y nos sale un mensaje de alerta
+
+
+
+##PREGUNTA 2.4 Visualizamos el EFA solicitado
+
+Vemos el resultado inicial:
+```{r}
+print(factorial$loadings)
+```
+
+Vemos el resultado mejorado: Cuando logramos que cada variable se vaya a un factor, tenemos una estructura simple.
+```{r}
+print(factorial$loadings, cutoff = 0.5)
+```
+
+##respuesta 2.4
+- Al ver el AFE con el corte. se puede ver que P.plural, Denutricion, Sin agua y Sin Desague aportan al FACTOR 1
+- Las variables mortinf,analfab,inasiec,nintrab aportan al FACTOR 2
+- tAMBIEN vemos que Hacinamiento no aporta a ningun factor con el corte 0.5
+
+
+
+##PREGUNTA 2.5 Podemos visualizar los variables y su relación con las latentes creadas:
+
+```{r}
+fa.diagram(factorial)
+```
+
+## PREGUNTA 2.6: Evaluamos el Análisis Factorial Exploratorio solicitado (comprobamos validez AF)
+
+- ¿La Raíz del error cuadrático medio corregida está cerca a cero?
+      - RESPUESTA:Valor no es cercano a 0 (0.1021), entonces,indica un mal ajuste.
+        Significa que el análisis extraído no es suficientemente  válido. 
+```{r}
+factorial$crms
+```
+
+- ¿La Raíz del error cuadrático medio de aproximación es menor a 0.05?
+    - 0.1364 NO es mayor a 0.05, entonces, NO HAY PROBLEMA 
+```{r}
+factorial$RMSEA
+```
+
+- ¿El índice de Tucker-Lewis es mayor a 0.9?
+    Es 0.752, es MENOR a 0.9, entonces, no es de muy buen ajuste. Al ser menor a 
+    0.9 indica insuficiencia de validez. 
+```{r}
+factorial$TLI
+```
+
+- ¿Qué variables aportaron mas a los factores?
+   - respuesta: Aporta más Inasistencia escolar y menos Hacinamiento
+```{r}
+#sort es una funcion para ordenar de menor a mayor
+sort(factorial$communality)
+```
+
+- ¿Qué variables contribuyen a mas de un factor?
+    - RESPUESTA: contribuye a mas de un factor ANALFABETISMO, desnutriciom, hacinamiento, inasistencia escolar.
+```{r}
+sort(factorial$complexity)
+#cada una de las variables, caada variable aporta a un factor.Pero tiene decimales, es deicr, aporta a 1.51 factores
+#que variable aporta a mas de un factor: PBI
+#que vairable aporta a menos de un factor: Presupuesto Publico
+```
+## PREGUNTA 2.7: Posibles valores proyectados
+
+¿Qué nombres les darías?
+
+Podemos crear un data set con sólo los factores creados
+
+```{r}
+factorial_casos<-as.data.frame(factorial$scores)
+head(factorial_casos)
+summary(factorial_casos)
+```
+
+o incluirlos en nuestro subset original
+
+```{r}
+subdata$factor1<- factorial_casos$MR1
+subdata$factor2<- factorial_casos$MR2
+```

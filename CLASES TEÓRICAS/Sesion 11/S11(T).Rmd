@@ -82,7 +82,7 @@ spearmanf1
   -Si hubieramos seguido una ruta no paramétrica, informaríamos el coeficiente de Spearman:0.6415126 (con p-value= 0).
 
 
-Ahora, consideremos que nos interesa saber a la vez la posible relación que pueda tener la variable que ha medido el desempeño en ciencias; así otra variable independiente sería la representada por la variable SCI. Como es otra variable numérica no podemos calcular la correlación de tres variables, pero podemos tratar de verlo visualmente:
+Ahora, consideremos que nos interesa saber a la vez la posible relación que pueda tener la variable que ha medido el desempeño en ciencias; así o tra variable independiente sería la representada por la variable SCI. Como es otra variable numérica no podemos calcular la correlación de tres variables, pero podemos tratar de verlo visualmente:
 
 En tres dimensiones:
 ```{r}
@@ -356,7 +356,7 @@ DIAGNOSTICO DE LA REGRESION
    - Se asume relación lineal entre Y y Xs:
 ```{r}
 # linea roja debe tender a horizontal
-plot(reg3, 3)
+plot(reg3, 1)
 
 ```
 2. Homocedasticidad

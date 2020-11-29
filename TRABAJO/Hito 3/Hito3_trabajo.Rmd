@@ -29,7 +29,7 @@ table(data$Autonomia)
 ```
 ```{r}
 #Luego, variable debe ser convertida en una variable tipo factor
-data$Autonomia <- as.factor(data$Autonomia )
+data$Autonomia <- as.factor(data$Autonomia)
 #Le asignamos etiquetas a los valores
 data$Autonomia=factor(data$Autonomia,
                      levels = levels(data$Autonomia),
@@ -48,19 +48,12 @@ table(data$Violencia)
 ```
 
 ```{r}
-#Empleamos funcion recode
-data$Violencia <- recode(data$Violencia, "0=0 ; 0.25=0 ; 0.5=0.5 ; 0.75=1 ; 1=1")
-#Verificamos
-table(data$Violencia)
-```
-
-```{r}
 #Luego, variable debe ser convertida en una variable tipo factor
 data$Violencia <- as.factor(data$Violencia)
 #Le asignamos etiquetas a los valores
 data$Violencia=factor(data$Violencia,
                      levels = levels(data$Violencia),
-                     labels = c("Protege","Regular","No protege"),
+                     labels = c("Protege totalmente","Protege mucho","Protege poco","No protege"),
                      ordered = T)#verificamos
                      
 str(data$Violencia)

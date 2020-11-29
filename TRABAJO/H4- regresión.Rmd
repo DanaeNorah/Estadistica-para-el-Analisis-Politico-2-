@@ -1,0 +1,373 @@
+
+
+```{r}
+library(rio)
+link='https://github.com/DanaeNorah/Estadistica-para-el-Analisis-Politico-2-/raw/master/TRABAJO/basefinal.csv'
+data = import(link)
+summary(data)
+row.names(data)=data$Pais
+data=na.omit(data)
+```
+
+###variable numerica
+```{r}
+library(car)
+data$Autonomia <- recode(data$Autonomia, "0=1 ; 0.25=0.75 ; 0.5=0.5 ; 0.75=0.25 ; 1=0")
+
+data$Autonomia <-as.factor(data$Autonomia)
+data$Autonomia=factor(data$Autonomia,
+                            levels = levels(data$Autonomia),
+                            labels = c("5","4","3","2","1"),
+                            ordered = T)
+data$Autonomia <-as.numeric(data$Autonomia)
+table(data$Autonomia)
+```
+
+###Variable violencia
+```{r}
+#Le asignamos etiquetas a los valores
+data$Violencia <- recode(data$Violencia,"0.25=0.75 ; 0.5=0.5 ; 0.75=0.25")
+data$Violencia <-as.factor(data$Violencia)
+data$Violencia=factor(data$Violencia,
+                            levels = levels(data$Violencia),
+                            labels = c("3","2","1"),
+                            ordered = T)
+data$Violencia <-as.numeric(data$Violencia)
+table(data$Violencia)
+```
+
+###Normalizamos la variable Desempleo
+```{r}
+library(BBmisc)
+data$Desempleo= normalize(data$Desempleo, 
+                       method = "range", 
+                       margin=2, # by column
+                       range = c(0, 100),)
+data$Desempleo=round(data$Desempleo,2)
+```
+
+###Creo una base de datos con las variables que usare
+```{r}
+subdata= data[,c(3,4,5,6,7,8,9,10)]
+```
+
+###Preparamos la subdata para la factorizacion
+```{r}
+#subdata$DesigualdadGenero=subdata$DesigualdadGenero *100
+#subdata$DesigualdadGenero= 100 - subdata$DesigualdadGenero 
+subdata$LibertadMov= 100 - subdata$LibertadMov
+subdata$AccesoJ= 100 - subdata$AccesoJ
+subdata$Desempleo= 100 - subdata$Desempleo
+```
+
+###Resumen de data
+```{r}
+str(subdata)
+```
+
+1. Calculemos matriz de correlación:
+
+```{r}
+# esta es:
+library(polycor)
+corMatrix=polycor::hetcor(subdata)$correlations
+```
+2. Explorar correlaciones:
+```{r}
+#Sin evaluar significancia:
+library(ggcorrplot)
+ggcorrplot(corMatrix)
+```
+
+```{r}
+#Evaluando significancia:
+ggcorrplot(corMatrix,
+          p.mat = cor_pmat(corMatrix),
+          insig = "blank")
+```
+```{r}
+#te sirve para redondear a dos decimales, pero si se corresolo "matriz_corr" es para sacar
+round(corMatrix, 2)
+```
+
+3. Verificar si datos permiten factorizar:
+```{r}
+library(psych)
+psych::KMO(corMatrix)
+```
+4. Verificar si la matriz de correlaciones es adecuada
+    - Aqui hay dos pruebas:
+
+ a. Hnula: La matriz de correlacion es una matriz identidad
+```{r}
+cortest.bartlett(corMatrix,n=nrow(subdata))$p.value>0.05
+```
+ b. Hnula: La matriz de correlacion es una matriz singular.
+```{r}
+library(matrixcalc)
+is.singular.matrix(corMatrix)
+```
+
+5, Determinar en cuantos factores o variables latentes podríamos redimensionar la subdata:
+```{r}
+fa.parallel(subdata,fm = 'ML', fa = 'fa')
+```
+
+6. Redimensionar a numero menor de factores
+
+Resultado inicial:
+```{r}
+library(GPArotation)
+resfa <- fa(subdata,nfactors = 3,cor = 'mixed',rotate = "varimax",fm="minres")
+```
+
+```{r}
+print(resfa$loadings)
+```
+
+Resultado mejorado:
+```{r}
+print(resfa$loadings,cutoff = 0.5)
+```
+Cuando logramos que cada variable se vaya a un factor, tenemos una estructura simple.
+
+Resultado visual:
+```{r}
+fa.diagram(resfa)
+```
+
+7. Evaluando Resultado obtenido:
+```{r}
+#¿La Raíz del error cuadrático medio corregida está cerca a cero?
+resfa$crms
+```
+```{r}
+#¿La Raíz del error cuadrático medio de aproximación es menor a 0.05?
+resfa$RMSEA
+```
+```{r}
+#¿El índice de Tucker-Lewis es mayor a 0.9?
+resfa$TLI
+```
+```{r}
+#¿Qué variables aportaron mas a los factores?
+sort(resfa$communality)
+```
+```{r}
+#¿Qué variables contribuyen a mas de un factor?
+sort(resfa$complexity)
+```
+
+8.Posibles valores proyectados:
+
+Creamos un data set
+```{r}
+factoriales=as.data.frame(resfa$scores)
+head(factoriales)
+```
+
+o incluirlos en nuestro subset original
+
+```{r}
+subdata$factor1<- factoriales$MR1
+subdata$factor2<- factoriales$MR2
+subdata$factor3<- factoriales$MR3
+
+summary(factoriales)
+```
+
+```{r}
+subdata=cbind(data[,c(1,2)],subdata)
+```
+
+RECORDANDO:
+
+```{r}
+library(fpc)
+library(cluster)
+library(dbscan)
+# YA NO NECESITAS CMD para HappyDemoFA[,c(2:4)]
+
+g.dist.cmd = daisy(subdata[,c(11:13)], metric = 'euclidean')
+kNNdistplot(g.dist.cmd, k=3)
+abline(h= 0.62,col='red')
+```
+Para tener una idea de cada quien:
+```{r}
+res.DB=fpc::dbscan(g.dist.cmd, eps=0.62, MinPts=3,method = 'dist')
+subdata$clustDB=as.factor(res.DB$cluster)
+aggregate(cbind(factor1, factor2,factor3) # dependientes
+         ~ clustDB, # nivel
+        data = subdata,    # data
+          max)            # operacion
+```
+
+Finalmente, veamos relaciones:
+```{r}
+library(BBmisc)
+subdata$factor1=normalize(subdata$factor1, 
+                      method = "range", 
+                      margin=2, # by column
+                      range = c(0, 100))
+subdata$factor2=normalize(subdata$factor2, 
+                      method = "range", 
+                      margin=2, # by column
+                      range = c(0, 100))
+subdata$factor3=normalize(subdata$factor3, 
+                      method = "range", 
+                      margin=2, # by column
+                      range = c(0, 100))
+```
+
+You can see them all here:
+```{r}
+plot(subdata$DesigualdadGenero,subdata$factor1)
+plot(subdata$DesigualdadGenero,subdata$factor2)
+plot(subdata$DesigualdadGenero,subdata$factor3)
+```
+
+
+#REGRESIONES
+```{r}
+hipotesis = formula(DesigualdadGenero ~ factor1)
+regresion=lm(hipotesis,data=subdata)
+summary(regresion)
+```
+```{r}
+hipotesis1 = formula(DesigualdadGenero ~ factor2)
+regresion1=lm(hipotesis1,data=subdata)
+summary(regresion1)
+```
+
+```{r}
+hipotesis2 = formula(DesigualdadGenero ~ factor3)
+regresion2=lm(hipotesis2,data=subdata)
+summary(regresion2)
+```
+
+```{r}
+hipotesis3 = formula(DesigualdadGenero ~ factor1 + factor2 + factor3)
+regresion3=lm(hipotesis3,data=subdata[,-c(1)])
+summary(regresion3)
+```
+
+#DIAGNOSTICO DE LA REGRESION
+
+  - Para que se considere que el modelo de regresión elegido es el adecuado, debemos verificar algunos 
+    requisitos a posteriori:
+
+1. Linealidad:
+   - Se asume relación lineal entre Y y X:
+```{r}
+# linea roja debe tender a horizontal
+plot(regresion3, 1)
+
+```
+2. Homocedasticidad
+
+  - Se asume que el error del modelo de regresión no afecta la varianza o dispersión de la estimación (MATH^):
+```{r}
+# linea roja debe tender a horizontal
+plot(regresion3, 3)
+```
+
+También podemos utilizar el test de Breusch-Pagan:
+```{r}
+library(lmtest)
+# null: modelo homocedastico
+bptest(regresion3)
+```
+
+  - La probabilidad de homocedasticidad es alta (p-value menor a 0.08), de el modelo muestra homocedasticidad.
+
+3. Normalidad de los residuos
+
+Los residuos, la diferencia entre MATH y MATH^, debe distribuirse de manera normal:
+```{r}
+# puntos cerca a la diagonal
+plot(regresion3, 2)
+
+```
+
+Podemos aplicar el test de Shapiro a los residuos:
+```{r}
+shapiro.test(regresion3$residuals)
+```
+
+4. No multicolinelidad
+
+  - Si los predictores tienen una correlación muy alta entre sí, hay multicolinealidad, lo cual no es deseable:
+```{r}
+library(DescTools)
+VIF(regresion3) # > 5 es problematico
+```
+
+#REGRESIONES CON LAS VARIABLES OBSERVABLES Y NO FACTORIZACIÓN
+
+```{r}
+hipotesis4 = formula(DesigualdadGenero ~ .)
+#como son todas las demas las v. independientes se pone "."
+
+regre=lm(hipotesis4,data=subdata[,-c(1)])
+summary(regre)
+```
+- lo interesante es que libertad de movimeinto, VIOLENCIA y Acceso a justucua
+
+- tmb es interesante ver que este modelo explica un 8% es muy alto
+
+```{r}
+hipotesis5 = formula(DesigualdadGenero ~ Autonomia + VozPolitica + Desempleo + CuentaF)
+#como son todas las demas las v. independientes se pone "."
+
+regre1=lm(hipotesis5,data=subdata[,-c(1)])
+summary(regre1)
+```
+SI QUITAMOS LOS 3 anteriores su explicacion baja
+
+```{r}
+hipotesis6 = formula(DesigualdadGenero ~ Autonomia+ VozPolitica  + LibertadMov + Desempleo + CuentaF)
+#como son todas las demas las v. independientes se pone "."
+
+regre2=lm(hipotesis6,data = subdata[,-c(1)])
+summary(regre2)
+```
+- este modelo 2 explica ma´s que quitando todo
+
+
+```{r}
+hipotesis7 = formula(DesigualdadGenero ~ Autonomia+ VozPolitica  + LibertadMov + Desempleo + AccesoJ + CuentaF)
+#como son todas las demas las v. independientes se pone "."
+
+regre3=lm(hipotesis7,data = subdata[,-c(1)])
+summary(regre3)
+```
+
+- expñica mas todas las variables menos Violencia
+
+```{r}
+hipotesis8 = formula(DesigualdadGenero ~ Autonomia+ VozPolitica + CuentaF)
+#como son todas las demas las v. independientes se pone "."
+
+regre4=lm(hipotesis8,data=subdata[,-c(1)])
+summary(regre4)
+```
+```{r}
+hipotesis9 = formula(DesigualdadGenero ~ Autonomia  + LibertadMov + CuentaF)
+#como son todas las demas las v. independientes se pone "."
+
+regre2=lm(hipotesis2,data=subdata[,-c(1)])
+summary(regre2)
+```
+- se le quita la variable desempleo y vozpolitica
+
+```{r}
+hipotesis10 = formula(DesigualdadGenero ~ Autonomia + CuentaF)
+#como son todas las demas las v. independientes se pone "."
+
+regre2=lm(hipotesis10,data=subdata[,-c(1)])
+summary(regre2)
+```
+
+
+
+

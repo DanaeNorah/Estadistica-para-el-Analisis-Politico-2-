@@ -137,6 +137,7 @@ Si puedes ver bloques correlacionados, hay esperanza de un buen analisis factori
 ```{r}
 library(psych)
 psych::KMO(corMatrix)
+#de aca ves si tamaño de matzi es adecuado Overall MSA-0.83 (util si mayor a 0.6)
 ```
 4. Verificar si la matriz de correlaciones es adecuada
     - Aqui hay dos pruebas:
@@ -196,7 +197,7 @@ resfa$RMSEA
 resfa$TLI
 ```
 ```{r}
-#¿Qué variables aportaron mas a los factores?
+#¿Qué variables aportaron mas a los factores? #te dice si es fiel o infiel
 sort(resfa$communality)
 ```
 ```{r}

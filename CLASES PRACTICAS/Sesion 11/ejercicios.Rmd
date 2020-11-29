@@ -1,0 +1,237 @@
+---
+title: "Proceso del Analisis Factorial Exploratorio (EFA)"
+output: html_notebook
+editor_options: 
+  chunk_output_type: inline
+---
+
+# Ejercicio 1: Base de datos de departamentos
+
+## Paso 0: Seleccionamos subdata
+
+Abrimos la base de datos:
+
+```{r}
+library(rio)
+regiones<- import("https://github.com/DataPolitica/salidas/raw/master/Data/regiones_total.xlsx")
+head(regiones)
+```
+
+Realizamos un subset y nos quedamos con las variables que utilizaremos. Lo llamaremos **subdata**:
+
+- nos aseguramos que usamos la variables que seleccionamos (agua, desgue, electrificacion,PBI...)
+```{r}
+subdata<- regiones[,c(11, 14:16, 18:19)]
+```
+
+--------------------------------------------------------------------
+
+## Paso 1: Matriz de correlaciones
+
+Generamos la matriz de correlaciones para identificar qué variables de nuestra subdata están correlacionadas. 
+
+```{r}
+library(polycor)
+matriz<-hetcor(subdata)
+matriz_corr<- matriz$correlations
+library(ggcorrplot)
+ggcorrplot(matriz_corr)
+```
+
+Vemos las correlaciones significativas: Si puedes ver bloques correlacionados hay esperanza de un buen analisis factorial.
+
+-ver en el gaafico con cuadrados MAS INTENSOS
+```{r}
+ggcorrplot(matriz_corr,
+           p.mat = cor_pmat(matriz_corr),
+           insig = "blank")
+```
+
+```{r}
+#te sirve para redondear a dos decimales, pero si se corresolo "matriz_corr" es para sacar
+round(matriz_corr, 2)
+```
+
+## Paso 2: Diagnóstico de nuestra matríz de correlaciones
+
+Primero, verificar si datos permiten factorizar:
+
+-Test KMO: cuanto mas cerca a 1 implica relacion es alta. Tiene que ser mayor que 0.5
+- FIJARTE EN EL OVERALL MSA
+```{r}
+library(psych)
+KMO(matriz_corr) 
+```
+
+Segundo, verificar si la matriz de correlaciones es adecuada. Para ello, se tienen dos funciones:
+
+- Test de Bartlett: H0: La matriz de correlacion es una matriz identidad.
+Buscamos rechazar la H0, por eso esperamos que sea signifitivo (False). Si no sale FALSE es grave. Matriz identidad (diagonal es 1, y lo demas es 0), solo una vairable se correlaciona consigo misma.
+
+```{r}
+cortest.bartlett(matriz_corr,n=nrow(subdata))$p.value>0.05
+```
+
+- Test For Singular Square Matrix: H0: La matriz de correlacion es una matriz singular. Una matriz que no sea inversa
+Buscamos que sea False. SI sale TRUE no seguir
+
+```{r}
+library(matrixcalc)
+is.singular.matrix(matriz_corr)
+```
+
+## Paso 3: Identificamos el número recomendado de factores y solicitamos el EFA
+
+Determinar en cuantos factores o variables latentes podríamos redimensionar la data. Vemos el número sugerido y también el gráfico. 
+
+```{r}
+#insumo basico para hacer el analisis factorial (DIARGRAMA DE SEDIMENTACION nos dice cuantos factores deberiamos calcular)
+fa.parallel(subdata, fm = 'ML', fa = 'fa')
+```
+
+Solicitamos el número de factores.
+Considerar si se presentan mensajes de alerta. 
+
+```{r}
+library(GPArotation)
+factorial <- fa(subdata,nfactors = 2, cor = 'mixed', rotate = "varimax",fm="minres")
+#correlacion mixta, rotacion
+```
+
+## Paso 4: Visualizamos el EFA solicitado
+
+Vemos el resultado inicial:
+- mayor sea el numero mas aporta al factor.  uando una vairbale tiene loadings en dos factores quiere decir que aporta a los dos factores
+```{r}
+print(factorial$loadings)
+```
+
+Vemos el resultado mejorado: Cuando logramos que cada variable se vaya a un factor, tenemos una estructura simple.
+
+```{r}
+print(factorial$loadings, cutoff = 0.5)
+```
+- al ver que vias no aporta, SERIA MEJOR HACER DE NUEVO EL ANALISIS
+  FACTORIAL SIN VIAS, o decides quedarte. Depende del diseño del trabajo
+- VAR. ACUMUAD:porcentaje de virbilidad, el factor uno 47%, el factro 2 es 70%
+
+
+Podemos visualizar los variables y su relación con las latentes creadas:
+
+```{r}
+fa.diagram(factorial)
+```
+
+## Paso 5: Evaluamos el Análisis Factorial Exploratorio solicitado (comprobamos validez AF)
+
+- ¿La Raíz del error cuadrático medio corregida está cerca a cero?
+      - Valores cercano a 0 indica un buen ajuste. Si no sale cerca al 0 
+        eso significa que el análisis extraído no es suficientemente 
+        válido. En ese caso se REPORTA.
+```{r}
+factorial$crms
+```
+
+- ¿La Raíz del error cuadrático medio de aproximación es menor a 0.05?
+    - 0.032 es mayor a 0.05 entonces HAY PROBLEMA (fijarse en el primero)
+```{r}
+factorial$RMSEA
+```
+
+- ¿El índice de Tucker-Lewis es mayor a 0.9?
+    Este índice tiende a 1 para modelos con muy buen ajuste, considerándose
+    aceptables valores superiores a 0.90, aunque lo ideal sería valores
+    mayores a 0.95.Si sale menor a 0.9 indica insuficiencia de validez. 
+    En ese caso se reporta. 
+```{r}
+factorial$TLI
+```
+
+- ¿Qué variables aportaron mas a los factores?
+   - aprota mas PBI y menos vias
+```{r}
+#sort es una funcion para ordenar de menor a mayor
+sort(factorial$communality)
+```
+
+- ¿Qué variables contribuyen a mas de un factor?
+
+```{r}
+sort(factorial$complexity)
+#cada una de las variables, caada variable aporta a un factor.Pero tiene decimales, es deicr, aporta a 1.51 factores
+#que variable aporta a mas de un factor: PBI
+#que vairable aporta a menos de un factor: Presupuesto Publico
+```
+## Paso 6: Posibles valores proyectados
+
+¿Qué nombres les darías?
+
+Podemos crear un data set con sólo los factores creados
+
+```{r}
+factorial_casos<-as.data.frame(factorial$scores)
+head(factorial_casos)
+summary(factorial_casos)
+```
+
+o incluirlos en nuestro subset original
+
+```{r}
+subdata$factor1<- factorial_casos$MR1
+subdata$factor2<- factorial_casos$MR2
+```
+
+
+
+
+--------------------------------------------------------------
+
+# Ejercicio 2: Realice un análisis factorial con todos los pasos indicados de la base de distritos y variables del sistema político electoral
+
+Abrimos la base de datos
+
+```{r}
+library(rio)
+electoral<- import("https://github.com/DataPolitica/salidas/raw/master/Data/ERM2010_Distrital.xlsx")
+head(electoral)
+```
+
+Realizamos un subset y nos quedamos con las variables que utilizaremos. Lo llamaremos **subdata**:
+
+```{r}
+subdata<- electoral[,c(5:11)]
+```
+
+
+# Ejercicio 3: IDE
+
+Abrimos la base de datos
+
+```{r}
+ide<- import("https://github.com/DataPolitica/salidas/raw/master/Data/IDE.sav")
+```
+
+Realizamos un subset y nos quedamos con las variables que utilizaremos. Lo llamaremos **subdata**:
+
+```{r}
+subdata<- ide[,c(6:10)]
+```
+
+
+# Ejercicio 4: DEMOCRACY INDEX
+
+Abrimos la base de datos
+
+```{r}
+demo<- import("https://github.com/DataPolitica/salidas/raw/master/Data/demo.xlsx")
+```
+
+Realizamos un subset y nos quedamos con las variables que utilizaremos. Lo llamaremos **subdata**:
+
+```{r}
+str(demo)
+demo[,-c(1,2,8)]=lapply(demo[,-c(1,2,8)], as.numeric)
+subdata<- demo[,c(3:7)]
+subdata<-na.omit(subdata)
+str(subdata)
+```

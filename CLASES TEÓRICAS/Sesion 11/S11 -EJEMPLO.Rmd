@@ -1,0 +1,32 @@
+
+
+```{r}
+library(rio)
+subdata=import("INDEX.xlsx")
+
+#LIMPIEZA
+#elimino fila
+subdata=subdata[-c(1,3),]
+
+#cambio nombes
+names(subdata)=subdata[c(1),]
+
+#elimino fila
+subdata=subdata[-c(1),]
+
+#elimino columna
+subdata= subdata[,-c(1,7)]
+
+#eliminar espacios
+subdata$Country=trimws(subdata$Country,whitespace = "[\\h\\v]")
+
+#numerica
+str(subdata)
+subdata[,c(2:6)]=lapply(subdata[,c(2:6)], as.numeric)
+str(subdata)
+subdata=na.omit(subdata)
+
+
+summary(data)
+```
+

@@ -12,38 +12,38 @@ data=na.omit(data)
 ###variable numerica
 ```{r}
 library(car)
-data$Autonomia <- recode(data$Autonomia, "0=1 ; 0.25=0.75 ; 0.5=0.5 ; 0.75=0.25 ; 1=0")
+data$MLMLAutonomia <- recode(data$MLAutonomia, "0=1 ; 0.25=0.75 ; 0.5=0.5 ; 0.75=0.25 ; 1=0")
 
-data$Autonomia <-as.factor(data$Autonomia)
-data$Autonomia=factor(data$Autonomia,
-                            levels = levels(data$Autonomia),
+data$MLAutonomia <-as.factor(data$MLAutonomia)
+data$MLAutonomia=factor(data$MLAutonomia,
+                            levels = levels(data$MLAutonomia),
                             labels = c("5","4","3","2","1"),
                             ordered = T)
-data$Autonomia <-as.numeric(data$Autonomia)
-table(data$Autonomia)
+data$MLAutonomia <-as.numeric(data$MLAutonomia)
+table(data$MLAutonomia)
 ```
 
-###Variable violencia
+###Variable MLMLViolencia
 ```{r}
 #Le asignamos etiquetas a los valores
-data$Violencia <- recode(data$Violencia,"0.25=0.75 ; 0.5=0.5 ; 0.75=0.25")
-data$Violencia <-as.factor(data$Violencia)
-data$Violencia=factor(data$Violencia,
-                            levels = levels(data$Violencia),
+data$MLViolencia <- recode(data$MLViolencia,"0.25=0.75 ; 0.5=0.5 ; 0.75=0.25")
+data$MLViolencia <-as.factor(data$MLViolencia)
+data$MLViolencia=factor(data$MLViolencia,
+                            levels = levels(data$MLViolencia),
                             labels = c("3","2","1"),
                             ordered = T)
-data$Violencia <-as.numeric(data$Violencia)
-table(data$Violencia)
+data$MLViolencia <-as.numeric(data$MLViolencia)
+table(data$MLViolencia)
 ```
 
-###Normalizamos la variable Desempleo
+###Normalizamos la variable DesempleoMujM/v
 ```{r}
 library(BBmisc)
-data$Desempleo= normalize(data$Desempleo, 
+data$DesempleoMuj= normalize(data$DesempleoMuj, 
                        method = "range", 
                        margin=2, # by column
                        range = c(0, 100),)
-data$Desempleo=round(data$Desempleo,2)
+data$DesempleoMuj=round(data$DesempleoMuj,2)
 ```
 
 ###Creo una base de datos con las variables que usare
@@ -56,8 +56,8 @@ subdata= data[,c(3,4,5,6,7,8,9,10)]
 #subdata$DesigualdadGenero=subdata$DesigualdadGenero *100
 #subdata$DesigualdadGenero= 100 - subdata$DesigualdadGenero 
 subdata$LibertadMov= 100 - subdata$LibertadMov
-subdata$AccesoJ= 100 - subdata$AccesoJ
-subdata$Desempleo= 100 - subdata$Desempleo
+subdata$ConfianzaSJ= 100 - subdata$ConfianzaSJ
+subdata$DesempleoMuj= 100 - subdata$DesempleoMuj
 ```
 
 ###Resumen de data
@@ -311,12 +311,12 @@ hipotesis4 = formula(DesigualdadGenero ~ .)
 regre=lm(hipotesis4,data=subdata[,-c(1)])
 summary(regre)
 ```
-- lo interesante es que libertad de movimeinto, VIOLENCIA y Acceso a justucua
+- lo interesante es que libertad de movimeinto, MLViolencia y Acceso a justucua
 
 - tmb es interesante ver que este modelo explica un 8% es muy alto
 
 ```{r}
-hipotesis5 = formula(DesigualdadGenero ~ Autonomia + VozPolitica + Desempleo + CuentaF)
+hipotesis5 = formula(DesigualdadGenero ~ MLAutonomia + VozPolitica + DesempleoMuj + CuentaF)
 #como son todas las demas las v. independientes se pone "."
 
 regre1=lm(hipotesis5,data=subdata[,-c(1)])
@@ -325,7 +325,7 @@ summary(regre1)
 SI QUITAMOS LOS 3 anteriores su explicacion baja
 
 ```{r}
-hipotesis6 = formula(DesigualdadGenero ~ Autonomia+ VozPolitica  + LibertadMov + Desempleo + CuentaF)
+hipotesis6 = formula(DesigualdadGenero ~ MLAutonomia+ VozPolitica  + LibertadMov + DesempleoMuj + CuentaF)
 #como son todas las demas las v. independientes se pone "."
 
 regre2=lm(hipotesis6,data = subdata[,-c(1)])
@@ -335,33 +335,33 @@ summary(regre2)
 
 
 ```{r}
-hipotesis7 = formula(DesigualdadGenero ~ Autonomia+ VozPolitica  + LibertadMov + Desempleo + AccesoJ + CuentaF)
+hipotesis7 = formula(DesigualdadGenero ~ MLAutonomia+ VozPolitica  + LibertadMov + DesempleoMuj + ConfianzaSJ + CuentaF)
 #como son todas las demas las v. independientes se pone "."
 
 regre3=lm(hipotesis7,data = subdata[,-c(1)])
 summary(regre3)
 ```
 
-- expñica mas todas las variables menos Violencia
+- expñica mas todas las variables menos MLViolencia
 
 ```{r}
-hipotesis8 = formula(DesigualdadGenero ~ Autonomia+ VozPolitica + CuentaF)
+hipotesis8 = formula(DesigualdadGenero ~ MLAutonomia+ VozPolitica + CuentaF)
 #como son todas las demas las v. independientes se pone "."
 
 regre4=lm(hipotesis8,data=subdata[,-c(1)])
 summary(regre4)
 ```
 ```{r}
-hipotesis9 = formula(DesigualdadGenero ~ Autonomia  + LibertadMov + CuentaF)
+hipotesis9 = formula(DesigualdadGenero ~ MLAutonomia  + LibertadMov + CuentaF)
 #como son todas las demas las v. independientes se pone "."
 
 regre2=lm(hipotesis2,data=subdata[,-c(1)])
 summary(regre2)
 ```
-- se le quita la variable desempleo y vozpolitica
+- se le quita la variable DesempleoMuj y vozpolitica
 
 ```{r}
-hipotesis10 = formula(DesigualdadGenero ~ Autonomia + CuentaF)
+hipotesis10 = formula(DesigualdadGenero ~ MLAutonomia + CuentaF)
 #como son todas las demas las v. independientes se pone "."
 
 regre2=lm(hipotesis10,data=subdata[,-c(1)])

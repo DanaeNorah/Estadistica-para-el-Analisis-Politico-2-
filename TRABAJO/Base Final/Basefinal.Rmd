@@ -127,8 +127,10 @@ str(Basefinal)
 
 PASO 6: EXPORTAMOS
 ```{r}
-export(Basefinal,"basefinal.csv")
+library(rio)
+Export(Basefinal,"basefinal.csv")
 ```
+
 
 
 

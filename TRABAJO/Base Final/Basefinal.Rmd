@@ -1,3 +1,5 @@
+HITO 3
+
 #MERGE DE LAS DATAS
 
 PASO 1: IMPORTAR LAS DOS DATAS
@@ -94,11 +96,14 @@ Basefinal[,c(2:10)]=round(Basefinal[,c(2:10)], digits = 2)
 names(Basefinal)[1]='Pais'
 names(Basefinal)[2]='VozPolitica'
 names(Basefinal)[3]='LibertadMov'
-names(Basefinal)[4]='AccesoJ'
+names(Basefinal)[4]='ConfianzaSJ'
 names(Basefinal)[5]='SecundariaC'
-names(Basefinal)[6]='Desempleo'
+names(Basefinal)[6]='DesempleoM/v'
 names(Basefinal)[7]='CuentaF'
 names(Basefinal)[10]='DesigualdadGenero'
+names(Basefinal)[8]='MLAutonomia'
+names(Basefinal)[9]='MLViolencia'
+
 #ordenar las columnas para poner primero la variable dependiente
 Basefinal = Basefinal[ , c(1,10,8,9,2,3,4,5,6,7)]
 names (Basefinal)
@@ -119,4 +124,11 @@ row.names(Basefinal)=Basefinal$Pais
 #verificamos
 str(Basefinal)
 ```
+
+PASO 6: EXPORTAMOS
+```{r}
+export(Basefinal,"basefinal.csv")
+```
+
+
 

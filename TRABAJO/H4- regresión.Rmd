@@ -2,7 +2,7 @@
 
 ```{r}
 library(rio)
-link='https://github.com/DanaeNorah/Estadistica-para-el-Analisis-Politico-2-/raw/master/TRABAJO/basefinal.csv'
+link='https://github.com/DanaeNorah/Estadistica-para-el-Analisis-Politico-2-/raw/master/TRABAJO/Base%20Final/basefinal.csv'
 data = import(link)
 summary(data)
 row.names(data)=data$Pais

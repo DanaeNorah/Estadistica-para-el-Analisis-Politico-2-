@@ -303,71 +303,9 @@ library(DescTools)
 VIF(regresion3) # > 5 es problematico
 ```
 
-#REGRESIONES CON LAS VARIABLES OBSERVABLES Y NO FACTORIZACIÓN
-
-```{r}
-hipotesis4 = formula(DesigualdadGenero ~ .)
-#como son todas las demas las v. independientes se pone "."
-
-regre=lm(hipotesis4,data=subdata[,-c(1)])
-summary(regre)
-```
-- lo interesante es que libertad de movimeinto, MLViolencia y Acceso a justucua
-
-- tmb es interesante ver que este modelo explica un 8% es muy alto
-
-```{r}
-hipotesis5 = formula(DesigualdadGenero ~ MLAutonomia + VozPolitica + DesempleoMuj + CuentaF)
-#como son todas las demas las v. independientes se pone "."
-
-regre1=lm(hipotesis5,data=subdata[,-c(1)])
-summary(regre1)
-```
-SI QUITAMOS LOS 3 anteriores su explicacion baja
-
-```{r}
-hipotesis6 = formula(DesigualdadGenero ~ MLAutonomia+ VozPolitica  + LibertadMov + DesempleoMuj + CuentaF)
-#como son todas las demas las v. independientes se pone "."
-
-regre2=lm(hipotesis6,data = subdata[,-c(1)])
-summary(regre2)
-```
-- este modelo 2 explica ma´s que quitando todo
 
 
-```{r}
-hipotesis7 = formula(DesigualdadGenero ~ MLAutonomia+ VozPolitica  + LibertadMov + DesempleoMuj + ConfianzaSJ + CuentaF)
-#como son todas las demas las v. independientes se pone "."
 
-regre3=lm(hipotesis7,data = subdata[,-c(1)])
-summary(regre3)
-```
-
-- expñica mas todas las variables menos MLViolencia
-
-```{r}
-hipotesis8 = formula(DesigualdadGenero ~ MLAutonomia+ VozPolitica + CuentaF)
-#como son todas las demas las v. independientes se pone "."
-
-regre4=lm(hipotesis8,data=subdata[,-c(1)])
-summary(regre4)
-```
-```{r}
-hipotesis9 = formula(DesigualdadGenero ~ MLAutonomia  + LibertadMov + CuentaF)
-#como son todas las demas las v. independientes se pone "."
-
-regre2=lm(hipotesis2,data=subdata[,-c(1)])
-summary(regre2)
-```
-- se le quita la variable DesempleoMuj y vozpolitica
-
-```{r}
-hipotesis10 = formula(DesigualdadGenero ~ MLAutonomia + CuentaF)
-#como son todas las demas las v. independientes se pone "."
-
-regre2=lm(hipotesis10,data=subdata[,-c(1)])
-summary(regre2)
-```
 
 
 

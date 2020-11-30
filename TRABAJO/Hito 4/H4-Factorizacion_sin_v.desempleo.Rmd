@@ -1,38 +1,43 @@
 
+
+HITO4 - GRUPO 2 - ANALISIS FACTORIAL EXPLORATORIO SIN VARIABLE DESEMPLEO
+
 ```{r}
 library(rio)
-link='https://github.com/DanaeNorah/Estadistica-para-el-Analisis-Politico-2-/raw/master/TRABAJO/basefinal.csv'
+link='https://github.com/DanaeNorah/Estadistica-para-el-Analisis-Politico-2-/raw/master/TRABAJO/Base%20Final/basefinal.csv'
 data = import(link)
 summary(data)
 row.names(data)=data$Pais
 data=na.omit(data)
 ```
 
-###variable numerica
+PASO 0: ALISTAR BASE DE DATOS
+
+###variable MLAutonomia
 ```{r}
 library(car)
-data$Autonomia <- recode(data$Autonomia, "0=1 ; 0.25=0.75 ; 0.5=0.5 ; 0.75=0.25 ; 1=0")
+data$MLMLAutonomia <- recode(data$MLAutonomia, "0=1 ; 0.25=0.75 ; 0.5=0.5 ; 0.75=0.25 ; 1=0")
 
-data$Autonomia <-as.factor(data$Autonomia)
-data$Autonomia=factor(data$Autonomia,
-                            levels = levels(data$Autonomia),
+data$MLAutonomia <-as.factor(data$MLAutonomia)
+data$MLAutonomia=factor(data$MLAutonomia,
+                            levels = levels(data$MLAutonomia),
                             labels = c("5","4","3","2","1"),
                             ordered = T)
-data$Autonomia <-as.numeric(data$Autonomia)
-table(data$Autonomia)
+data$MLAutonomia <-as.numeric(data$MLAutonomia)
+table(data$MLAutonomia)
 ```
 
-###Variable violencia
+###Variable MLViolencia
 ```{r}
 #Le asignamos etiquetas a los valores
-data$Violencia <- recode(data$Violencia,"0.25=0.75 ; 0.5=0.5 ; 0.75=0.25")
-data$Violencia <-as.factor(data$Violencia)
-data$Violencia=factor(data$Violencia,
-                            levels = levels(data$Violencia),
+data$MLViolencia <- recode(data$MLViolencia,"0.25=0.75 ; 0.5=0.5 ; 0.75=0.25")
+data$MLViolencia <-as.factor(data$MLViolencia)
+data$MLViolencia=factor(data$MLViolencia,
+                            levels = levels(data$MLViolencia),
                             labels = c("3","2","1"),
                             ordered = T)
-data$Violencia <-as.numeric(data$Violencia)
-table(data$Violencia)
+data$MLViolencia <-as.numeric(data$MLViolencia)
+table(data$MLViolencia)
 ```
 
 ###Creo una base de datos con las variables que usare
@@ -45,16 +50,14 @@ subdata= data[,c(3,4,5,6,7,8,10)]
 #subdata$DesigualdadGenero=subdata$DesigualdadGenero *100
 #subdata$DesigualdadGenero= 100 - subdata$DesigualdadGenero 
 subdata$LibertadMov= 100 - subdata$LibertadMov
-subdata$AccesoJ= 100 - subdata$AccesoJ
-#subdata$Desempleo= 100 - subdata$Desempleo
+subdata$ConfianzaSJ= 100 - subdata$ConfianzaSJ
 ```
 
 ###Resumen de data
 ```{r}
 str(subdata)
 ```
-
-1. Calculemos matriz de correlación:
+PASO 1: Calculemos matriz de correlación:
 
 ```{r}
 # esta es:
@@ -146,7 +149,6 @@ sort(resfa$communality)
 #¿Qué variables contribuyen a mas de un factor?
 sort(resfa$complexity)
 ```
-
 
 8.Posibles valores proyectados:
 
@@ -291,3 +293,4 @@ shapiro.test(regresion3$residuals)
 library(DescTools)
 VIF(regresion3) # > 5 es problematico
 ```
+

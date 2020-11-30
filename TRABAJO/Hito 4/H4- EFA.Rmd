@@ -1,8 +1,3 @@
----
-output: html_document
-editor_options: 
-  chunk_output_type: console
----
 
 HITO4 - GRUPO 2 - ANALISIS FACTORIAL EXPLORATORIO
 
@@ -16,7 +11,7 @@ data=na.omit(data)
 ```
 PASO 0: ALISTAR BASE DE DATOS
 
-###variable numerica
+###variable MLAutonomia
 ```{r}
 library(car)
 data$MLMLAutonomia <- recode(data$MLAutonomia, "0=1 ; 0.25=0.75 ; 0.5=0.5 ; 0.75=0.25 ; 1=0")
@@ -30,7 +25,7 @@ data$MLAutonomia <-as.numeric(data$MLAutonomia)
 table(data$MLAutonomia)
 ```
 
-###Variable MLMLViolencia
+###Variable MLViolencia
 ```{r}
 #Le asignamos etiquetas a los valores
 data$MLViolencia <- recode(data$MLViolencia,"0.25=0.75 ; 0.5=0.5 ; 0.75=0.25")
@@ -71,8 +66,7 @@ subdata$DesempleoMuj= 100 - subdata$DesempleoMuj
 ```{r}
 str(subdata)
 ```
-
-1. Calculemos matriz de correlación:
+PASO 1: Calculemos matriz de correlación:
 
 ```{r}
 # esta es:

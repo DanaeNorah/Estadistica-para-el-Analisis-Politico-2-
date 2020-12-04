@@ -1,0 +1,187 @@
+
+PC 7 - DANAE NORAH BALLENA VARGAS - 20180267
+
+```{r}
+library(htmltab) #para scrapear
+library(stringr) #para limpieza de columnas 
+library(readr) #para extraer un único numero de la columna
+library(rio) #para importar
+library(cluster) #clustering
+library(plyr) #aggregate, funcion each
+library(psych) #para hacer tablas comparadas
+library(knitr) #para generar tablas html
+library(kableExtra) #para generar tablas html
+library(factoextra) #visualización de clusters
+library(ggrepel) #para que las etiquetas de los graficos no se superpongan
+library(dplyr)
+library(car) #recodificacion
+library(magrittr)
+library(foreign)
+```
+
+1. Traer la data
+```{r}
+#base 1
+library(rio)
+link1='https://github.com/jcgcjuan/Magallanes-Clases-/raw/master/Data%20EconoFreedom.xlsx'
+data1=import(link1)
+
+#base 2
+library(htmltab)
+link2='https://en.wikipedia.org/wiki/Democracy_Index'
+Xpath= '//*[@id="mw-content-text"]/div[1]/table[2]'
+
+data2= htmltab(doc =link2,
+               which =Xpath)
+```
+
+2. Limpieza:
+```{r}
+str(data1)
+data1=na.omit(data1)
+names(data1)[names(data1)=='Country Name']='Country'
+data1$`Property Rights` = as.numeric(data1$`Property Rights`)
+data1$`Judical Effectiveness` = as.numeric(data1$`Judical Effectiveness`)
+data1$`Government Integrity`= as.numeric(data1$`Government Integrity`)
+#espacios en blanco
+names(data1)=gsub(" ", "",names(data1))
+names(data1)
+```
+Columnas que queremos:
+```{r}
+data1 = data1[,c(2,7:9)]
+```
+
+2. Limpiar la data2:
+```{r}
+#corregir etiquetados:
+names(data2)=str_split(string = names(data2),
+          pattern = ' >>', simplify = T)[,1]
+#espacios en blanco:
+names(data2)=gsub(" ", "",names(data2))
+
+#en todos los etiquetados
+names(data2)=gsub("Â", "",names(data2))
+
+#en Country
+data2$Country=gsub("Â", "",data2$Country)
+data2$Country=trimws(data2$Country,whitespace = "[\\h\\v]")
+```
+
+#Columnas que queremos:
+```{r}
+data2 = data2[,c(2:3)]
+```
+
+```{r}
+str(data2)
+names(data2)
+#convetir a numerica:
+data2=na.omit(data2)
+data2$Score = as.numeric(data2$Score)
+```
+
+3. MERGE:
+```{r}
+data=merge(data1,data2,by.x='Country', by.y='Country')
+data=na.omit(data)
+```
+
+4. LOS MODELOS:
+```{r}
+modelo1=lm(data$PropertyRights~ factor(data$Country)+data$Score)
+summary(modelo1)
+```
+
+```{r}
+modelo2=lm(data$Score ~ data$GovernmentIntegrity+data$PropertyRights+ data$JudicalEffectiveness)
+summary(modelo2)
+```
+```{r}
+modelo3=lm(data$Score~ data$PropertyRights+ data$JudicalEffectiveness)
+summary(modelo3)
+```
+
+5. COMPARACION DE LOS MODELOS
+```{r}
+anova(modelo1,modelo2,modelo3)
+```
+
+```{r}
+library(stargazer)
+stargazer(modelo1,modelo2,modelo3,type ="text", no.space = F, digits =3)
+```
+¿Que modelo explica mejor?
+- el modelo 2 explica mejor, porque el R cuadrado ajustado es mayor a los otros dos modelos, al explicar 54.1%. Los modelos no difieren porque hay una mejora al aumentar mas variables.
+
+
+6. DIAGNOSTICO DE LA REGRESION
+
+
+1. Linealidad:
+
+   - Se asume relación lineal entre Y y Xs:
+```{r}
+# linea roja debe tender a horizontal
+plot(modelo2, 1)
+```
+RESPUESTA: Evaluando este grafico observo que la linea roja dista mucho de la linea puntada, por ello, no esta pegada y concluyo que NO hay linealidad. 
+
+
+2. Homocedasticidad
+  - Se asume que el error del modelo de regresión no afecta la varianza o dispersión de la estimación (MATH^):
+  - cuando la vairanza de los errores es cosntante
+```{r}
+# linea roja debe tender a horizontal
+plot(modelo2, 3)
+```
+RESPUESTA: debe haber una linea horizontal para afirmar que hay homocedasticidad. Concluyo que no es homocedastico, sino heterocedastico y es un problema.
+
+#También podemos utilizar el test de Breusch-Pagan:
+```{r}
+library(lmtest)
+bptest(modelo2)
+```
+- Hipotesis nula: modelo homocedastico
+
+RESPUESTA: La probabilidad de homocedasticidad es muy baja (p-value menor a 0.05), rechazo la hipotesis nula, es decir, que el modelo muestre homocedasticidad o sea mocedastico
+
+
+
+3. Normalidad de los residuos
+
+Los residuos, la diferencia entre MATH y MATH^, debe distribuirse de manera normal:
+```{r}
+# puntos cerca a la diagonal
+plot(modelo2, 2)
+```
+RESPUESTA: 
+
+Podemos aplicar el test de Shapiro a los residuos:
+```{r}
+shapiro.test(modelo2$residuals)
+#hipotesis nula=distribucion normal de los residuos
+```
+RESPUESTA: en el grafico vemos si los puntos estan sobre la diagonal, al no estar sobre la diagonal NO ES NORMAL.
+
+
+4. No multicolinelidad
+  - Si los predictores tienen una correlación muy alta entre sí, hay multicolinealidad, lo cual no es deseable:
+```{r}
+library(DescTools)
+VIF(modelo2) # > 5 es problematico
+```
+RESPUESTA: no hay MULTICOLINEALIDAD porque los valores son menor a 5. 
+
+
+5. Valores influyentes
+```{r}
+plot(modelo2,5)
+```
+RESPUESTA: Se concluye que si hay casos influyentes 
+
+```{r}
+checkmodelo2=as.data.frame(influence.measures(modelo2)$is.inf)
+head(checkmodelo2)
+```
+Los casos influyentes son 6

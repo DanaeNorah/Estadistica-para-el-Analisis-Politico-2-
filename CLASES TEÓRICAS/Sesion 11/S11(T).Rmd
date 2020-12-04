@@ -400,6 +400,22 @@ library(DescTools)
 VIF(reg3) # > 5 es problematico
 
 ```
+
+
+5. Valores influyentes
+```{r}
+plot(reg3,5)
+```
+RESPUESTA: Se concluye que si hay casos influyentes que son el 29,160,205
+
+EL MODELO NOS PERMITE PREDECIR, ESTA ECUACION TIENE COEFICIENTES. SIN EMBARGO, PUEDEN HABER ALGUNOS CASOS QUE INFLUYEN EN EL MODELO QUE HAS COSNTRUIDO PORQUE SON DISTANTES. En este caso el caso 29, dista mucho de los demas casos y altera el calculo de nuestro modelo. 
+
+```{r}
+checkReg3=as.data.frame(influence.measures(reg3)$is.inf)
+head(checkReg3)
+```
+- Entonces solo hay solo 6 casos influyentes
+
 Normalmente le prestamos atencion al indice de Cook y a los valores predecidos (los hat values):
 ```{r}
 checkReg3[checkReg3$cook.d |checkReg3$hat]

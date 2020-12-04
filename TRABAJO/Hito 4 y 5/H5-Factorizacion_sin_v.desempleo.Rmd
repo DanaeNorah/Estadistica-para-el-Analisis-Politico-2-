@@ -172,6 +172,12 @@ summary(factoriales)
 subdata=cbind(data[,c(1,2)],subdata)
 ```
 
+```{r}
+subdata$DesigualdadGenero=subdata$DesigualdadGenero *100
+subdata$DesigualdadGenero= 100 - subdata$DesigualdadGenero 
+```
+
+
 RECORDANDO:
 
 ```{r}

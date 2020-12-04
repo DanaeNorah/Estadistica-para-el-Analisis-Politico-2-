@@ -1,3 +1,8 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
 
 HITO4 - GRUPO 2 - ANALISIS FACTORIAL EXPLORATORIO
 
@@ -14,7 +19,7 @@ PASO 0: ALISTAR BASE DE DATOS
 ###variable MLAutonomia
 ```{r}
 library(car)
-data$MLMLAutonomia <- recode(data$MLAutonomia, "0=1 ; 0.25=0.75 ; 0.5=0.5 ; 0.75=0.25 ; 1=0")
+data$MLAutonomia <- recode(data$MLAutonomia, "0=1 ; 0.25=0.75 ; 0.5=0.5 ; 0.75=0.25 ; 1=0")
 
 data$MLAutonomia <-as.factor(data$MLAutonomia)
 data$MLAutonomia=factor(data$MLAutonomia,
@@ -55,8 +60,6 @@ subdata= data[,c(3,4,5,6,7,8,9,10)]
 
 ###Preparamos la subdata para la factorizacion
 ```{r}
-#subdata$DesigualdadGenero=subdata$DesigualdadGenero *100
-#subdata$DesigualdadGenero= 100 - subdata$DesigualdadGenero 
 subdata$LibertadMov= 100 - subdata$LibertadMov
 subdata$ConfianzaSJ= 100 - subdata$ConfianzaSJ
 subdata$DesempleoMuj= 100 - subdata$DesempleoMuj
@@ -96,6 +99,11 @@ round(corMatrix, 2)
 library(psych)
 psych::KMO(corMatrix)
 ```
+#VEMOS EL KMO de cada variable
+```{r}
+KMO(corMatrix)$MSAi
+```
+
 4. Verificar si la matriz de correlaciones es adecuada
     - Aqui hay dos pruebas:
 
@@ -113,6 +121,7 @@ is.singular.matrix(corMatrix)
 ```{r}
 fa.parallel(subdata,fm = 'ML', fa = 'fa')
 ```
+
 
 6. Redimensionar a numero menor de factores
 
@@ -179,6 +188,11 @@ summary(factoriales)
 
 ```{r}
 subdata=cbind(data[,c(1,2)],subdata)
+```
+
+```{r}
+subdata$DesigualdadGenero=subdata$DesigualdadGenero *100
+subdata$DesigualdadGenero= 100 - subdata$DesigualdadGenero 
 ```
 
 RECORDANDO:

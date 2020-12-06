@@ -1,0 +1,458 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+
+
+HITO5 - GRUPO 2 - ANALISIS FACTORIAL EXPLORATORIO SIN VARIABLE DESEMPLEO
+
+```{r}
+library(rio)
+link='https://github.com/DanaeNorah/Estadistica-para-el-Analisis-Politico-2-/raw/master/TRABAJO/Base%20Final/basefinal.csv'
+data = import(link)
+summary(data)
+row.names(data)=data$Pais
+data=na.omit(data)
+```
+###variable MLAutonomia
+```{r}
+library(car)
+data$MLAutonomia <-as.factor(data$MLAutonomia)
+data$MLAutonomia=factor(data$MLAutonomia,
+                            levels = levels(data$MLAutonomia),
+                            labels = c("1","2","3","4","5"),
+                            ordered = T)
+data$MLAutonomia <-as.numeric(data$MLAutonomia)
+table(data$MLAutonomia)
+```
+
+###Variable MLViolencia
+```{r}
+#Le asignamos etiquetas a los valores
+data$MLViolencia <-as.factor(data$MLViolencia)
+data$MLViolencia=factor(data$MLViolencia,
+                            levels = levels(data$MLViolencia),
+                            labels = c("1","2","3"),
+                            ordered = T)
+data$MLViolencia <-as.numeric(data$MLViolencia)
+table(data$MLViolencia)
+```
+
+PASO 0: ALISTAR BASE DE DATOS
+
+###Creo una base de datos con las variables que usare
+```{r}
+names(data)[7]='DesconfianzaSJ'
+subdata= data[,c(3,4,5,6,7,8,10)]
+```
+
+###Preparamos la subdata para la factorizacion
+```{r}
+subdata$SecundariaC= 100 - subdata$SecundariaC
+subdata$CuentaF= 100 - subdata$CuentaF
+subdata$VozPolitica= 100 - subdata$VozPolitica
+```
+
+###Resumen de data
+```{r}
+str(subdata)
+```
+
+PASO 1: Calculemos matriz de correlación:
+
+```{r}
+# esta es:
+library(polycor)
+corMatrix=polycor::hetcor(subdata)$correlations
+```
+2. Explorar correlaciones:
+```{r}
+#Sin evaluar significancia:
+library(ggcorrplot)
+ggcorrplot(corMatrix)
+```
+
+```{r}
+#Evaluando significancia:
+ggcorrplot(corMatrix,
+          p.mat = cor_pmat(corMatrix),
+          insig = "blank")
+```
+```{r}
+#te sirve para redondear a dos decimales, pero si se corresolo "matriz_corr" es para sacar
+round(corMatrix, 2)
+```
+
+3. Verificar si datos permiten factorizar:
+```{r}
+library(psych)
+psych::KMO(corMatrix)
+```
+4. Verificar si la matriz de correlaciones es adecuada
+    - Aqui hay dos pruebas:
+
+ a. Hnula: La matriz de correlacion es una matriz identidad
+```{r}
+cortest.bartlett(corMatrix,n=nrow(subdata))$p.value>0.05
+```
+ b. Hnula: La matriz de correlacion es una matriz singular.
+```{r}
+library(matrixcalc)
+is.singular.matrix(corMatrix)
+```
+
+5, Determinar en cuantos factores o variables latentes podríamos redimensionar la subdata:
+```{r}
+fa.parallel(subdata,fm = 'ML', fa = 'fa')
+```
+
+
+6. Redimensionar a numero menor de factores
+
+Resultado inicial:
+```{r}
+library(GPArotation)
+resfa <- fa(subdata,nfactors = 3,cor = 'mixed',rotate = "varimax",fm="minres")
+```
+
+```{r}
+print(resfa$loadings)
+```
+RESPUESTA: 57.4% de las caracteristicas de las variables,es un problema porque se pierde bastante información.No se utiliza el EFA.
+
+Resultado mejorado:
+```{r}
+print(resfa$loadings,cutoff = 0.5)
+```
+Cuando logramos que cada variable se vaya a un factor, tenemos una estructura simple.
+
+Resultado visual:
+```{r}
+fa.diagram(resfa)
+```
+CONCLUSION: los tres factores obtenidos en el análisis factorial no corresponde a las variables latentes propuestas segun la revision de literatura.
+
+7. Evaluando Resultado obtenido:
+```{r}
+#¿La Raíz del error cuadrático medio corregida está cerca a cero?
+resfa$crms
+```
+```{r}
+#¿La Raíz del error cuadrático medio de aproximación es menor a 0.05?
+resfa$RMSEA
+```
+```{r}
+#¿El índice de Tucker-Lewis es mayor a 0.9?
+resfa$TLI
+```
+```{r}
+#¿Qué variables aportaron mas a los factores?
+sort(resfa$communality)
+```
+```{r}
+#¿Qué variables contribuyen a mas de un factor?
+sort(resfa$complexity)
+```
+
+8.Posibles valores proyectados:
+
+Creamos un data set
+```{r}
+factoriales=as.data.frame(resfa$scores)
+head(factoriales)
+```
+
+o incluirlos en nuestro subset original
+
+```{r}
+subdata$factor1<- factoriales$MR1
+subdata$factor2<- factoriales$MR2
+subdata$factor3<- factoriales$MR3
+
+summary(factoriales)
+```
+
+9. REINCORPORAMOS AL SUBDATA LAS VARIABLES QUE SE NECESITAN PARA LA REGRESION (PAIS,DESIGUALDADDEGENERO Y
+   DESEMPELO MUJ)
+```{r}
+subdata=cbind(data[,c(1,2,9)],subdata)
+```
+
+10. NORMALIZAMOS LOS FACTORES Y NUESTRO INDICE DE DESIGUALDAD DE GENERO
+```{r}
+library(BBmisc)
+subdata$DesigualdadGenero=normalize(subdata$DesigualdadGenero, 
+                      method = "range", 
+                      margin=2, # by column
+                      range = c(0, 100))
+subdata$factor1=normalize(subdata$factor1, 
+                      method = "range", 
+                      margin=2, # by column
+                      range = c(0, 100))
+subdata$factor2=normalize(subdata$factor2, 
+                      method = "range", 
+                      margin=2, # by column
+                      range = c(0, 100))
+subdata$factor3=normalize(subdata$factor3, 
+                      method = "range", 
+                      margin=2, # by column
+                      range = c(0, 100))
+```
+añadir correlaciones con cada factor independiente
+```{r}
+f1=formula(~DesigualdadGenero + factor1) #v. dependiente y v. independiente
+# camino parametrico
+pearson1=cor.test(f1,data=subdata)
+pearson1
+```
+```{r}
+f2=formula(~DesigualdadGenero + factor2) #v. dependiente y v. independiente
+# camino parametrico
+pearson2=cor.test(f2,data=subdata)
+pearson2
+```
+```{r}
+f3=formula(~DesigualdadGenero + factor3) #v. dependiente y v. independiente
+
+# camino parametrico
+pearson3=cor.test(f3,data=subdata)
+pearson3
+```
+
+11. GRAIFCAS DE LAS CORRELACIONES
+```{r}
+plot(subdata$factor1,subdata$DesigualdadGenero)
+plot(subdata$factor2,subdata$DesigualdadGenero)
+plot(subdata$factor3,subdata$DesigualdadGenero)
+```
+
+#REGRESIONES
+```{r}
+hipotesis1= formula(DesigualdadGenero ~ factor1)
+regresion1=lm(hipotesis1,data=subdata)
+summary(regresion1)
+```
+```{r}
+hipotesis2 = formula(DesigualdadGenero ~ factor3)
+regresion2=lm(hipotesis2,data=subdata)
+summary(regresion2)
+```
+
+```{r}
+hipotesis3 = formula(DesigualdadGenero ~ factor1 + factor3)
+regresion3=lm(hipotesis3,data=subdata)
+summary(regresion3)
+```
+
+```{r}
+hipotesis4 = formula(DesigualdadGenero ~ factor1 + factor2 + factor3)
+regresion4=lm(hipotesis4,data=subdata[,-c(1)])
+summary(regresion4)
+```
+```{r}
+library(stargazer)
+stargazer(regresion3, regresion4, type = "text")
+```
+
+CONCLUSION: nos convendria
+
+#agregamos desmepleo como variable CONTROL (PONER EN ANEXO)
+```{r}
+hipotesis5 = formula(DesigualdadGenero ~ factor1 + factor2 + factor3+ DesempleoMuj)
+regresion5=lm(hipotesis5,data=subdata[,-c(1)])
+summary(regresion5)
+```
+#DIAGNOSTICO DE LA REGRESION CON LOS FACTORES
+  - Para que se considere que el modelo de regresión elegido es el adecuado, debemos verificar algunos 
+    requisitos a posteriori:
+1. Linealidad:
+   - Se asume relación lineal entre Y y X:
+```{r}
+# linea roja debe tender a horizontal
+plot(regresion4, 1)
+
+```
+2. Homocedasticidad
+
+  - Se asume que el error del modelo de regresión no afecta la varianza o dispersión de la estimación (MATH^):
+```{r}
+# linea roja debe tender a horizontal
+plot(regresion4, 3)
+```
+También podemos utilizar el test de Breusch-Pagan:
+```{r}
+library(lmtest)
+# null: modelo homocedastico
+bptest(regresion4)
+```
+3. Normalidad de los residuos
+Los residuos, la diferencia entre MATH y MATH^, debe distribuirse de manera normal:
+```{r}
+# puntos cerca a la diagonal
+plot(regresion3, 4)
+```
+Podemos aplicar el test de Shapiro a los residuos:
+```{r}
+shapiro.test(regresion4$residuals)
+```
+4. No multicolinelidad
+- Si los predictores tienen una correlación muy alta entre sí, hay multicolinealidad, lo cual no es deseable:
+```{r}
+library(DescTools)
+VIF(regresion4) # > 5 es problematico
+```
+5. Valores influyentes
+```{r}
+plot(regresion4,5)
+```
+RESPUESTA: Se concluye que si hay casos influyentes que son Namibia, Bolivia y South Africa
+```{r}
+checkregresion4=as.data.frame(influence.measures(regresion4)$is.inf)
+head(checkregresion4)
+checkregresion4[checkregresion4$cook.d|checkregresion4$hat,]
+#no todo valor outlier es influyente pero si todo valor influyente es outlier
+```
+
+12. AL REALIZAR EL EFA NOS DAMOS CUENTA QUE NO ES VIABLE POR LO TANTO REALZIAMOS LAS REGRESIONES SOLO CON LAS VARIABLES OBSERVABLES Y YA NO CON FACTORES
+
+A. Primero analziamos las correlaicones entre las variables observables y el indice
+```{r}
+library(polycor)
+correlaciones=polycor::hetcor(subdata[,-c(1,11,12,13)])$correlations
+#Sin evaluar significancia:
+library(ggcorrplot)
+ggcorrplot(correlaciones)
+```
+```{r}
+round(corMatrix, 2)
+```
+
+#REGRESION CON CADA VARIABLE
+```{r}
+mod1=lm(subdata$DesigualdadGenero ~ subdata$MLAutonomia)
+summary(mod1)
+```
+```{r}
+mod2=lm(subdata$DesigualdadGenero ~ subdata$MLViolencia)
+summary(mod2)
+```
+```{r}
+mod3=lm(subdata$DesigualdadGenero ~ subdata$VozPolitica)
+summary(mod3)
+```
+```{r}
+mod4=lm(subdata$DesigualdadGenero ~ subdata$LibertadMov)
+summary(mod4)
+```
+```{r}
+mod5=lm(subdata$DesigualdadGenero ~ subdata$Desconfianza)
+summary(mod5)
+```
+```{r}
+mod6=lm(subdata$DesigualdadGenero ~ subdata$DesempleoMuj)
+summary(mod6)
+```
+```{r}
+mod7=lm(subdata$DesigualdadGenero ~ subdata$SecundariaC)
+summary(mod7)
+```
+```{r}
+mod8=lm(subdata$DesigualdadGenero ~ subdata$CuentaF)
+summary(mod8)
+```
+13. MODELOS FINALES DE REGRESION
+```{r}
+MF0=lm(DesigualdadGenero ~ .,data=subdata[,-c(1)])
+summary(MF0)
+```
+```{r}
+MF1=lm(subdata$DesigualdadGenero ~ subdata$MLAutonomia +subdata$LibertadMov + subdata$SecundariaC + subdata$CuentaF)
+library(stargazer)
+stargazer(MF1, type = "text")
+```
+
+
+```{r}
+MF2=lm(subdata$DesigualdadGenero ~ subdata$MLAutonomia +subdata$SecundariaC + subdata$CuentaF+ subdata$VozPolitica)
+stargazer(MF2, type = "text")
+```
+
+
+```{r}
+MF3=lm(subdata$DesigualdadGenero ~ subdata$MLAutonomia +subdata$LibertadMov + subdata$SecundariaC)
+stargazer(MF3, type = "text")
+```
+
+
+```{r}
+MF4=lm(subdata$DesigualdadGenero ~ subdata$MLAutonomia +subdata$CuentaF + subdata$SecundariaC)
+stargazer(MF4, type = "text")
+```
+
+
+```{r}
+stargazer(MF1,MF2,MF3,MF4, type = "text") #TRES putnso nos dan un alto valor de significancia, el primero es el estimado o cieficiente, el entre parentesis es el error residual.
+```
+```{r}
+stargazer(MF2,MF4, type = "text") 
+```
+14.DIAGNOSTICO DEL MODELO FINAL 4
+
+A.LINEALIDAD
+   - Se asume relación lineal entre Y y X:
+```{r}
+# linea roja debe tender a horizontal
+plot(MF4, 1)
+```
+B. Homocedasticidad
+   - A MAYORES valores pronosticados el erro es mayor. entonces la varianza no es igual, ES UN MODELO HETEROCES
+  - Se asume que el error del modelo de regresión no afecta la varianza o dispersión de la estimación (MATH^):
+```{r}
+# linea roja debe tender a horizontal
+plot(MF4, 3)
+```
+También podemos utilizar el test de Breusch-Pagan:
+```{r}
+library(lmtest)
+# Hnull: modelo homocedastico
+bptest(MF4)
+```
+
+  - La probabilidad de homocedasticidad es alta, de el modelo muestra homocedasticidad.
+
+C. Normalidad de los residuos
+
+Los residuos, la diferencia entre MATH y MATH^, debe distribuirse de manera normal:
+```{r}
+# puntos cerca a la diagonal
+plot(MF4, 2)
+```
+###como interpretar el QQPLOT
+
+Podemos aplicar el test de Shapiro a los residuos:
+```{r}
+shapiro.test(MF4$residuals)
+```
+- SI HAY UNS DISTRIBUCION NORMAL
+
+D.No multicolinelidad
+  - Si los predictores tienen una correlación muy alta entre sí, hay multicolinealidad, lo cual no es deseable:
+```{r}
+library(DescTools)
+VIF(MF4) # > 5 es problematico
+```
+
+5. Valores influyentes
+```{r}
+plot(MF4,5)
+```
+RESPUESTA: segun el grafico hay un indicio que si hay tres casos influyentes pero se verificará tomando en cuenta la distancia cook y el hat.
+
+```{r}
+checkMF4=as.data.frame(influence.measures(MF4)$is.inf)
+head(checkMF4)
+
+checkMF4[checkMF4$cook.d|checkMF4$hat,] 
+```
+RESPUESTA: no hay valores influyentes

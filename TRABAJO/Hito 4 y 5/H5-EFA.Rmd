@@ -1,7 +1,7 @@
 ---
 output: html_document
 editor_options: 
-  chunk_output_type: console
+  chunk_output_type: inline
 ---
 
 HITO4 - GRUPO 2 - ANALISIS FACTORIAL EXPLORATORIO
@@ -122,6 +122,16 @@ is.singular.matrix(corMatrix)
 fa.parallel(subdata,fm = 'ML', fa = 'fa')
 ```
 
+```{r}
+#instalar 'parameters' y 'n_factors'
+library(parameters)
+library(nFactors)
+sugerencia=parameters::n_factors(corMatrix)
+
+library(see)
+# tenemos:
+plot(sugerencia)
+```
 
 6. Redimensionar a numero menor de factores
 
@@ -236,9 +246,9 @@ subdata$factor3=normalize(subdata$factor3,
 
 You can see them all here:
 ```{r}
-plot(subdata$DesigualdadGenero,subdata$factor1)
-plot(subdata$DesigualdadGenero,subdata$factor2)
-plot(subdata$DesigualdadGenero,subdata$factor3)
+plot(subdata$factor1,subdata$DesigualdadGenero)
+plot(subdata$factor2,subdata$DesigualdadGenero)
+plot(subdata$factor3,subdata$DesigualdadGenero)
 ```
 
 
@@ -318,6 +328,32 @@ VIF(regresion3) # > 5 es problematico
 ```
 
 
+
+Podemos aplicar el test de Shapiro a los residuos:
+```{r}
+shapiro.test(regresion3$residuals)
+```
+
+4. No multicolinelidad
+
+  - Si los predictores tienen una correlación muy alta entre sí, hay multicolinealidad, lo cual no es deseable:
+```{r}
+library(DescTools)
+VIF(regresion3) # > 5 es problematico
+```
+
+5. Valores influyentes
+```{r}
+plot(regresion3,5)
+```
+RESPUESTA: Se concluye que si hay casos influyentes que son el 29,160,205
+
+EL MODELO NOS PERMITE PREDECIR, ESTA ECUACION TIENE COEFICIENTES. SIN EMBARGO, PUEDEN HABER ALGUNOS CASOS QUE INFLUYEN EN EL MODELO QUE HAS COSNTRUIDO PORQUE SON DISTANTES. En este caso el caso 29, dista mucho de los demas casos y altera el calculo de nuestro modelo. 
+
+```{r}
+checkregresion3=as.data.frame(influence.measures(regresion3)$is.inf)
+head(checkregresion3)
+```
 
 
 

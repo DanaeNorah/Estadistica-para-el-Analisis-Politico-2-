@@ -1,9 +1,9 @@
 ---
 title: "R Notebook"
 output: html_notebook
+editor_options: 
+  chunk_output_type: inline
 ---
-
-
 
 HITO5 - GRUPO 2 - ANALISIS FACTORIAL EXPLORATORIO SIN VARIABLE DESEMPLEO
 
@@ -214,7 +214,6 @@ pearson2
 ```
 ```{r}
 f3=formula(~DesigualdadGenero + factor3) #v. dependiente y v. independiente
-
 # camino parametrico
 pearson3=cor.test(f3,data=subdata)
 pearson3
@@ -325,7 +324,7 @@ library(ggcorrplot)
 ggcorrplot(correlaciones)
 ```
 ```{r}
-round(corMatrix, 2)
+correlaciones
 ```
 
 #REGRESION CON CADA VARIABLE
@@ -361,62 +360,97 @@ summary(mod7)
 mod8=lm(subdata$DesigualdadGenero ~ subdata$CuentaF)
 summary(mod8)
 ```
+
+
 13. MODELOS FINALES DE REGRESION
 ```{r}
 MF0=lm(DesigualdadGenero ~ .,data=subdata[,-c(1)])
 summary(MF0)
 ```
+
+#MODELO 1
 ```{r}
 MF1=lm(subdata$DesigualdadGenero ~ subdata$MLAutonomia +subdata$LibertadMov + subdata$SecundariaC + subdata$CuentaF)
+anova(MF1)
 library(stargazer)
 stargazer(MF1, type = "text")
 ```
 
-
-```{r}
-MF2=lm(subdata$DesigualdadGenero ~ subdata$MLAutonomia +subdata$SecundariaC + subdata$CuentaF+ subdata$VozPolitica)
-stargazer(MF2, type = "text")
-```
-
-
-```{r}
-MF3=lm(subdata$DesigualdadGenero ~ subdata$MLAutonomia +subdata$LibertadMov + subdata$SecundariaC)
-stargazer(MF3, type = "text")
-```
-
-
-```{r}
-MF4=lm(subdata$DesigualdadGenero ~ subdata$MLAutonomia +subdata$CuentaF + subdata$SecundariaC)
-stargazer(MF4, type = "text")
-```
-
-
-```{r}
-stargazer(MF1,MF2,MF3,MF4, type = "text") #TRES putnso nos dan un alto valor de significancia, el primero es el estimado o cieficiente, el entre parentesis es el error residual.
-```
-```{r}
-stargazer(MF2,MF4, type = "text") 
-```
-14.DIAGNOSTICO DEL MODELO FINAL 4
-
+##DIAGNOSTICO DEL MODELO 2
 A.LINEALIDAD
    - Se asume relación lineal entre Y y X:
 ```{r}
 # linea roja debe tender a horizontal
-plot(MF4, 1)
+plot(MF1, 1)
+```
+B. Homocedasticidad
+   Se asume que el error del modelo de regresión no afecta la varianza o dispersión de la estimación (MATH^):
+```{r}
+# linea roja debe tender a horizontal
+plot(MF1, 3)
+```
+También podemos utilizar el test de Breusch-Pagan:
+```{r}
+library(lmtest)
+# Hnull: modelo homocedastico
+bptest(MF1)
+```
+C. Normalidad de los residuos
+- Los residuos, la diferencia entre MATH y MATH^, debe distribuirse de manera normal:
+```{r}
+# puntos cerca a la diagonal
+plot(MF1, 2)
+```
+Podemos aplicar el test de Shapiro a los residuos:
+```{r}
+shapiro.test(MF1$residuals)
+```
+
+D.No multicolinelidad
+  - Si los predictores tienen una correlación muy alta entre sí, hay multicolinealidad, lo cual no es deseable:
+```{r}
+library(DescTools)
+VIF(MF1) # > 5 es problematico
+```
+
+5. Valores influyentes
+```{r}
+plot(MF1,5)
+```
+```{r}
+checkMF1=as.data.frame(influence.measures(MF1)$is.inf)
+head(checkMF1)
+
+checkMF1[checkMF1$cook.d|checkMF1$hat,] 
+```
+
+
+
+#MODELO 2
+```{r}
+MF2=lm(subdata$DesigualdadGenero ~ subdata$MLAutonomia +subdata$SecundariaC + subdata$CuentaF+ subdata$VozPolitica)
+anova(MF1)
+stargazer(MF2, type = "text")
+```
+##DIAGNOSTICO DEL MODELO 2
+A.LINEALIDAD
+   - Se asume relación lineal entre Y y X:
+```{r}
+# linea roja debe tender a horizontal
+plot(MF2, 1)
 ```
 B. Homocedasticidad
    - A MAYORES valores pronosticados el erro es mayor. entonces la varianza no es igual, ES UN MODELO HETEROCES
   - Se asume que el error del modelo de regresión no afecta la varianza o dispersión de la estimación (MATH^):
 ```{r}
 # linea roja debe tender a horizontal
-plot(MF4, 3)
+plot(MF2, 3)
 ```
 También podemos utilizar el test de Breusch-Pagan:
 ```{r}
 library(lmtest)
 # Hnull: modelo homocedastico
-bptest(MF4)
+bptest(MF2)
 ```
 
   - La probabilidad de homocedasticidad es alta, de el modelo muestra homocedasticidad.
@@ -426,13 +460,13 @@ C. Normalidad de los residuos
 Los residuos, la diferencia entre MATH y MATH^, debe distribuirse de manera normal:
 ```{r}
 # puntos cerca a la diagonal
-plot(MF4, 2)
+plot(MF2, 2)
 ```
 ###como interpretar el QQPLOT
 
 Podemos aplicar el test de Shapiro a los residuos:
 ```{r}
-shapiro.test(MF4$residuals)
+shapiro.test(MF2$residuals)
 ```
 - SI HAY UNS DISTRIBUCION NORMAL
 
@@ -440,19 +474,94 @@ D.No multicolinelidad
   - Si los predictores tienen una correlación muy alta entre sí, hay multicolinealidad, lo cual no es deseable:
 ```{r}
 library(DescTools)
-VIF(MF4) # > 5 es problematico
+VIF(MF2) # > 5 es problematico
 ```
 
 5. Valores influyentes
 ```{r}
-plot(MF4,5)
+plot(MF2,5)
 ```
 RESPUESTA: segun el grafico hay un indicio que si hay tres casos influyentes pero se verificará tomando en cuenta la distancia cook y el hat.
 
 ```{r}
-checkMF4=as.data.frame(influence.measures(MF4)$is.inf)
-head(checkMF4)
+checkMF2=as.data.frame(influence.measures(MF2)$is.inf)
+head(checkMF2)
 
-checkMF4[checkMF4$cook.d|checkMF4$hat,] 
+checkMF2[checkMF2$cook.d|checkMF2$hat,] 
 ```
 RESPUESTA: no hay valores influyentes
+
+
+#MODELO 3
+```{r}
+MF3=lm(subdata$DesigualdadGenero ~ subdata$MLAutonomia +subdata$CuentaF + subdata$SecundariaC)
+anova(MF3)
+stargazer(MF3, type = "text")
+```
+
+##DIAGNOSTICO DEL MODELO 3
+A.LINEALIDAD
+   - Se asume relación lineal entre Y y X:
+```{r}
+# linea roja debe tender a horizontal
+plot(MF3, 1)
+```
+B. Homocedasticidad
+   - A MAYORES valores pronosticados el erro es mayor. entonces la varianza no es igual, ES UN MODELO HETEROCES
+  - Se asume que el error del modelo de regresión no afecta la varianza o dispersión de la estimación (MATH^):
+```{r}
+# linea roja debe tender a horizontal
+plot(MF3, 3)
+```
+También podemos utilizar el test de Breusch-Pagan:
+```{r}
+library(lmtest)
+# Hnull: modelo homocedastico
+bptest(MF3)
+```
+
+  - La probabilidad de homocedasticidad es alta, de el modelo muestra homocedasticidad.
+
+C. Normalidad de los residuos
+
+Los residuos, la diferencia entre MATH y MATH^, debe distribuirse de manera normal:
+```{r}
+# puntos cerca a la diagonal
+plot(MF3, 2)
+```
+###como interpretar el QQPLOT
+
+Podemos aplicar el test de Shapiro a los residuos:
+```{r}
+shapiro.test(MF3$residuals)
+```
+- SI HAY UNS DISTRIBUCION NORMAL
+
+D.No multicolinelidad
+  - Si los predictores tienen una correlación muy alta entre sí, hay multicolinealidad, lo cual no es deseable:
+```{r}
+library(DescTools)
+VIF(MF3) # > 5 es problematico
+```
+
+5. Valores influyentes
+```{r}
+plot(MF3,5)
+```
+RESPUESTA: segun el grafico hay un indicio que si hay tres casos influyentes pero se verificará tomando en cuenta la distancia cook y el hat.
+
+```{r}
+checkMF3=as.data.frame(influence.measures(MF3)$is.inf)
+head(checkMF3)
+
+checkMF3[checkMF3$cook.d|checkMF3$hat,] 
+```
+RESPUESTA: no hay valores influyentes
+
+
+14. COMPARACION DE MODELOS
+```{r}
+stargazer(MF1,MF2,MF3, type = "text") #TRES putnso nos dan un alto valor de significancia, el primero es el estimado o cieficiente, el entre parentesis es el error residual.
+```
+
+

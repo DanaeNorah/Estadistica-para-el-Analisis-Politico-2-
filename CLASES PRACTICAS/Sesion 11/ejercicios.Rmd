@@ -1,7 +1,10 @@
 ---
 title: "Proceso del Analisis Factorial Exploratorio (EFA)"
-output: html_notebook
-editor_options: 
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+editor_options:
   chunk_output_type: inline
 ---
 

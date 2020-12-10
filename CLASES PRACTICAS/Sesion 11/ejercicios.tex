@@ -1,0 +1,794 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\hypersetup{
+  pdftitle={Proceso del Analisis Factorial Exploratorio (EFA)},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+\urlstyle{same} % disable monospaced font for URLs
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+
+\title{Proceso del Analisis Factorial Exploratorio (EFA)}
+\author{}
+\date{\vspace{-2.5em}}
+
+\begin{document}
+\maketitle
+
+\hypertarget{ejercicio-1-base-de-datos-de-departamentos}{%
+\section{Ejercicio 1: Base de datos de
+departamentos}\label{ejercicio-1-base-de-datos-de-departamentos}}
+
+\hypertarget{paso-0-seleccionamos-subdata}{%
+\subsection{Paso 0: Seleccionamos
+subdata}\label{paso-0-seleccionamos-subdata}}
+
+Abrimos la base de datos:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(rio)}
+\NormalTok{regiones<-}\StringTok{ }\KeywordTok{import}\NormalTok{(}\StringTok{"https://github.com/DataPolitica/salidas/raw/master/Data/regiones_total.xlsx"}\NormalTok{)}
+\KeywordTok{head}\NormalTok{(regiones)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   n    Región casos   casos_t fallecidos fallecidos_t poblacion poblacion_100k
+## 1 1  Amazonas  9968 2627.4171        190     50.08118    379384        3.79384
+## 2 2    Ancash 17314 1597.9415       1141    105.30503   1083519       10.83519
+## 3 3  Apurímac  2448  603.3138         60     14.78710    405759        4.05759
+## 4 4  Arequipa 30441 2201.5144       1106     79.98669   1382730       13.82730
+## 5 5  Ayacucho  7407 1202.0916        253     41.05970    616176        6.16176
+## 6 6 Cajamarca 13860 1033.5478        377     28.11310   1341012       13.41012
+##   altura_media_capital pobreza vias_pavimentadas problema_salud_cronico
+## 1                 2483    47.3           42.0695               42.41115
+## 2                 3050    23.5           30.7078               41.37640
+## 3                 2500    42.8           34.6249               40.20969
+## 4                 2335     9.1           28.3488               33.07475
+## 5                 2746    51.9           34.5617               29.67002
+## 6                 2750    52.9           38.8711               28.28153
+##   esperanza_vida  agua desague electrificacion medicos_colegiados PBI_percapita
+## 1          71.65 51.84   36.69           73.67                262      6820.929
+## 2          74.86 71.56   56.38           85.20               2741     16846.823
+## 3          71.44 56.33   36.12           80.43                508     14738.951
+## 4          77.13 72.47   65.85           89.98               2195     23096.513
+## 5          72.01 66.99   45.35           80.94                560      7783.191
+## 6          74.03 52.89   32.48           80.68                464      7081.692
+##   presupuestopublico_percapita ejecución_inversion_publica PEA_informal
+## 1                     446.2813                     72.9082      85.3501
+## 2                     509.8968                     53.1842      80.3267
+## 3                     519.3545                     61.7492      88.0408
+## 4                     403.1003                     61.5159      65.2675
+## 5                     462.4479                     67.7971      87.0986
+## 6                     326.7535                     61.0216      89.3412
+##   analfabetismo poblacion_secundaria
+## 1        8.4242              41.2392
+## 2        9.5630              51.4177
+## 3       14.0318              43.6943
+## 4        3.5449              68.1574
+## 5       11.8598              46.1963
+## 6       11.5018              35.7519
+\end{verbatim}
+
+Realizamos un subset y nos quedamos con las variables que utilizaremos.
+Lo llamaremos \textbf{subdata}:
+
+\begin{itemize}
+\tightlist
+\item
+  nos aseguramos que usamos la variables que seleccionamos (agua,
+  desgue, electrificacion,PBI\ldots)
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{subdata<-}\StringTok{ }\NormalTok{regiones[,}\KeywordTok{c}\NormalTok{(}\DecValTok{11}\NormalTok{, }\DecValTok{14}\OperatorTok{:}\DecValTok{16}\NormalTok{, }\DecValTok{18}\OperatorTok{:}\DecValTok{19}\NormalTok{)]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{paso-1-matriz-de-correlaciones}{%
+\subsection{Paso 1: Matriz de
+correlaciones}\label{paso-1-matriz-de-correlaciones}}
+
+Generamos la matriz de correlaciones para identificar qué variables de
+nuestra subdata están correlacionadas.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(polycor)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: package 'polycor' was built under R version 4.0.3
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{matriz<-}\KeywordTok{hetcor}\NormalTok{(subdata)}
+\NormalTok{matriz_corr<-}\StringTok{ }\NormalTok{matriz}\OperatorTok{$}\NormalTok{correlations}
+\KeywordTok{library}\NormalTok{(ggcorrplot)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: package 'ggcorrplot' was built under R version 4.0.3
+\end{verbatim}
+
+\begin{verbatim}
+## Loading required package: ggplot2
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{ggcorrplot}\NormalTok{(matriz_corr)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{ejercicios_files/figure-latex/unnamed-chunk-3-1.pdf}
+
+Vemos las correlaciones significativas: Si puedes ver bloques
+correlacionados hay esperanza de un buen analisis factorial.
+
+-ver en el gaafico con cuadrados MAS INTENSOS
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{ggcorrplot}\NormalTok{(matriz_corr,}
+           \DataTypeTok{p.mat =} \KeywordTok{cor_pmat}\NormalTok{(matriz_corr),}
+           \DataTypeTok{insig =} \StringTok{"blank"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{ejercicios_files/figure-latex/unnamed-chunk-4-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#te sirve para redondear a dos decimales, pero si se corresolo "matriz_corr" es para sacar}
+\KeywordTok{round}\NormalTok{(matriz_corr, }\DecValTok{2}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##                              vias_pavimentadas  agua desague electrificacion
+## vias_pavimentadas                         1.00 -0.01    0.01           -0.21
+## agua                                     -0.01  1.00    0.88            0.91
+## desague                                   0.01  0.88    1.00            0.84
+## electrificacion                          -0.21  0.91    0.84            1.00
+## PBI_percapita                             0.32  0.44    0.60            0.39
+## presupuestopublico_percapita              0.24  0.10    0.03            0.02
+##                              PBI_percapita presupuestopublico_percapita
+## vias_pavimentadas                     0.32                         0.24
+## agua                                  0.44                         0.10
+## desague                               0.60                         0.03
+## electrificacion                       0.39                         0.02
+## PBI_percapita                         1.00                         0.58
+## presupuestopublico_percapita          0.58                         1.00
+\end{verbatim}
+
+\hypertarget{paso-2-diagnuxf3stico-de-nuestra-matruxedz-de-correlaciones}{%
+\subsection{Paso 2: Diagnóstico de nuestra matríz de
+correlaciones}\label{paso-2-diagnuxf3stico-de-nuestra-matruxedz-de-correlaciones}}
+
+Primero, verificar si datos permiten factorizar:
+
+-Test KMO: cuanto mas cerca a 1 implica relacion es alta. Tiene que ser
+mayor que 0.5 - FIJARTE EN EL OVERALL MSA
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(psych)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Attaching package: 'psych'
+\end{verbatim}
+
+\begin{verbatim}
+## The following objects are masked from 'package:ggplot2':
+## 
+##     %+%, alpha
+\end{verbatim}
+
+\begin{verbatim}
+## The following object is masked from 'package:polycor':
+## 
+##     polyserial
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{KMO}\NormalTok{(matriz_corr) }
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Kaiser-Meyer-Olkin factor adequacy
+## Call: KMO(r = matriz_corr)
+## Overall MSA =  0.53
+## MSA for each item = 
+##            vias_pavimentadas                         agua 
+##                         0.27                         0.58 
+##                      desague              electrificacion 
+##                         0.60                         0.70 
+##                PBI_percapita presupuestopublico_percapita 
+##                         0.45                         0.27
+\end{verbatim}
+
+Segundo, verificar si la matriz de correlaciones es adecuada. Para ello,
+se tienen dos funciones:
+
+\begin{itemize}
+\tightlist
+\item
+  Test de Bartlett: H0: La matriz de correlacion es una matriz
+  identidad. Buscamos rechazar la H0, por eso esperamos que sea
+  signifitivo (False). Si no sale FALSE es grave. Matriz identidad
+  (diagonal es 1, y lo demas es 0), solo una vairable se correlaciona
+  consigo misma.
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{cortest.bartlett}\NormalTok{(matriz_corr,}\DataTypeTok{n=}\KeywordTok{nrow}\NormalTok{(subdata))}\OperatorTok{$}\NormalTok{p.value}\OperatorTok{>}\FloatTok{0.05}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] FALSE
+\end{verbatim}
+
+\begin{itemize}
+\tightlist
+\item
+  Test For Singular Square Matrix: H0: La matriz de correlacion es una
+  matriz singular. Una matriz que no sea inversa Buscamos que sea False.
+  SI sale TRUE no seguir
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(matrixcalc)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: package 'matrixcalc' was built under R version 4.0.3
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{is.singular.matrix}\NormalTok{(matriz_corr)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] FALSE
+\end{verbatim}
+
+\hypertarget{paso-3-identificamos-el-nuxfamero-recomendado-de-factores-y-solicitamos-el-efa}{%
+\subsection{Paso 3: Identificamos el número recomendado de factores y
+solicitamos el
+EFA}\label{paso-3-identificamos-el-nuxfamero-recomendado-de-factores-y-solicitamos-el-efa}}
+
+Determinar en cuantos factores o variables latentes podríamos
+redimensionar la data. Vemos el número sugerido y también el gráfico.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#insumo basico para hacer el analisis factorial (DIARGRAMA DE SEDIMENTACION nos dice cuantos factores deberiamos calcular)}
+\KeywordTok{fa.parallel}\NormalTok{(subdata, }\DataTypeTok{fm =} \StringTok{'ML'}\NormalTok{, }\DataTypeTok{fa =} \StringTok{'fa'}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{ejercicios_files/figure-latex/unnamed-chunk-9-1.pdf}
+
+\begin{verbatim}
+## Parallel analysis suggests that the number of factors =  2  and the number of components =  NA
+\end{verbatim}
+
+Solicitamos el número de factores. Considerar si se presentan mensajes
+de alerta.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(GPArotation)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: package 'GPArotation' was built under R version 4.0.3
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{factorial <-}\StringTok{ }\KeywordTok{fa}\NormalTok{(subdata,}\DataTypeTok{nfactors =} \DecValTok{2}\NormalTok{, }\DataTypeTok{cor =} \StringTok{'mixed'}\NormalTok{, }\DataTypeTok{rotate =} \StringTok{"varimax"}\NormalTok{,}\DataTypeTok{fm=}\StringTok{"minres"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning in fa.stats(r = r, f = f, phi = phi, n.obs = n.obs, np.obs = np.obs, :
+## The estimated weights for the factor scores are probably incorrect. Try a
+## different factor score estimation method.
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in fac(r = r, nfactors = nfactors, n.obs = n.obs, rotate = rotate, : An
+## ultra-Heywood case was detected. Examine the results carefully
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#correlacion mixta, rotacion}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{paso-4-visualizamos-el-efa-solicitado}{%
+\subsection{Paso 4: Visualizamos el EFA
+solicitado}\label{paso-4-visualizamos-el-efa-solicitado}}
+
+Vemos el resultado inicial: - mayor sea el numero mas aporta al factor.
+uando una vairbale tiene loadings en dos factores quiere decir que
+aporta a los dos factores
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{print}\NormalTok{(factorial}\OperatorTok{$}\NormalTok{loadings)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Loadings:
+##                              MR1    MR2   
+## vias_pavimentadas                    0.424
+## agua                          0.934       
+## desague                       0.916  0.149
+## electrificacion               0.964       
+## PBI_percapita                 0.468  0.888
+## presupuestopublico_percapita         0.605
+## 
+##                  MR1   MR2
+## SS loadings    2.869 1.369
+## Proportion Var 0.478 0.228
+## Cumulative Var 0.478 0.706
+\end{verbatim}
+
+Vemos el resultado mejorado: Cuando logramos que cada variable se vaya a
+un factor, tenemos una estructura simple.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{print}\NormalTok{(factorial}\OperatorTok{$}\NormalTok{loadings, }\DataTypeTok{cutoff =} \FloatTok{0.5}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Loadings:
+##                              MR1    MR2   
+## vias_pavimentadas                         
+## agua                          0.934       
+## desague                       0.916       
+## electrificacion               0.964       
+## PBI_percapita                        0.888
+## presupuestopublico_percapita         0.605
+## 
+##                  MR1   MR2
+## SS loadings    2.869 1.369
+## Proportion Var 0.478 0.228
+## Cumulative Var 0.478 0.706
+\end{verbatim}
+
+\begin{itemize}
+\tightlist
+\item
+  al ver que vias no aporta, SERIA MEJOR HACER DE NUEVO EL ANALISIS
+  FACTORIAL SIN VIAS, o decides quedarte. Depende del diseño del trabajo
+\item
+  VAR. ACUMUAD:porcentaje de virbilidad, el factor uno 47\%, el factro 2
+  es 70\%
+\end{itemize}
+
+Podemos visualizar los variables y su relación con las latentes creadas:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{fa.diagram}\NormalTok{(factorial)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{ejercicios_files/figure-latex/unnamed-chunk-13-1.pdf}
+
+\hypertarget{paso-5-evaluamos-el-anuxe1lisis-factorial-exploratorio-solicitado-comprobamos-validez-af}{%
+\subsection{Paso 5: Evaluamos el Análisis Factorial Exploratorio
+solicitado (comprobamos validez
+AF)}\label{paso-5-evaluamos-el-anuxe1lisis-factorial-exploratorio-solicitado-comprobamos-validez-af}}
+
+\begin{itemize}
+\tightlist
+\item
+  ¿La Raíz del error cuadrático medio corregida está cerca a cero? -
+  Valores cercano a 0 indica un buen ajuste. Si no sale cerca al 0 eso
+  significa que el análisis extraído no es suficientemente válido. En
+  ese caso se REPORTA.
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{factorial}\OperatorTok{$}\NormalTok{crms}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0.08261519
+\end{verbatim}
+
+\begin{itemize}
+\tightlist
+\item
+  ¿La Raíz del error cuadrático medio de aproximación es menor a 0.05?
+
+  \begin{itemize}
+  \tightlist
+  \item
+    0.032 es mayor a 0.05 entonces HAY PROBLEMA (fijarse en el primero)
+  \end{itemize}
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{factorial}\OperatorTok{$}\NormalTok{RMSEA}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##      RMSEA      lower      upper confidence 
+##  0.3233485  0.1527133  0.5340611  0.9000000
+\end{verbatim}
+
+\begin{itemize}
+\tightlist
+\item
+  ¿El índice de Tucker-Lewis es mayor a 0.9? Este índice tiende a 1 para
+  modelos con muy buen ajuste, considerándose aceptables valores
+  superiores a 0.90, aunque lo ideal sería valores mayores a 0.95.Si
+  sale menor a 0.9 indica insuficiencia de validez. En ese caso se
+  reporta.
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{factorial}\OperatorTok{$}\NormalTok{TLI}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0.5212291
+\end{verbatim}
+
+\begin{itemize}
+\tightlist
+\item
+  ¿Qué variables aportaron mas a los factores?
+
+  \begin{itemize}
+  \tightlist
+  \item
+    aprota mas PBI y menos vias
+  \end{itemize}
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#sort es una funcion para ordenar de menor a mayor}
+\KeywordTok{sort}\NormalTok{(factorial}\OperatorTok{$}\NormalTok{communality)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##            vias_pavimentadas presupuestopublico_percapita 
+##                    0.1888712                    0.3676602 
+##                      desague                         agua 
+##                    0.8605013                    0.8758996 
+##              electrificacion                PBI_percapita 
+##                    0.9367019                    1.0082507
+\end{verbatim}
+
+\begin{itemize}
+\tightlist
+\item
+  ¿Qué variables contribuyen a mas de un factor?
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{sort}\NormalTok{(factorial}\OperatorTok{$}\NormalTok{complexity)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## presupuestopublico_percapita                         agua 
+##                     1.006075                     1.007816 
+##              electrificacion                      desague 
+##                     1.017507                     1.053256 
+##            vias_pavimentadas                PBI_percapita 
+##                     1.098506                     1.516497
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#cada una de las variables, caada variable aporta a un factor.Pero tiene decimales, es deicr, aporta a 1.51 factores}
+\CommentTok{#que variable aporta a mas de un factor: PBI}
+\CommentTok{#que vairable aporta a menos de un factor: Presupuesto Publico}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{paso-6-posibles-valores-proyectados}{%
+\subsection{Paso 6: Posibles valores
+proyectados}\label{paso-6-posibles-valores-proyectados}}
+
+¿Qué nombres les darías?
+
+Podemos crear un data set con sólo los factores creados
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{factorial_casos<-}\KeywordTok{as.data.frame}\NormalTok{(factorial}\OperatorTok{$}\NormalTok{scores)}
+\KeywordTok{head}\NormalTok{(factorial_casos)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##          MR1        MR2
+## 1 -1.2123710 -0.1879479
+## 2  0.5244837  0.4357522
+## 3 -0.5214367  0.7148069
+## 4  1.2143593  0.7401245
+## 5 -0.1678911 -0.2219972
+## 6 -0.5750133 -0.2651315
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{summary}\NormalTok{(factorial_casos)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##       MR1                MR2         
+##  Min.   :-1.48355   Min.   :-1.6099  
+##  1st Qu.:-0.98449   1st Qu.:-0.4329  
+##  Median :-0.04854   Median :-0.1260  
+##  Mean   : 0.00000   Mean   : 0.0000  
+##  3rd Qu.: 0.97628   3rd Qu.: 0.3127  
+##  Max.   : 1.45470   Max.   : 4.0370
+\end{verbatim}
+
+o incluirlos en nuestro subset original
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{subdata}\OperatorTok{$}\NormalTok{factor1<-}\StringTok{ }\NormalTok{factorial_casos}\OperatorTok{$}\NormalTok{MR1}
+\NormalTok{subdata}\OperatorTok{$}\NormalTok{factor2<-}\StringTok{ }\NormalTok{factorial_casos}\OperatorTok{$}\NormalTok{MR2}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{ejercicio-2-realice-un-anuxe1lisis-factorial-con-todos-los-pasos-indicados-de-la-base-de-distritos-y-variables-del-sistema-poluxedtico-electoral}{%
+\section{Ejercicio 2: Realice un análisis factorial con todos los pasos
+indicados de la base de distritos y variables del sistema político
+electoral}\label{ejercicio-2-realice-un-anuxe1lisis-factorial-con-todos-los-pasos-indicados-de-la-base-de-distritos-y-variables-del-sistema-poluxedtico-electoral}}
+
+Abrimos la base de datos
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(rio)}
+\NormalTok{electoral<-}\StringTok{ }\KeywordTok{import}\NormalTok{(}\StringTok{"https://github.com/DataPolitica/salidas/raw/master/Data/ERM2010_Distrital.xlsx"}\NormalTok{)}
+\KeywordTok{head}\NormalTok{(electoral)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   UBIGEO   REGION   PROVINCIA    DISTRITO NEP 2010 NP 2010
+## 1 010102 AMAZONAS CHACHAPOYAS    ASUNCION    2.292   1.465
+## 2 010103 AMAZONAS CHACHAPOYAS      BALSAS    2.457   1.743
+## 3 010104 AMAZONAS CHACHAPOYAS       CHETO    3.432   3.142
+## 4 010105 AMAZONAS CHACHAPOYAS   CHILIQUIN    3.409   1.983
+## 5 010106 AMAZONAS CHACHAPOYAS CHUQUIBAMBA    4.575   3.871
+## 6 010107 AMAZONAS CHACHAPOYAS     GRANADA    2.942   2.147
+##   HIPERFRACCIONAMIENTO 2010 VOLATILIDAD TOTAL 2010 CONCENTRACION 2010
+## 1                     2.588                  0.002              0.841
+## 2                     2.676                  1.000              0.850
+## 3                     3.615                  1.000              0.659
+## 4                     4.054                  0.033              0.649
+## 5                     5.215                  0.071              0.566
+## 6                     3.326                  0.027              0.787
+##   HERFINDHAL HIRSCHMAN 2010 COMPETITIVIDAD 2010
+## 1                     0.436               0.338
+## 2                     0.407               0.216
+## 3                     0.291               0.002
+## 4                     0.293               0.265
+## 5                     0.219               0.005
+## 6                     0.340               0.124
+\end{verbatim}
+
+Realizamos un subset y nos quedamos con las variables que utilizaremos.
+Lo llamaremos \textbf{subdata}:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{subdata<-}\StringTok{ }\NormalTok{electoral[,}\KeywordTok{c}\NormalTok{(}\DecValTok{5}\OperatorTok{:}\DecValTok{11}\NormalTok{)]}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{ejercicio-3-ide}{%
+\section{Ejercicio 3: IDE}\label{ejercicio-3-ide}}
+
+Abrimos la base de datos
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{ide<-}\StringTok{ }\KeywordTok{import}\NormalTok{(}\StringTok{"https://github.com/DataPolitica/salidas/raw/master/Data/IDE.sav"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+Realizamos un subset y nos quedamos con las variables que utilizaremos.
+Lo llamaremos \textbf{subdata}:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{subdata<-}\StringTok{ }\NormalTok{ide[,}\KeywordTok{c}\NormalTok{(}\DecValTok{6}\OperatorTok{:}\DecValTok{10}\NormalTok{)]}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{ejercicio-4-democracy-index}{%
+\section{Ejercicio 4: DEMOCRACY
+INDEX}\label{ejercicio-4-democracy-index}}
+
+Abrimos la base de datos
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{demo<-}\StringTok{ }\KeywordTok{import}\NormalTok{(}\StringTok{"https://github.com/DataPolitica/salidas/raw/master/Data/demo.xlsx"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+Realizamos un subset y nos quedamos con las variables que utilizaremos.
+Lo llamaremos \textbf{subdata}:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{str}\NormalTok{(demo)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 'data.frame':    167 obs. of  8 variables:
+##  $ Pais                   : chr  "Noruega" "Islandia" "Suecia" "Nueva Zelanda" ...
+##  $ PUNT                   : chr  "9.87" "9.58" "9.39" "9.27" ...
+##  $ Pluralismo             : chr  "10.00" "10.00" "9.58" "10.00" ...
+##  $ Funcionamiento_gobierno: chr  "9.64" "9.29" "9.64" "9.29" ...
+##  $ Participacion_politica : chr  "10.00" "8.89" "8.33" "8.89" ...
+##  $ Cultura_policita       : chr  "10.00" "10.00" "10.00" "8.13" ...
+##  $ Derechos_civiles       : chr  "9.71" "9.71" "9.41" "10.00" ...
+##  $ Cate                   : chr  "Democracia plena" "Democracia plena" "Democracia plena" "Democracia plena" ...
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{demo[,}\OperatorTok{-}\KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{,}\DecValTok{8}\NormalTok{)]=}\KeywordTok{lapply}\NormalTok{(demo[,}\OperatorTok{-}\KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{,}\DecValTok{8}\NormalTok{)], as.numeric)}
+\NormalTok{subdata<-}\StringTok{ }\NormalTok{demo[,}\KeywordTok{c}\NormalTok{(}\DecValTok{3}\OperatorTok{:}\DecValTok{7}\NormalTok{)]}
+\NormalTok{subdata<-}\KeywordTok{na.omit}\NormalTok{(subdata)}
+\KeywordTok{str}\NormalTok{(subdata)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 'data.frame':    167 obs. of  5 variables:
+##  $ Pluralismo             : num  10 10 9.58 10 10 9.58 10 9.58 10 9.58 ...
+##  $ Funcionamiento_gobierno: num  9.64 9.29 9.64 9.29 8.93 7.86 9.29 9.64 8.93 9.29 ...
+##  $ Participacion_politica : num  10 8.89 8.33 8.89 8.33 8.33 8.33 7.78 7.78 7.78 ...
+##  $ Cultura_policita       : num  10 10 10 8.13 8.75 10 9.38 8.75 8.75 9.38 ...
+##  $ Derechos_civiles       : num  9.71 9.71 9.41 10 9.71 10 9.12 10 10 9.12 ...
+\end{verbatim}
+
+\end{document}

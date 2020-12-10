@@ -85,8 +85,6 @@ model <- ' democracia  =~ Electoral + Functioning + Politicalparticipation + Pol
 Ahora vemos qué arroja el modelo:
 ```{r}
 # normalizar las variables:
-
-
 HappyDemo=scale(HappyDemo[,-1])
 library(lavaan)
 ```

@@ -1,3 +1,8 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: inline
+---
 
 
 SESION 13- Sesión de cierre 2020 II

@@ -12,7 +12,7 @@ library(htmltab)
 happyL=c("https://en.wikipedia.org/wiki/World_Happiness_Report",
          '//*[@id="mw-content-text"]/div/table/tbody')
 demoL=c("https://en.wikipedia.org/wiki/Democracy_Index", 
-        '//*[@id="mw-content-text"]/div/table[2]/tbody')
+        '//*//*[@id="mw-content-text"]/div[1]/table[3]')
 
 # carga
 happy = htmltab(doc = happyL[1],which  = happyL[2],encoding = "UTF-8")
@@ -280,5 +280,4 @@ You can see them all here:
 ```{r}
 plot(HappyDemo[,c("ScoreDemo","ScoreHappy","faDemo","faHappyInd",
                   "faHappySoc")])
-
 ```

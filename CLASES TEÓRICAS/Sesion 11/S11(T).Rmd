@@ -149,7 +149,6 @@ Nota que los histogramas de la data real tienen encima la curva normal que ideal
 - Se suele usar un qqplot para explorar la PRESENCIA/AUSENCIA de normalidad:
 ```{r}
 # se sugiere normalidad si los puntos no se alejan de la diagonal.
-
 library(ggpubr)
 ggqqplot(data=hsb,x="MATH") + facet_grid(. ~ SEX) 
 ```
@@ -284,9 +283,10 @@ Este plano podemos representarlo así:
 Nuevamente, el Y verdadero es MATH, pero la regresión produce un MATH^ estimado en forma de plano. De igual manera el R cuadrado ajustado (0.5241861) nos da una pista de nuestra lejanía a una situación perfecta
 
 Es clave darse cuenta de otro detalle, que el coeficiente de WRTG ha variado en la fórmula ahora que está presente SCI ¿Por qué sucede esto? 
-     Veamoslo así: en el primer caso, WRTG y ϵ buscaban representar la variabilidad en MATH, y ahora, en el segundo caso, 
-     viene SCI para mejorar esa explicación; es así que el peso de la explicación ahora se recalcula y el coeficiente de 
-     WRTG deja de explicar lo que le corresponde a SCI, y ϵ también le entrega algo a SCI.
+     Veamoslo así: en el primer caso, WRTG y ϵ buscaban representar la variabilidad en MATH, y ahora, en el 
+     segundo caso, viene SCI para mejorar esa explicación; es así que el peso de la explicación ahora se 
+     recalcula y el coeficiente de WRTG deja de explicar lo que le corresponde a SCI, y ϵ también le entrega
+     algo a SCI.
 
      Como ϵ no tiene coeficiente, representamos su variación usando el error típico de los residuos o residual standard error
      (RSE). Nótese que éste ha variado de un modelo ha otro, ahora tenemos un RSE menor. Aquí vale la pena preguntarse si esta
@@ -404,7 +404,7 @@ VIF(reg3) # > 5 es problematico
 
 5. Valores influyentes
 ```{r}
-plot(reg3,5)
+plot(reg3,5) #en video de christian el 4
 ```
 RESPUESTA: Se concluye que si hay casos influyentes que son el 29,160,205
 

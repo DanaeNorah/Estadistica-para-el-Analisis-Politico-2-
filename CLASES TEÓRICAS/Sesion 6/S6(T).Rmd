@@ -41,6 +41,7 @@ demo[,-c(1,8,9)]=lapply(demo[,-c(1,8,9)], as.numeric) # a numerico
 # veamos que tenemos:
 str(demo)
 ```
+
 ESTRATETGIA AGLOMERATIVA 
 - NO hay clusters, tiene limite en cuanto a cantidad de datos
 - Se parte por considerar cada caso(fila) como un CLUSTER, para de ahi ir creando MINICLUSTERS hasta que todos los casos sean un    solo cluster. El proceso va mostrando que tanto esfuerzo toma juntar los elementos cluster tras cluster.

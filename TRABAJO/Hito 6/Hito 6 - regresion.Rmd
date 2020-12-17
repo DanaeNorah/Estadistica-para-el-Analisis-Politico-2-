@@ -563,7 +563,18 @@ RESPUESTA: no hay valores influyentes
 
 14. COMPARACION DE MODELOS
 ```{r}
-stargazer(MF1,MF2,MF3, type = "text") #TRES putnso nos dan un alto valor de significancia, el primero es el estimado o cieficiente, el entre parentesis es el error residual.
+#TRES putnso nos dan un alto valor de significancia, el primero es el estimado o cieficiente, el entre parentesis es el error residual.
+```
+
+
+```{r}
+stargazer(MF1,MF2,MF3, type = "text", title = "Modelos planteados",digits = 3, single.row = F,no.space = F,intercept.bottom = FALSE,
+          dep.var.caption="Variable dependiente:",
+          dep.var.labels="Desigualdad de género",
+          covariate.labels=c("Constante","Marco Legal Autonomía","Libertad de Movimiento","Secundaria 
+                             Completa", "Cuenta Financierta","Voz Política"),
+          column.labels = c("Modelo 1", "Modelo 2","Modelo 3"),
+          notes.label = "Notas:")
 ```
 
 

@@ -96,7 +96,7 @@ Basefinal[,c(2:10)]=round(Basefinal[,c(2:10)], digits = 2)
 names(Basefinal)[1]='Pais'
 names(Basefinal)[2]='VozPolitica'
 names(Basefinal)[3]='LibertadMov'
-names(Basefinal)[4]='ConfianzaSJ'
+names(Basefinal)[4]='DesconfianzaSJ'
 names(Basefinal)[5]='SecundariaC'
 names(Basefinal)[6]='DesempleoMuj'
 names(Basefinal)[7]='CuentaF'

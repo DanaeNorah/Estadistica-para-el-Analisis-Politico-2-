@@ -1,0 +1,12 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+PC8 - DANAE NORAH BALLENA VARGAS (20180267)
+```{r}
+library(rio)
+link='https://github.com/arcruz0/paqueteadp/blob/master/data/quiebre_democracia.rda?raw=true'
+data = import(link)
+```
+

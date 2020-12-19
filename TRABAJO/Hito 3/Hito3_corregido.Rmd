@@ -13,7 +13,7 @@ PRODUCTO 1:
 IMPORTAMOS LA DATA BASEFINAL DEL GITHUB
 ```{r}
 library(rio)
-basefinal=import('https://github.com/DanaeNorah/Estadistica-para-el-Analisis-Politico-2-/raw/master/TRABAJO/basefinal.csv')
+basefinal=import('https://github.com/DanaeNorah/Estadistica-para-el-Analisis-Politico-2-/raw/master/TRABAJO/Base%20Final/basefinal.csv')
 data= basefinal
 str(data)
 ```

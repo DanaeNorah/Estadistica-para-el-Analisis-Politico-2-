@@ -1,0 +1,1861 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+TRABAJO FINAL - GRUPO 2
+
+Tema: Desigualdad de genero
+
+###PARTE 1. PRESENTACION DE DATOS: EXTRACCION, LIMPIEZA Y MERGE
+
+```{r}
+library(htmltab)
+library(stringr) 
+library(readr)
+library(rio)
+library(tidyr)
+```
+----
+1. LIMPIEZA DE LA BASE DE DATOS POLITICAL VOICE
+----
+PASO 1: Abrir nuestra base de datos original
+```{r}
+link_github="https://github.com/DanaeNorah/Estadistica-para-el-Analisis-Politico-2-/raw/master/Political_voice_(original).csv"
+Politica=import(link_github)
+```
+
+PASO 2: Eliminamos los duplicadoS:
+```{r}
+Politica=Politica[-grep("ALL",Politica$REGION),]
+```
+
+PASO 3: Eliminamos las columnas que no necesitaremos:
+```{r}
+Politica=Politica[,-grep("REGION|Region|LOCATION|INC|Income|VAR|TIME|Year|Flags|Flag Codes",names(Politica))]
+```
+
+PASO 4:Verificamos que los valores sean numericos:
+```{r}
+str(Politica$Value)
+```
+
+PASO 5: Eliminamos los "law" en las filas de nuestra data "Politica" 
+```{r}
+Politica = Politica[Politica$Variable=="Practice",]
+```
+
+PASO 6: Cambiamos el nombre de la tercera columna de nuestra data "Politica"
+```{r}
+names(Politica)[3]="Politica_p"
+head(Politica)
+```
+----
+2. LIMPIEZA DE LA BASE DE DATOS FREEDOM OF MOVEMENT
+----
+PASO 1: Abrir nuestra base de datos original de nuestro Git Hub:
+```{r}
+link1_github="https://github.com/DanaeNorah/Estadistica-para-el-Analisis-Politico-2-/raw/master/Freedom%20_(original).csv"
+freedom =import(link1_github)
+```
+
+PASO 2: Eliminamos los duplicados de nuestra data:
+```{r}
+freedom=freedom[-grep("ALL",freedom$REGION),]
+```
+
+PASO 3: Eliminados las columnas que no utilizaremos:
+```{r}
+freedom=freedom[,-grep("REGION|Region|LOCATION|INC|Income|VAR|TIME|Year|Flags|Flag Codes",names(freedom))]
+```
+
+PASO 4: Verificamos que sean numericos los valores:
+```{r}
+str(freedom$Value)
+```
+
+PASO 5: Eliminamos los "law" en las filas de nuestra data "freedom"
+```{r}
+freedom = freedom[freedom$Variable=="Practice",]
+```
+
+PASO 6: Cambiamos el nombre de la tercera columna de nuestra data "freedom"
+```{r}
+names(freedom)[3]="Freedom_p"
+head(freedom)
+```
+----
+3. MERGE DE LAS BASES DE DATOS POLITICA y FREEDOM
+----
+PASO 1: Empleamos la funcion merge
+```{r}
+Libertad_civil=merge(Politica,freedom,by.x = "Country",by.y="Country")
+head(Libertad_civil)
+```
+PASO 2: Eliminamos las columnas que no usaremos
+
+```{r}
+libertad=Libertad_civil[,c(-2,-4)]
+```
+----
+4. LIMPIEZA DE LA BASE DE DATOS JUSTICIA
+----
+PASO 1: Abrimos la base de datos
+```{r}
+AccesoJ="https://github.com/GabiCorazao/EstS2/raw/Trabajo/Acceso-Justicia(original).csv"
+AccesoJ=import(AccesoJ)
+names(AccesoJ)
+```
+
+PASO 2: Buscamos las filas y columnas que no deben estar incluidos
+```{r}
+?grep
+AccesoJ[grep("ALL",AccesoJ$REGION),]
+?grep
+AccesoJ[,grep("REGION|Region|LOCATION|INC|Income|VAR|TIME|Year|Flags|Flag Codes",names(AccesoJ))]
+```
+
+PASO 3: Eliminamos los datos que no deben estar incluidos
+```{r}
+AccesoJ=AccesoJ[-grep("ALL",AccesoJ$REGION),]
+AccesoJ=AccesoJ[,-grep("REGION|Region|LOCATION|INC|Income|VAR|TIME|Year|Flags|Flag Codes",names(AccesoJ))]
+```
+
+PASO 4: Tambien se van a eliminar las filas que corresponden a la columna "LAW"
+```{r}
+?grep
+AccesoJ[grep("Law",AccesoJ$Variable),]
+AccesoJ=AccesoJ[-grep("Law",AccesoJ$Variable),]
+#Ya que esta hecho, voy a quitar la columna variables y voy a renonmbrar la columna "Value"
+AccesoJ=AccesoJ[,-grep("Variable",names(AccesoJ))]
+#cambiando el nombre
+names(AccesoJ) = c("Country", "Practice")
+```
+
+PASO 5: Ahora verificamos si hay datos duplicados
+```{r}
+AccesoJ[duplicated(AccesoJ$Country),]
+AccesoJ=AccesoJ[!duplicated(AccesoJ$Country),]
+```
+
+PASO 6: Verificamos si los valores son leidos como numeros o como caracteres
+```{r}
+str(AccesoJ)
+#como es leido como numerico, ya no hace falta formatear nada, nuestra data esta lista!
+```
+----
+5. LIMPIEZA DE LA BASE DE DATOS SECUNDARIA
+----
+
+PASO 1: Abrimos la data
+```{r}
+SecundariaC="https://github.com/GabiCorazao/EstS2/blob/Trabajo/Secundaria-Completa(original).xlsx?raw=true"
+SecundariaC=import(SecundariaC)
+names(SecundariaC)
+```
+
+PASO 2: Eliminamos filas y columnas que no usaremos
+```{r}
+#identificando las filas que no me sirven
+SecundariaC$`Table 5. Gender Inequality Index`
+#eliminando las filas y columnas que no me sirven
+SecundariaC=SecundariaC[-c(1:7, 70, 125, 163, 200, 207:263),]
+SecundariaC=SecundariaC[,-c(1,3:12,14:20)]
+```
+
+PASO 3: Renombramos las columnas 
+```{r}
+names(SecundariaC) = c("Country", "SecundariaCompleta")
+#y voy a verificar que funcionen y revisar de nuevo si hay alguna unidad que deba ser limpiada
+SecundariaC$Country
+```
+
+PASO 4: Verificar si los datos se leen como numericos
+```{r}
+str(SecundariaC)
+#tenemos que convertir a numericos los datos de la segunda columna 
+SecundariaC$SecundariaCompleta=as.numeric(SecundariaC$SecundariaCompleta)
+#verificamos
+str(SecundariaC)
+```
+
+Pd:Antes de convertir los datos a numerico habian como 14 decimales(si no mas) y despues de aplicar el codigo resultaron solo 7 decimales.
+----
+6. MERGE DE LAS BASES DE DATOS ACCESOJ y SECUNDARIAC
+----
+
+PASO 1: Juntamos las bases
+```{r}
+Acceso_Secundaria=merge(AccesoJ,SecundariaC,all.x=T,all.y=T)
+Acceso_Secundaria[!complete.cases(Acceso_Secundaria),] 
+```
+
+PASO 2: Modificamos los nombres de paises que no estan iguales en ambas bases de datos 
+```{r}
+#AccesoJ
+AccesoJ[AccesoJ$Country=="CÃ´te d'Ivoire","Country"]="Côte d'Ivoire"
+AccesoJ[AccesoJ$Country=="Chinese Taipei","Country"]="China"
+AccesoJ[AccesoJ$Country=='Palestinian Authority or West Bank and Gaza Strip',"Country"]="Palestine, State of"
+#SecundariaC
+SecundariaC[SecundariaC$Country=='Bolivia (Plurinational State of)',"Country"]="Bolivia"
+SecundariaC[SecundariaC$Country=='Czechia',"Country"]="Czech Republic"
+SecundariaC[SecundariaC$Country=='Congo (Democratic Republic of the)',"Country"]="Democratic Republic of the Congo"
+SecundariaC[SecundariaC$Country=='Hong Kong, China (SAR)',"Country"]="Hong Kong, China"
+SecundariaC[SecundariaC$Country=='Iran (Islamic Republic of)',"Country"]="Iran"
+SecundariaC[SecundariaC$Country=='Moldova (Republic of)',"Country"]="Moldova"
+SecundariaC[SecundariaC$Country=='Russian Federation',"Country"]="Russia"
+SecundariaC[SecundariaC$Country=='Slovakia',"Country"]="Slovak Republic"
+SecundariaC[SecundariaC$Country=='South Sudan',"Country"]="South Sudan"
+SecundariaC[SecundariaC$Country=='Tanzania (United Republic of)',"Country"]="Tanzania"
+SecundariaC[SecundariaC$Country=='Venezuela (Bolivarian Republic of)',"Country"]="Venezuela"
+```
+
+PASO 3: Hacemos el merge nuevamente
+```{r}
+sec=merge(AccesoJ,SecundariaC,all.x=T,all.y=T)
+```
+
+----
+7. LIMPIEZA DE BASE DE DATOS TASA DE DESEMPLEO TOTAL - MUJERES
+----
+
+PASO 1: Empecemos importando las bases de datos obtenidas
+```{r}
+link2="https://github.com/Winny-calderon/Proyecto-EAP2/raw/master/hdro_statistical_data_dashboard_2.xlsx"
+gender_gap=import(link2)
+names(gender_gap)
+```
+
+PASO 2: Eliminamos las columnas y filas que no usaremos
+```{r}
+#columnas
+gender_gap=gender_gap[,-c(1, 3:10)]
+gender_gap=gender_gap[,-c(2:5)]
+gender_gap=gender_gap[,-c(3:13)]
+#filas:
+gender_gap=gender_gap[-c(1:14, 77, 132, 170, 207, 214:272),]
+```
+
+PASO 3: Como una de nuetras columnas presenta un nombre muy largo, por temas de practicidad, cambiaremos sus nombres a unos mas sencillos
+```{r}
+names(gender_gap) = c("Country", "Unemployment")
+```
+
+PASO 4: Veamos la naturaleza de nuestras variables
+```{r}
+str(gender_gap)
+#En el caso de "Country" no hay que corregir
+#La tasa de desempleo está en caracter, debemos convertirla a numérica
+gender_gap$Unemployment = as.numeric(gender_gap$Unemployment)
+```
+
+----
+8. LIMPIEZA DE BASE DE DATOS MUJERES CON CUENTA EN UNA INSTITUCION FINANCIERA 
+----
+
+PASO 1: Extraemos la base de datos
+```{r}
+link1= "https://github.com/Winny-calderon/Proyecto-EAP2/raw/master/hdro_statistical_data_dashboard_3.xlsx"
+data_woman=import(link1)
+names(data_woman)
+```
+
+PASO 2: Revisamos que columnas y filas no nos sirven y las eliminamos
+```{r}
+#eliminamos columnas
+data_woman=data_woman[,-c(1, 3:24, 26:28)]
+#eliminamos filas
+data_woman=data_woman[-c(1:12, 75, 130, 168, 205, 212:267),]
+```
+
+PASO 3: Despues, cambiamos los nombres de las columnas
+```{r}
+names(data_woman) = c("Country", "Account")
+```
+
+PASO 4: Revisamos la naturaleza de cada variable
+```{r}
+str(data_woman) 
+#"Account" aparece como caracter, por ende, debemos convertirla a numerica
+data_woman$Account = as.numeric(data_woman$Account)
+```
+
+----
+9. MERGE DE BASES DE DATOS DESEMPLEO Y CUENTA FINANCIERA
+----
+
+PASO 1: Juntar la data
+```{r}
+#Primero veamos el nombre de las variables
+names(gender_gap)
+names(data_woman)
+#entonces le pedimos que nos fusione las datas en base a la variable comun (o Key): Country
+#gender_data: será nuestra nueva base de datos, la cual será contendrá a nuestras dos bases editadas antes
+gender_data=merge(gender_gap,data_woman,by.x='Country', by.y='Country') 
+head(gender_data)
+```
+
+PASO 2: Asimismo, aplicaremos el comando que nos mostrará los paises en total
+```{r}
+gender_data2=merge(gender_gap,data_woman,all.x=T,all.y=T)
+```
+Podemos notar que todos los casos de países conicide, es decir, no hay ningún pais mas ni menos en las dos datas usadas antes.
+
+PASO 3: Tambien es importante fijarnos si hay duplicados en nuestra data
+```{r}
+gender_data[duplicated(gender_data$Country),]
+```
+No hay ninguna columna duplicada.
+
+PASO 4: Modificamos los nombres
+```{r}
+#Bolivia (Plurinational State of)
+gender_data[gender_data$Country=='Bolivia (Plurinational State of)',"Country"]="Bolivia"
+#Congo (Democratic Republic of the)
+gender_data[gender_data$Country=='Congo (Democratic Republic of the)',"Country"]="Congo, Democratic Republic of the"
+#Eswatini (Kingdom of)
+gender_data[gender_data$Country=='Eswatini (Kingdom of)',"Country"]="Eswatini, Kingdom of"
+#Hong Kong, China (SAR)
+gender_data[gender_data$Country=='Hong Kong, China (SAR)',"Country"]="Hong Kong, China"
+#Iran (Islamic Republic of)
+gender_data[gender_data$Country=='Iran (Islamic Republic of)',"Country"]="Iran, Islamic Republic of"
+#Korea (Republic of)
+gender_data[gender_data$Country=='Korea (Republic of)',"Country"]="Korea, Republic of"
+#Micronesia (Federated States of)
+gender_data[gender_data$Country=='Micronesia (Federated States of)',"Country"]="Micronesia, Federated States of"
+#Moldova (Republic of)
+gender_data[gender_data$Country=='Moldova (Republic of)',"Country"]="Moldova, Republic of"
+#Tanzania (United Republic of)
+gender_data[gender_data$Country=='Tanzania (United Republic of)',"Country"]="Tanzania, United Republic of"
+#Venezuela (Bolivarian Republic of)
+gender_data[gender_data$Country=='Venezuela (Bolivarian Republic of)',"Country"]="Venezuela, Bolivarian Republic of"
+
+gender= gender_data
+```
+
+NOTA: La base original de donde se recogieron las variables Autonomia Reproductiva (autoreprod) y Violencia contra la mujer (violencia) fue encontrada en la página web de Organisation for Economic Co-Operation and Development (OECD) que permite descargar la información en formato "csv". Luego la data fue subida al repositorio personal de GitHub con el nombre de "GIDDB2019Completa.csv" y está incluida como referencia dentro de la carpeta "Bases originales". En el link fuente donde está ubicada la data existe la opción que permite personalizar la búsqueda y descargar solo las variables que se requieren. De ahí se obtuvieron las bases para las variables (autreprod y violencia) que también están en la carpeta. Esas dos fueron las bases usadas para el procesamiento de datos que viene a continuación. 
+
+----
+10. LIMPIEZA DE BASE DE DATOS AUTONOMIA REPRODUCTIVA
+----
+
+PASO 1: Importamos la base de datos 2
+```{r}
+#vamos a importar la base desde GitHub
+#Creamos el objeto linkautreprod
+linkautreprod="https://raw.githubusercontent.com/mercy-diaz/ProyectoEst/master/Bases%20originales/autreprod.csv"
+autreprod=import(linkautreprod)
+```
+
+PASO 2: Nos quedamos con las columnas que vamos a utilizar
+```{r}
+autreprod = autreprod[,c(4,11)]
+```
+
+PASO 3: Cambiamos los nombres de las columnas
+```{r}
+names(autreprod) = c("Pais","Autonomia")
+```
+
+PASO 4: Revisamos y eliminamos posibles valores duplicados
+```{r}
+#Aplicamos función duplicated
+autreprod[duplicated(autreprod),]
+autreprod = autreprod[!duplicated(autreprod),]
+```
+
+PASO 5: Revisamos las columnas que tenemos
+
+Empezamos con la columna "Pais"
+```{r}
+#Nos aseguramos de que los nombres de los países estén limpios
+autreprod$Pais
+#Observamos que se debe hacer una corrección
+```
+
+Limpiamos la columna "Pais"
+```{r}
+#Aplicamos la función gsub para reemplazar los símbolos no deseados
+autreprod$Pais = gsub("CÃ´te d'Ivoire","Côte d'Ivoire",autreprod$Pais)
+```
+
+Verificamos:
+```{r}
+autreprod$Pais
+```
+
+----
+11. LIMPIEZA DE BASE DE DATOS VIOLENCIA CONTRA LA MUJER
+----
+
+PASO 1: Importamos la base de datos 3
+```{r}
+linkviolencia="https://raw.githubusercontent.com/mercy-diaz/ProyectoEst/master/Bases%20originales/violencia.csv"
+violenciamuj=import(linkviolencia)
+```
+
+PASO 2: Nos quedamos con las columnas que vamos a utilizar
+```{r}
+violenciamuj = violenciamuj[,c(4,11)]
+```
+
+PASO 3: Cambiamos los nombres de las columnas
+```{r}
+names(violenciamuj) = c("Pais","Violencia")
+```
+
+PASO 4: Revisamos y eliminamos valores duplicados
+```{r}
+#Aplicamos funcion duplicated
+violenciamuj[duplicated(violenciamuj),]
+violenciamuj = violenciamuj[!duplicated(violenciamuj),]
+```
+
+PASO 5: Revisamos las columnas que nos quedaron:
+
+Empezamos con la columna "Pais"
+```{r}
+#Nos aseguramos de que los nombres de los países estén limpios
+violenciamuj$Pais
+#Observamos que se debe hace una corrección
+```
+
+Limpiamos la columna "Pais"
+```{r}
+#Aplicamos la función gsub para reemplazar
+violenciamuj$Pais = gsub("CÃ´te d'Ivoire","Côte d'Ivoire",violenciamuj$Pais)
+```
+
+Revisamos nuevamente
+```{r}
+str(violenciamuj)
+```
+
+----
+12. LIMPIEZA BASE DE DATOS INDICE DE DESIGUALDAD DE GENERO
+----
+
+PASO 1: Importamos base de datos
+```{r}
+linkindex="https://raw.githubusercontent.com/mercy-diaz/ProyectoEst/master/Bases%20originales/index.csv"
+index=import(linkindex)
+```
+
+PASO 2: Nos quedamos solo con las columnas que vamos a utilizar
+```{r}
+index=index[,c(2,25)]
+```
+
+PASO 3: Cambiamos los nombres de las columnas
+```{r}
+names(index)=c("Pais","GIIIndex")
+```
+
+PASO 4: Revisamos las columnas que tenemos:
+
+Empezamos con columna "Pais"
+```{r}
+#Nos aseguramos de que los nombres de los países estén limpios
+index$Pais
+```
+
+Limpiamos los nombres en columna "Pais"
+```{r}
+#Aplicamos la función gsub para reemplazar los símbolos no deseados
+index$Pais = gsub("CÃ´te d'Ivoire","Côte d'Ivoire",index$Pais)
+```
+
+Verificamos:
+```{r}
+index$Pais
+```
+
+Continuamos con la columna "GIIIndex"
+```{r}
+#Observamos que tiene elementos no deseados ("") que debemos eliminar
+str(index$GIIIndex)
+```
+
+Limpiamos la columna "GIIIndex"
+```{r}
+library(stringr)
+#Revisamos en qué partición está el dato que nos interesa
+str_split(string = index$GIIIndex,
+          pattern = '\\"',
+          simplify = T)
+#El dato se encuentra en la partición 2
+#Creamos una nueva columna "GII"
+index$GII = str_split(string = index$GIIIndex,
+          pattern = '\\"',
+          simplify = T)[,2]
+```
+
+Revisamos la nueva columna GII
+```{r}
+#Observamos que está limpia
+str(index$GII)
+#Ahora la información deber ser convertida a valores numéricos
+index$GII = as.numeric(index$GII)
+```
+
+Verificamos
+```{r}
+#Aplicamos función str para revisar la columna GII
+str(index$GII)
+#Ahora es numérica
+```
+
+PASO 5: Nos quedamos con las columnas que vamos a usar
+```{r}
+index = index[,c(1,3)]
+```
+
+----
+13. MERGE DE BASES DE DATOS AUTONOMIA REPRODUCTIVA, VIOLENCIA CONTRA LA MUJER, INDICE DE DESIGUALDAD DE GENERO
+----
+
+PASO 1: vamos a unir una por una
+```{r}
+base1=merge(autreprod,violenciamuj,all.x=T,all.y=T)
+#De esta forma incluimos todos nuestros casos
+#Presupone que la primera columna será la columna guía
+```
+
+Revisamos
+```{r}
+base1$Pais
+```
+
+PASO 2: Modificamos algunos nombres para que la información se incorpore mejor
+```{r}
+base1$Pais = gsub('Bolivia',"Bolivia (Plurinational State of)",base1$Pais)
+base1$Pais = gsub('Democratic Republic of the Congo',"Congo (Democratic Republic of the)",base1$Pais)
+```
+
+PASO 3: Ahora continuamos con la base que falta
+```{r}
+basefinal=merge(base1,index,all.x=T,all.y=T)
+```
+
+PASO 4: Limpiamos espacios en blanco en nombres de observaciones
+```{r}
+#Usamos la función trimws
+basefinal$Pais=trimws(basefinal$Pais,whitespace = "[\\h\\v]")
+```
+
+PASO 5: Revisamos el data frame
+```{r}
+data.frame(basefinal)
+```
+
+PASO 6: Buscamos casos duplicados
+```{r}
+basefinal[duplicated(basefinal$Pais),]
+basefinal[!complete.cases(basefinal),]
+
+autonomia=basefinal
+```
+----
+14. MERGE DE TODAS LAS DATAS
+----
+
+PASO 1: IMPORTAR LAS DOS DATAS
+```{r}
+#Cambiar la column Pais a Country para eliminar duplicados
+names(autonomia)[1]='Country'
+```
+
+PASO 2: Modificamos los nombres
+```{r}
+#eliminar duplicados 
+##Data 1
+libertad[libertad$Country=='CÃ´te d\'Ivoire','Country']='Costa de Marfil'
+libertad[libertad$Country=='Côte d\'Ivoire','Country']='Costa de Marfil'
+libertad[libertad$Country=='China (People\'s Republic of)','Country']='China'
+libertad[libertad$Country=='Congo (Democratic Republic of the)','Country']='Democratic Republic of the Congo'
+libertad[libertad$Country=='Czech Republic','Country']='Czechia'
+libertad[libertad$Country=='Palestinian Authority or West Bank and Gaza Strip','Country']='Palestine'
+libertad[libertad$Country=='Slovak Republic','Country']='Slovakia'
+##Data 2
+sec[sec$Country=='Côte d\'Ivoire','Country']='Costa de Marfil'
+sec[sec$Country=='Czech Republic','Country']='Czechia'
+sec[sec$Country=='Eswatini (Kingdom of)','Country']='Eswatini'
+sec[sec$Country=='Korea (Republic of)','Country']='Korea'
+sec[sec$Country=='Palestine, State of','Country']='Palestine'
+sec[sec$Country=='Slovak Republic','Country']='Slovakia'
+##Data 3
+gender[gender$Country=='CÃ´te d\'Ivoire','Country']='Costa de Marfil'
+gender[gender$Country=='Congo, Democratic Republic of the','Country']='Democratic Republic of the Congo'
+gender[gender$Country=='Czech Republic','Country']='Czechia'
+gender[gender$Country=='Eswatini, Kingdom of','Country']='Eswatini'
+gender[gender$Country=='Iran, Islamic Republic of','Country']='Iran'
+gender[gender$Country=='Korea (Democratic People\'s Rep. of)','Country']='North Korea'
+gender[gender$Country=='Korea, Republic of','Country']='Korea'
+gender[gender$Country=='Moldova, Republic of','Country']='Moldova'
+gender[gender$Country=='Palestine, State of','Country']='Palestine'
+gender[gender$Country=='Russian Federation','Country']='Russia'
+gender[gender$Country=='Tanzania, United Republic of','Country']='Tanzania'
+gender[gender$Country=='Venezuela, Bolivarian Republic of','Country']='Venezuela'
+##Data 4
+autonomia[autonomia$Country=='Bolivia (Plurinational State of)','Country']='Bolivia'
+autonomia[autonomia$Country=='Côte d\'Ivoire','Country']='Costa de Marfil'
+autonomia[autonomia$Country=='China (People\'s Republic of)','Country']='China'
+autonomia[autonomia$Country=='Congo (Democratic Republic of the)','Country']='Democratic Republic of the Congo'
+autonomia[autonomia$Country=='Eswatini (Kingdom of)','Country']='Eswatini'
+autonomia[autonomia$Country=='Iran (Islamic Republic of)','Country']='Iran'
+autonomia[autonomia$Country=='Korea (Republic of)','Country']='Korea'
+autonomia[autonomia$Country=='Moldova (Republic of)','Country']='Moldova'
+autonomia[autonomia$Country=='Palestinian Authority or West Bank and Gaza Strip','Country']='Palestine'
+autonomia[autonomia$Country=='Russian Federation','Country']='Russia'
+autonomia[autonomia$Country=='Slovak Republic','Country']='Slovakia'
+autonomia[autonomia$Country=='Tanzania (United Republic of)','Country']='Tanzania'
+autonomia[autonomia$Country=='Venezuela (Bolivarian Republic of)','Country']='Venezuela'
+```
+
+PASO 3: Unimos las bases
+```{r}
+#base 1 y 2
+baseLyS=merge(libertad,sec,all.x = T, all.y = T)
+str(baseLyS)
+#base 1-2 y 3
+baseLSG=merge(baseLyS,gender,all.x = T, all.y = T)
+str(baseLSG)
+#base 1-2-3 y 4
+baseLSGA=merge(baseLSG,autonomia,all.x = T, all.y = T)
+str(baseLSGA)
+```
+
+PASO 4: BASE FINAL 
+```{r}
+Basefinal=baseLSGA
+```
+
+PASO 5: PREPARAMOS Y MODIFICAMOS NUESTRA BASE FINAL PARA HACERLA MÁS ENTENDEDIBLE
+
+```{r}
+#Uniformizar a 2 digitos el número de decimales a utilizar en nuestra data "Basefinal" 
+Basefinal[,c(2:10)]=round(Basefinal[,c(2:10)], digits = 2)
+#cambiar nombres a las columnas
+names(Basefinal)[1]='Pais'
+names(Basefinal)[2]='VozPolitica'
+names(Basefinal)[3]='LibertadMov'
+names(Basefinal)[4]='DesconfianzaSJ'
+names(Basefinal)[5]='SecundariaC'
+names(Basefinal)[6]='DesempleoMuj'
+names(Basefinal)[7]='CuentaF'
+names(Basefinal)[10]='DesigualdadGenero'
+names(Basefinal)[8]='MLAutonomia'
+names(Basefinal)[9]='MLViolencia'
+
+#ordenar las columnas para poner primero la variable dependiente
+Basefinal = Basefinal[ , c(1,10,8,9,2,3,4,5,6,7)]
+names (Basefinal)
+str(Basefinal)
+```
+PASO 6: Modificando los nombres de las bases
+```{r}
+#identificar duplicados
+Basefinal[!complete.cases(Basefinal),] 
+```
+
+```{r}
+Basefinal=Basefinal[-c(36,38,60,79,84,96,97,98,100,123,125,157,172,179,180,189,208),]
+```
+NOTA: se exporto y guardo la BASEFINAL en el git hub como un documentos "csv"
+
+--------------------------------
+###PARTE 2: EXPLORACION DE DATOS
+
+IMPORTAMOS LA DATA BASEFINAL DE GITHUB
+```{r}
+basefinal=import('https://github.com/DanaeNorah/Estadistica-para-el-Analisis-Politico-2-/raw/master/TRABAJO/Base%20Final/basefinal.csv')
+data= basefinal
+str(data)
+```
+----
+1. ANALISIS UNIVARIADO DE NUESTAS VARIABLES
+----
+
+PAS0 0: Antes de proceder con el análisis, vamos a recodificar las variables independientes (autonomia y violencia) para poder hacer un mejor analisis.
+
+#Variable Autonomia
+```{r}
+#Revisamos valores iniciales
+table(data$MLAutonomia)
+```
+```{r}
+#Luego, la variable debe ser convertida en una variable tipo factor
+data$MLAutonomia <- as.factor(data$MLAutonomia )
+#Le asignamos etiquetas a los valores
+data$MLAutonomia=factor(data$MLAutonomia,
+                     levels = levels(data$MLAutonomia),
+                     labels = c("Protege totalmente","Protege mucho","Protege","Protege muy poco","No protege"),
+                     ordered = T)
+#verificamos
+str(data$MLAutonomia)
+table(data$MLAutonomia )
+```
+
+#Variable violencia
+```{r}
+#Revisamos los valores iniciales
+table(data$MLViolencia)
+```
+
+```{r}
+#Luego, la variable debe ser convertida en una variable tipo factor
+data$MLViolencia <- as.factor(data$MLViolencia)
+#Le asignamos etiquetas a los valores
+data$MLViolencia=factor(data$MLViolencia,
+                     levels = levels(data$MLViolencia),
+                     labels = c("Protege totalmente","Protege","Protege muy poco","No protege"),
+                     ordered = T)#verificamos
+                     
+str(data$MLViolencia)
+table(data$MLViolencia)
+```
+
+PASO 1: VARIABLE NUMERICA Desigualdad de genero
+
+#Variable dependiente: Indice de Desigualdad de Genero
+```{r}
+#Solicitamos estadisticos descriptivos
+summary(data$DesigualdadGenero)
+```
+
+```{r}
+library(psych)
+describe.by(data$DesigualdadGenero)
+str(data$DesigualdadGenero)
+```
+
+-Analisis grafico de variable
+```{r}
+#Solicitamos histograma
+hist(data$DesigualdadGenero, main = "Desigualdad de genero")
+```
+
+PASO 2;:VARIABLE ORDINAL Autonomia reproductiva
+
+```{r}
+#Solicitamos estadisticos descriptivos
+summary(data$Autonomia)
+```
+
+
+-Analisis grafico de variable
+```{r}
+#Solicitamos histograma
+library(jtools)
+barplot(table(data$MLAutonomia),col="red",
+        xlab=NULL,main="Autonomia Reproductiva")
+```
+
+PASO 3: VARIABLE ORDINAL Violencia contra la mujer
+```{r}
+#Solicitamos estadisticos descriptivos
+summary(data$MLViolencia)
+```
+
+
+-Analisis grafico de variable
+```{r}
+#Solicitamos una grafica de barras
+barplot(table(data$MLViolencia),col="lightgreen",
+        xlab=NULL,main="Violencia contra la mujer")
+```
+
+PASO 4: VARIABLE NUMERICA VozPolitica
+
+```{r}
+#Solicitamos las medidas de tendencia central
+library(psych)
+library(DescTools)
+describeBy(data$VozPolitica)
+summary(data$VozPolitica)
+```
+
+
+- Graficos
+```{r}
+#Solicitamos un histograma
+hist(data$VozPolitica, col = "green", main="Voz politica", xlab = "Por parlamento", ylab ="Porcnetaje de mujeres")
+```
+
+
+PASO 5: VARIABLE NUMERICA LibertadMov (libertad de movimiento)
+```{r}
+#Solicitamos las medidas de tendencia central
+describeBy(data$LibertadMov)
+summary(data$LibertadMov)
+```
+
+- Graficos
+```{r}
+#Solicitamos un histograma 
+hist(data$LibertadMov, col = "lightblue", main="Libertad de movimiento", xlab = "", ylab =NULL)
+#Solicitamos un boxplot para ver los outliers
+boxplot(data$LibertadMov, col = "red", main="Libertad de movimiento")
+```
+
+PASO 6: Analisis descriptivo de la variable "DesconfianzaSJ"
+```{r}
+#Solicitamos el desvrybeBy para el analisis univariado
+describeBy(data$DesconfianzaSJ, digits=2)
+```
+
+- Graficos
+```{r}
+#Solicitamos un boxplot
+boxplot(data$DesconfianzaSJ, col = "lightgreen", main="Desconfianza Sistema de Justicia")
+#Solicitamos un histograma
+hist((data$DesconfianzaSJ),col="lightblue",
+        xlab="Cantidad de paises",
+        ylab="Desconfianza SJ",
+        main="Desconfianza Sistema de Justicia")
+```
+
+
+PASO 7: Analisis descriptivo de la variable "SecundariaC"
+```{r}
+#Solicitamos el desvrybeBy para el analisis univariado
+describeBy(data$SecundariaC, digits=2)
+```
+
+- Graficos
+```{r}
+#Solicitamos un boxplot
+boxplot(data$SecundariaC, col = "lightgreen", main="Secundaria Completa")
+#Solicitamos el histograma
+hist((data$SecundariaC),col="lightblue",
+        xlab="Cantidad de paises",
+        ylab="Promedio de mujeres con secundaria completa",
+        main="Mujeres con secundaria completa")
+```
+
+PASO 8: Analisis descriptivo de la variable "Desempleo"
+```{r}
+#Solicitamos el desvrybeBy para el analisis univariado
+describeBy(data$DesempleoMuj, digits=2)
+```
+
+- Graficos
+```{r}
+#Solicitamos un boxplot
+boxplot(data$DesempleoMuj,  col="blue", main="Boxplot de Desempleo")
+#Solicitamos el histograma
+hist((data$DesempleoMuj), col="blue",
+        xlab="Cantidad de paises",
+        ylab="Proporcion de mujeres desempleadas",
+        main="Mujeres desempleadas")
+```
+
+PASO 9: Analisis descriptivo de la variable "CuentaF"
+```{r}
+#Solicitamos el desvrybeBy para el analisis univariado
+describeBy(data$CuentaF, digits=2)
+```
+
+```{r}
+#Solicitamos un boxplot
+boxplot(data$CuentaF, main="Boxplot de Cuenta Financiera ", col="blue")
+#Solicitamos el histograma
+hist((data$CuentaF), col="blue",
+        xlab="Cantidad de paises",
+        ylab="Porcentaje de mujeres con banca movil",
+        main="Mujeres con banca movil")
+```
+
+PASO 10: aplicamos las funciones para todas las vairables a la vez
+```{r}
+#para varias variables
+describeBy(as.matrix(cbind(data[,c(2:10)])), digits = 2)
+#summary
+summary(data[,c(2:10)])
+```
+
+----
+2. ANALISIS BIVARIADO: CORRELACION Y GRÁFICO DE DISPERSION
+----
+
+PASO 1: ANOVA de un factor entre  "DesigualdadGenero" y "Autonomía"
+
+```{r}
+#Aplicamos la prueba ANOVA de un factor. Usamos la nueva variable creada unos pasos atrás.
+anovaautonomia <- aov(data$DesigualdadGenero ~ data$MLAutonomia)
+summary(anovaautonomia)
+```
+RESPUESTA:
+                  Pr(>F)    
+data$MLAutonomia   3.67e-10 ***
+
+```{r}
+#Prueba de comparaciones múltiples (Tukey)
+TukeyHSD(anovaautonomia) 
+```
+RESPUESTA:
+                     p adj
+Protege mucho-Protege totalmente     0.0083290
+Protege-Protege totalmente           0.0000081
+Protege muy poco-Protege totalmente  0.0000000
+No protege-Protege totalmente        0.0001110
+Protege-Protege mucho                0.6984536
+Protege muy poco-Protege mucho       0.5184943
+No protege-Protege mucho             0.3655178
+Protege muy poco-Protege             0.9999768
+No protege-Protege                   0.9169521
+No protege-Protege muy poco          0.9173002
+
+```{r}
+#Gráfico de medias con intervalos de confianza (ver superposición)
+library(gplots) 
+plotmeans(data$DesigualdadGenero ~ MLAutonomia, data = data,ylab = "Desigualdad de género")
+```
+
+PASO 2: ANOVA de unfactor entre  "DesigualdadGenero"y "Violencia"
+```{r}
+#Aplicamos la prueba ANOVA de un factor
+anovaviolencia <- aov(data$DesigualdadGenero ~ data$MLViolencia)
+summary(anovaviolencia)
+```
+RESPUESTA:
+                  Pr(>F)   
+data$MLViolencia   0.00644 **
+
+```{r}
+#Prueba de comparaciones múltiples (Tukey)
+TukeyHSD(anovaviolencia)
+```
+RESPUESTA: 
+                                     p adj
+Protege-Protege totalmente           0.0112447
+Protege muy poco-Protege totalmente  0.0113994
+Protege muy poco-Protege             0.8572113
+
+```{r}
+#Gráfico de medias con intervalos de confianza (ver superposición)
+plotmeans(data$DesigualdadGenero ~ MLViolencia, data = data, ylab = "Desigualdad de género")
+```
+
+PASO 3: Correlacion entre  "DesigualdadGenero"y "VozPolitica"
+```{r}
+#Analisis visual usando un grafico de dispersion
+plot(data$DesigualdadGenero, data$VozPolitica, xlab="Voz Politica", ylab="Desigualdad de Genero")
+#Solicitamos la prueba R de Pearson
+cor.test(data$DesigualdadGenero, data$VozPolitica)
+## H0: Las variables son estadIsticamente independientes
+## HA: Las variables son estadIsticamente dependientes
+```
+
+RESPUESTA: cor = -0.3797722  p-value = 6.529e-06
+
+Que tan fuerte es la correlacion? Que sentido tiene? Por que?
+
+PASO 4: Correlacion entre  "DesigualdadGenero"y "LibertadMov"(libertad de movimiento)
+```{r}
+#Analisis visual usando un grafico de dispersion
+plot(data$DesigualdadGenero, data$LibertadMov, xlab="Libertad de movimiento", ylab="Desigualdad de Genero")
+#Solicitamos la prueba R de Pearson
+cor.test(data$DesigualdadGenero, data$LibertadMov)
+## H0: Las variables son estadIsticamente independientes
+## HA: Las variables son estadIsticamente dependientes
+```
+RESPUESTA: cor = -0.4299311  p-value = 2.41e-07
+
+PASO 5: Correlacion entre  "DesigualdadGenero"y "Desconfianza Jsticia"
+```{r}
+#Analisis visual usando un grafico de dispersion
+plot(data$DesigualdadGenero, data$DesconfianzaSJ, xlab="Acceso a Justicia", ylab="Desigualdad de Genero")
+#Solicitamos la prueba R de Pearson
+cor.test(data$DesigualdadGenero, data$DesconfianzaSJ)
+## H0: Las variables son estadIsticamente independientes
+## HA: Las variables son estadIsticamente dependientes
+```
+RESPUESTA: cor = -0.1588468   p-value = 0.06888
+
+PASO 6: Correlacion entre  "DesigualdadGenero"y "SecundariaC"(secundaria completa)
+```{r}
+#Analisis visual usando un grafico de dispersion
+plot(data$DesigualdadGenero, data$SecundariaC, xlab="Secundaria Completa", ylab="Desigualdad de Genero")
+#Solicitamos la prueba R de Pearson
+cor.test(data$DesigualdadGenero, data$SecundariaC) 
+## H0: Las variables son estadIsticamente independientes
+## HA: Las variables son estadIsticamente dependientes
+```
+RESPUESTA: cor = -0.7925136   p-value < 2.2e-16
+
+PASO 7: Correlacion entre  "DesigualdadGenero"y "Desempleo"
+```{r}
+#Analisis visual usando un grafico de dispersion
+plot(data$DesigualdadGenero, data$DesempleoMuj, xlab="Desempleo", ylab="Desigualdad de Genero")
+#Solicitamos la prueba R de Pearson
+cor.test(data$DesigualdadGenero, data$DesempleoMuj)
+## H0: Las variables son estadIsticamente independientes
+## HA: Las variables son estadIsticamente dependientes
+```
+RESPUESTA: cor = 0.01774458  p-value = 0.8227
+
+PASO 8: Correlacion entre  "DesigualdadGenero"y "CuentaF"(Cuenta financiera)
+```{r}
+#Analisis visual usando un grafico de dispersion
+plot(data$DesigualdadGenero, data$CuentaF, xlab="Cuenta financiera", ylab="Desigualdad de Genero")
+#Solicitamos la prueba R de Pearson
+cor.test(data$DesigualdadGenero, data$CuentaF) 
+## H0: Las variables son estadIsticamente independientes
+## HA: Las variables son estadIsticamente dependientes
+```
+RESPUESTA: cor = -0.8300363  p-value < 2.2e-16
+
+----
+3.1 ANALISIS FACTORIAL EXPLORATORIO CON LA VARIABLE DESEMPLEO
+----
+
+NOTA: realizamos este paso para justificar el no usar la variable DesmepleoMuj
+```{r}
+row.names(data)=data$Pais
+data=na.omit(data)
+```
+PASO 0: ALISTAR BASE DE DATOS
+```{r}
+library(car)
+data$MLAutonomia <-as.factor(data$MLAutonomia)
+data$MLAutonomia=factor(data$MLAutonomia,
+                            levels = levels(data$MLAutonomia),
+                            labels = c("1","2","3","4","5"),
+                            ordered = T)
+data$MLAutonomia <-as.numeric(data$MLAutonomia)
+table(data$MLAutonomia)
+```
+
+###Variable MLViolencia
+```{r}
+#Le asignamos etiquetas a los valores
+data$MLViolencia <-as.factor(data$MLViolencia)
+data$MLViolencia=factor(data$MLViolencia,
+                            levels = levels(data$MLViolencia),
+                            labels = c("1","2","3","4"),
+                            ordered = T)
+data$MLViolencia <-as.numeric(data$MLViolencia)
+table(data$MLViolencia)
+```
+
+
+###Creo una base de datos con las variables que usare
+```{r}
+subdata= data[,c(3,4,5,6,7,8,10)]
+```
+
+###Preparamos la subdata para la factorizacion
+```{r}
+subdata$SecundariaC= 100 - subdata$SecundariaC
+subdata$CuentaF= 100 - subdata$CuentaF
+subdata$VozPolitica= 100 - subdata$VozPolitica
+```
+###Normalizamos la variable DesempleoMujM/v
+```{r}
+library(BBmisc)
+data$DesempleoMuj= normalize(data$DesempleoMuj, 
+                       method = "range", 
+                       margin=2, # by column
+                       range = c(0, 100),)
+data$DesempleoMuj=round(data$DesempleoMuj,2)
+```
+
+###Creo una base de datos con las variables que usare
+```{r}
+subdata= data[,c(3,4,5,6,7,8,9,10)]
+```
+
+###Resumen de data
+```{r}
+str(subdata)
+```
+PASO 1: Calculemos matriz de correlación:
+
+```{r}
+# esta es:
+library(polycor)
+corMatrix=polycor::hetcor(subdata)$correlations
+```
+PASO 2. Explorar correlaciones:
+```{r}
+#Sin evaluar significancia:
+library(ggcorrplot)
+ggcorrplot(corMatrix)
+```
+
+```{r}
+#Evaluando significancia:
+ggcorrplot(corMatrix,
+          p.mat = cor_pmat(corMatrix),
+          insig = "blank")
+```
+```{r}
+#te sirve para redondear a dos decimales, pero si se corresolo "matriz_corr" es para sacar
+round(corMatrix, 2)
+```
+
+PASO 3. Verificar si datos permiten factorizar:
+```{r}
+library(psych)
+psych::KMO(corMatrix)
+```
+#VEMOS EL KMO de cada variable
+```{r}
+KMO(corMatrix)$MSAi
+```
+
+PASO 4. Verificar si la matriz de correlaciones es adecuada
+    - Aqui hay dos pruebas:
+
+ a. Hnula: La matriz de correlacion es una matriz identidad
+```{r}
+cortest.bartlett(corMatrix,n=nrow(subdata))$p.value>0.05
+```
+ b. Hnula: La matriz de correlacion es una matriz singular.
+```{r}
+library(matrixcalc)
+is.singular.matrix(corMatrix)
+```
+
+PASO 5, Determinar en cuantos factores o variables latentes podríamos redimensionar la subdata:
+```{r}
+fa.parallel(subdata,fm = 'ML', fa = 'fa')
+```
+
+```{r}
+#instalar 'parameters' y 'n_factors'
+library(parameters)
+library(nFactors)
+sugerencia=parameters::n_factors(corMatrix)
+
+library(see)
+# tenemos:
+plot(sugerencia)
+```
+
+PASO 6. Redimensionar a numero menor de factores
+
+Resultado inicial:
+```{r}
+library(GPArotation)
+resfa <- fa(subdata,nfactors = 3,cor = 'mixed',rotate = "varimax",fm="minres")
+```
+
+```{r}
+print(resfa$loadings)
+```
+
+Resultado mejorado:
+```{r}
+print(resfa$loadings,cutoff = 0.5)
+```
+Cuando logramos que cada variable se vaya a un factor, tenemos una estructura simple.
+
+Resultado visual:
+```{r}
+fa.diagram(resfa)
+```
+
+PASO 7. Evaluando Resultado obtenido:
+```{r}
+#¿La Raíz del error cuadrático medio corregida está cerca a cero?
+resfa$crms
+```
+```{r}
+#¿La Raíz del error cuadrático medio de aproximación es menor a 0.05?
+resfa$RMSEA
+```
+```{r}
+#¿El índice de Tucker-Lewis es mayor a 0.9?
+resfa$TLI
+```
+```{r}
+#¿Qué variables aportaron mas a los factores?
+sort(resfa$communality)
+```
+```{r}
+#¿Qué variables contribuyen a mas de un factor?
+sort(resfa$complexity)
+```
+
+PASO 8.Posibles valores proyectados:
+
+Creamos un data set
+```{r}
+factoriales=as.data.frame(resfa$scores)
+head(factoriales)
+```
+
+o incluirlos en nuestro subset original
+
+```{r}
+subdata$factor1<- factoriales$MR1
+subdata$factor2<- factoriales$MR2
+subdata$factor3<- factoriales$MR3
+
+summary(factoriales)
+```
+
+```{r}
+subdata=cbind(data[,c(1,2)],subdata)
+```
+
+Finalmente, veamos relaciones:
+```{r}
+library(BBmisc)
+subdata$factor1=normalize(subdata$factor1, 
+                      method = "range", 
+                      margin=2, # by column
+                      range = c(0, 100))
+subdata$factor2=normalize(subdata$factor2, 
+                      method = "range", 
+                      margin=2, # by column
+                      range = c(0, 100))
+subdata$factor3=normalize(subdata$factor3, 
+                      method = "range", 
+                      margin=2, # by column
+                      range = c(0, 100))
+```
+
+Las podemos ver todas aqui:
+```{r}
+plot(subdata$factor1,subdata$DesigualdadGenero)
+plot(subdata$factor2,subdata$DesigualdadGenero)
+plot(subdata$factor3,subdata$DesigualdadGenero)
+```
+
+
+#REGRESIONES
+```{r}
+hipotesis3 = formula(DesigualdadGenero ~ factor1 + factor2 + factor3)
+regresion3=lm(hipotesis3,data=subdata[,-c(1)])
+summary(regresion3)
+```
+
+#DIAGNOSTICO DE LA REGRESION
+
+  - Para que se considere que el modelo de regresión elegido es el adecuado, debemos verificar algunos 
+    requisitos a posteriori:
+
+a. Linealidad:
+   - Se asume relación lineal entre Y y X:
+```{r}
+# linea roja debe tender a horizontal
+plot(regresion3, 1)
+```
+b. Homocedasticidad
+
+  - Se asume que el error del modelo de regresión no afecta la varianza o dispersión de la estimación (MATH^):
+```{r}
+# linea roja debe tender a horizontal
+plot(regresion3, 3)
+```
+
+También podemos utilizar el test de Breusch-Pagan:
+```{r}
+library(lmtest)
+# null: modelo homocedastico
+bptest(regresion3)
+```
+
+  - La probabilidad de homocedasticidad es alta (p-value menor a 0.08), de el modelo muestra homocedasticidad.
+
+c. Normalidad de los residuos
+
+Los residuos, la diferencia entre MATH y MATH^, debe distribuirse de manera normal:
+```{r}
+# puntos cerca a la diagonal
+plot(regresion3, 2)
+
+```
+
+Podemos aplicar el test de Shapiro a los residuos:
+```{r}
+shapiro.test(regresion3$residuals)
+```
+
+d. No multicolinelidad
+
+  - Si los predictores tienen una correlación muy alta entre sí, hay multicolinealidad, lo cual no es deseable:
+```{r}
+library(DescTools)
+VIF(regresion3) # > 5 es problematico
+```
+
+e. Valores influyentes
+```{r}
+plot(regresion3,5)
+```
+```{r}
+checkregresion3=as.data.frame(influence.measures(regresion3)$is.inf)
+head(checkregresion3)
+
+checkregresion3[checkregresion3$cook.d|checkregresion3$hat,] 
+```
+
+----
+3.2  ANALISIS FACTORIAL EXPLORATORIO SIN VARIABLE DESEMPLEO (variable problematica)
+----
+
+PASO 0: ALISTAR BASE DE DATOS
+
+###Creo una base de datos con las variables que usare
+```{r}
+subdata= data[,c(3,4,5,6,7,8,10)]
+```
+
+###Resumen de data
+```{r}
+str(subdata)
+```
+
+PASO 1: Calculemos matriz de correlación:
+
+```{r}
+# esta es:
+library(polycor)
+corMatrix=polycor::hetcor(subdata)$correlations
+```
+
+PASO 2. Explorar correlaciones:
+```{r}
+#Sin evaluar significancia:
+library(ggcorrplot)
+ggcorrplot(corMatrix)
+```
+
+```{r}
+#Evaluando significancia:
+ggcorrplot(corMatrix,
+          p.mat = cor_pmat(corMatrix),
+          insig = "blank")
+```
+```{r}
+#te sirve para redondear a dos decimales, pero si se corresolo "matriz_corr" es para sacar
+round(corMatrix, 2)
+```
+
+PASO 3. Verificar si losdatos permiten factorizar:
+```{r}
+library(psych)
+psych::KMO(corMatrix)
+```
+PASO 4. Verificar si la matriz de correlaciones es adecuada
+    - Aqui hay dos pruebas:
+
+ a. Hnula: La matriz de correlacion es una matriz identidad
+```{r}
+cortest.bartlett(corMatrix,n=nrow(subdata))$p.value>0.05
+```
+ b. Hnula: La matriz de correlacion es una matriz singular.
+```{r}
+library(matrixcalc)
+is.singular.matrix(corMatrix)
+```
+
+Paso 5. Determinar en cuantos factores o variables latentes podríamos redimensionar la subdata:
+```{r}
+fa.parallel(subdata,fm = 'ML', fa = 'fa')
+```
+
+
+PASO 6. Redimensionar a numero menor de factores
+
+Resultado inicial:
+```{r}
+library(GPArotation)
+resfa <- fa(subdata,nfactors = 3,cor = 'mixed',rotate = "varimax",fm="minres")
+```
+
+```{r}
+print(resfa$loadings)
+```
+RESPUESTA: 57.4% de las caracteristicas de las variables,es un problema porque se pierde bastante información.No se utiliza el EFA.
+
+Resultado mejorado:
+```{r}
+print(resfa$loadings,cutoff = 0.5)
+```
+Cuando logramos que cada variable se vaya a un factor, tenemos una estructura simple.
+
+Resultado visual:
+```{r}
+fa.diagram(resfa)
+```
+CONCLUSION: los tres factores obtenidos en el análisis factorial no corresponde a las variables latentes propuestas segun la revision de literatura.
+
+PASO 7. Evaluando Resultado obtenido:
+```{r}
+#¿La Raíz del error cuadrático medio corregida está cerca a cero?
+resfa$crms
+```
+```{r}
+#¿La Raíz del error cuadrático medio de aproximación es menor a 0.05?
+resfa$RMSEA
+```
+```{r}
+#¿El índice de Tucker-Lewis es mayor a 0.9?
+resfa$TLI
+```
+```{r}
+#¿Qué variables aportaron mas a los factores?
+sort(resfa$communality)
+```
+```{r}
+#¿Qué variables contribuyen a mas de un factor?
+sort(resfa$complexity)
+```
+
+PASO 8.Posibles valores proyectados:
+
+Creamos un data set
+```{r}
+factoriales=as.data.frame(resfa$scores)
+head(factoriales)
+```
+
+o incluirlos en nuestro subset original
+
+```{r}
+subdata$factor1<- factoriales$MR1
+subdata$factor2<- factoriales$MR2
+subdata$factor3<- factoriales$MR3
+
+summary(factoriales)
+```
+
+PASO 9. REINCORPORAMOS AL SUBDATA LAS VARIABLES QUE SE NECESITAN PARA LA REGRESION (PAIS,DESIGUALDADDEGENERO Y
+   DESEMPELO MUJ)
+```{r}
+subdata=cbind(data[,c(1,2,9)],subdata)
+```
+
+PASO 10. NORMALIZAMOS LOS FACTORES Y NUESTRO INDICE DE DESIGUALDAD DE GENERO
+```{r}
+library(BBmisc)
+subdata$DesigualdadGenero=normalize(subdata$DesigualdadGenero, 
+                      method = "range", 
+                      margin=2, # by column
+                      range = c(0, 100))
+subdata$factor1=normalize(subdata$factor1, 
+                      method = "range", 
+                      margin=2, # by column
+                      range = c(0, 100))
+subdata$factor2=normalize(subdata$factor2, 
+                      method = "range", 
+                      margin=2, # by column
+                      range = c(0, 100))
+subdata$factor3=normalize(subdata$factor3, 
+                      method = "range", 
+                      margin=2, # by column
+                      range = c(0, 100))
+```
+añadir correlaciones con cada factor independiente
+```{r}
+f1=formula(~DesigualdadGenero + factor1) #v. dependiente y v. independiente
+# camino parametrico
+pearson1=cor.test(f1,data=subdata)
+pearson1
+```
+```{r}
+f2=formula(~DesigualdadGenero + factor2) #v. dependiente y v. independiente
+# camino parametrico
+pearson2=cor.test(f2,data=subdata)
+pearson2
+```
+```{r}
+f3=formula(~DesigualdadGenero + factor3) #v. dependiente y v. independiente
+# camino parametrico
+pearson3=cor.test(f3,data=subdata)
+pearson3
+```
+
+PASO 11. GRAIFCAS DE LAS CORRELACIONES
+```{r}
+plot(subdata$factor1,subdata$DesigualdadGenero)
+plot(subdata$factor2,subdata$DesigualdadGenero)
+plot(subdata$factor3,subdata$DesigualdadGenero)
+```
+
+#REGRESIONES
+```{r}
+hipotesis1= formula(DesigualdadGenero ~ factor1)
+regresion1=lm(hipotesis1,data=subdata)
+summary(regresion1)
+```
+```{r}
+hipotesis2 = formula(DesigualdadGenero ~ factor3)
+regresion2=lm(hipotesis2,data=subdata)
+summary(regresion2)
+```
+
+```{r}
+hipotesis3 = formula(DesigualdadGenero ~ factor1 + factor3)
+regresion3=lm(hipotesis3,data=subdata)
+summary(regresion3)
+```
+
+```{r}
+hipotesis4 = formula(DesigualdadGenero ~ factor1 + factor2 + factor3)
+regresion4=lm(hipotesis4,data=subdata[,-c(1)])
+summary(regresion4)
+```
+```{r}
+library(stargazer)
+stargazer(regresion3, regresion4, type = "text")
+```
+
+CONCLUSION: nos convendria
+
+#agregamos desmepleo como variable CONTROL (PONER EN ANEXO)
+```{r}
+hipotesis5 = formula(DesigualdadGenero ~ factor1 + factor2 + factor3+ DesempleoMuj)
+regresion5=lm(hipotesis5,data=subdata[,-c(1)])
+summary(regresion5)
+```
+#DIAGNOSTICO DE LA REGRESION CON LOS FACTORES
+  - Para que se considere que el modelo de regresión elegido es el adecuado, debemos verificar algunos 
+    requisitos a posteriori:
+a. Linealidad:
+   - Se asume relación lineal entre Y y X:
+```{r}
+# linea roja debe tender a horizontal
+plot(regresion4, 1)
+
+```
+b. Homocedasticidad
+
+  - Se asume que el error del modelo de regresión no afecta la varianza o dispersión de la estimación (MATH^):
+```{r}
+# linea roja debe tender a horizontal
+plot(regresion4, 3)
+```
+También podemos utilizar el test de Breusch-Pagan:
+```{r}
+library(lmtest)
+# null: modelo homocedastico
+bptest(regresion4)
+```
+c. Normalidad de los residuos
+Los residuos, la diferencia entre MATH y MATH^, debe distribuirse de manera normal:
+```{r}
+# puntos cerca a la diagonal
+plot(regresion3, 4)
+```
+Podemos aplicar el test de Shapiro a los residuos:
+```{r}
+shapiro.test(regresion4$residuals)
+```
+d. No multicolinelidad
+- Si los predictores tienen una correlación muy alta entre sí, hay multicolinealidad, lo cual no es deseable:
+```{r}
+library(DescTools)
+VIF(regresion4) # > 5 es problematico
+```
+e. Valores influyentes
+```{r}
+plot(regresion4,5)
+```
+RESPUESTA: Se concluye que si hay casos influyentes que son Namibia, Bolivia y South Africa
+```{r}
+checkregresion4=as.data.frame(influence.measures(regresion4)$is.inf)
+head(checkregresion4)
+checkregresion4[checkregresion4$cook.d|checkregresion4$hat,]
+#no todo valor outlier es influyente pero si todo valor influyente es outlier
+```
+
+----
+4. REGRESIÓN LINEAL MULTIPLE
+----
+
+NOTA: Al realizar el EFA nos damos cuenta que no es viable, por  lo tanto, realizamoslas regresiones solo con las variables observables y no no con factores
+
+PASO 1. Primero analziamos las correlaicones entre las variables observables y el indice
+```{r}
+library(polycor)
+correlaciones=polycor::hetcor(subdata[,-c(1,11,12,13)])$correlations
+#Sin evaluar significancia:
+library(ggcorrplot)
+ggcorrplot(correlaciones)
+```
+```{r}
+correlaciones
+```
+
+PASO 2. REGRESION CON CADA VARIABLE
+```{r}
+mod1=lm(subdata$DesigualdadGenero ~ subdata$MLAutonomia)
+summary(mod1)
+```
+```{r}
+mod2=lm(subdata$DesigualdadGenero ~ subdata$MLViolencia)
+summary(mod2)
+```
+```{r}
+mod3=lm(subdata$DesigualdadGenero ~ subdata$VozPolitica)
+summary(mod3)
+```
+```{r}
+mod4=lm(subdata$DesigualdadGenero ~ subdata$LibertadMov)
+summary(mod4)
+```
+```{r}
+mod5=lm(subdata$DesigualdadGenero ~ subdata$Desconfianza)
+summary(mod5)
+```
+```{r}
+mod6=lm(subdata$DesigualdadGenero ~ subdata$DesempleoMuj)
+summary(mod6)
+```
+```{r}
+mod7=lm(subdata$DesigualdadGenero ~ subdata$SecundariaC)
+summary(mod7)
+```
+```{r}
+mod8=lm(subdata$DesigualdadGenero ~ subdata$CuentaF)
+summary(mod8)
+```
+
+
+PASO 3. MODELOS FINALES DE REGRESION
+```{r}
+MF0=lm(DesigualdadGenero ~ .,data=subdata[,-c(1)])
+summary(MF0)
+```
+
+#MODELO 1
+```{r}
+MF1=lm(subdata$DesigualdadGenero ~ subdata$MLAutonomia +subdata$LibertadMov + subdata$SecundariaC + subdata$CuentaF)
+anova(MF1)
+library(stargazer)
+stargazer(MF1, type = "text")
+```
+
+##DIAGNOSTICO DEL MODELO 1
+a. Linealidad
+   - Se asume relación lineal entre Y y X:
+```{r}
+# linea roja debe tender a horizontal
+plot(MF1, 1)
+```
+b. Homocedasticidad
+   Se asume que el error del modelo de regresión no afecta la varianza o dispersión de la estimación (MATH^):
+```{r}
+# linea roja debe tender a horizontal
+plot(MF1, 3)
+```
+También podemos utilizar el test de Breusch-Pagan:
+```{r}
+library(lmtest)
+# Hnull: modelo homocedastico
+bptest(MF1)
+```
+c. Normalidad de los residuos
+- Los residuos, la diferencia entre MATH y MATH^, debe distribuirse de manera normal:
+```{r}
+# puntos cerca a la diagonal
+plot(MF1, 2)
+```
+Podemos aplicar el test de Shapiro a los residuos:
+```{r}
+shapiro.test(MF1$residuals)
+```
+
+D.No multicolinelidad
+  - Si los predictores tienen una correlación muy alta entre sí, hay multicolinealidad, lo cual no es deseable:
+```{r}
+library(DescTools)
+VIF(MF1) # > 5 es problematico
+```
+
+e. Valores influyentes
+```{r}
+plot(MF1,5)
+```
+```{r}
+checkMF1=as.data.frame(influence.measures(MF1)$is.inf)
+head(checkMF1)
+
+checkMF1[checkMF1$cook.d|checkMF1$hat,] 
+```
+
+
+
+#MODELO 2
+```{r}
+MF2=lm(subdata$DesigualdadGenero ~ subdata$MLAutonomia +subdata$SecundariaC + subdata$CuentaF+ subdata$VozPolitica)
+anova(MF1)
+stargazer(MF2, type = "text")
+```
+##DIAGNOSTICO DEL MODELO 2
+a. Linealidad
+   - Se asume relación lineal entre Y y X:
+```{r}
+# linea roja debe tender a horizontal
+plot(MF2, 1)
+```
+b. Homocedasticidad
+   - A MAYORES valores pronosticados el erro es mayor. entonces la varianza no es igual, ES UN MODELO HETEROCES
+  - Se asume que el error del modelo de regresión no afecta la varianza o dispersión de la estimación (MATH^):
+```{r}
+# linea roja debe tender a horizontal
+plot(MF2, 3)
+```
+También podemos utilizar el test de Breusch-Pagan:
+```{r}
+library(lmtest)
+# Hnull: modelo homocedastico
+bptest(MF2)
+```
+
+  - La probabilidad de homocedasticidad es alta, de el modelo muestra homocedasticidad.
+
+c. Normalidad de los residuos
+
+Los residuos, la diferencia entre MATH y MATH^, debe distribuirse de manera normal:
+```{r}
+# puntos cerca a la diagonal
+plot(MF2, 2)
+```
+###como interpretar el QQPLOT
+
+Podemos aplicar el test de Shapiro a los residuos:
+```{r}
+shapiro.test(MF2$residuals)
+```
+- SI HAY UNS DISTRIBUCION NORMAL
+
+d.No multicolinelidad
+  - Si los predictores tienen una correlación muy alta entre sí, hay multicolinealidad, lo cual no es deseable:
+```{r}
+library(DescTools)
+VIF(MF2) # > 5 es problematico
+```
+
+e. Valores influyentes
+```{r}
+plot(MF2,5)
+```
+RESPUESTA: segun el grafico hay un indicio que si hay tres casos influyentes pero se verificará tomando en cuenta la distancia cook y el hat.
+
+```{r}
+checkMF2=as.data.frame(influence.measures(MF2)$is.inf)
+head(checkMF2)
+
+checkMF2[checkMF2$cook.d|checkMF2$hat,] 
+```
+RESPUESTA: no hay valores influyentes
+
+
+#MODELO 3
+```{r}
+MF3=lm(subdata$DesigualdadGenero ~ subdata$MLAutonomia +subdata$CuentaF + subdata$SecundariaC)
+anova(MF3)
+stargazer(MF3, type = "text")
+```
+
+##DIAGNOSTICO DEL MODELO 3
+a. Linealidad
+   - Se asume relación lineal entre Y y X:
+```{r}
+# linea roja debe tender a horizontal
+plot(MF3, 1)
+```
+b. Homocedasticidad
+   - A MAYORES valores pronosticados el erro es mayor. entonces la varianza no es igual, ES UN MODELO HETEROCES
+  - Se asume que el error del modelo de regresión no afecta la varianza o dispersión de la estimación (MATH^):
+```{r}
+# linea roja debe tender a horizontal
+plot(MF3, 3)
+```
+También podemos utilizar el test de Breusch-Pagan:
+```{r}
+library(lmtest)
+# Hnull: modelo homocedastico
+bptest(MF3)
+```
+
+  - La probabilidad de homocedasticidad es alta, de el modelo muestra homocedasticidad.
+
+c. Normalidad de los residuos
+
+Los residuos, la diferencia entre MATH y MATH^, debe distribuirse de manera normal:
+```{r}
+# puntos cerca a la diagonal
+plot(MF3, 2)
+```
+###como interpretar el QQPLOT
+
+Podemos aplicar el test de Shapiro a los residuos:
+```{r}
+shapiro.test(MF3$residuals)
+```
+- SI HAY UNA DISTRIBUCION NORMAL
+
+d.No multicolinelidad
+  - Si los predictores tienen una correlación muy alta entre sí, hay multicolinealidad, lo cual no es deseable:
+```{r}
+library(DescTools)
+VIF(MF3) # > 5 es problematico
+```
+
+e. Valores influyentes
+```{r}
+plot(MF3,5)
+```
+RESPUESTA: segun el grafico hay un indicio que si hay tres casos influyentes pero se verificará tomando en cuenta la distancia cook y el hat.
+
+```{r}
+checkMF3=as.data.frame(influence.measures(MF3)$is.inf)
+head(checkMF3)
+
+checkMF3[checkMF3$cook.d|checkMF3$hat,] 
+```
+RESPUESTA: no hay valores influyentes
+
+
+PASO 4. COMPARACION DE MODELOS
+
+```{r}
+stargazer(MF1,MF2,MF3, type = "text", title = "Modelos planteados",digits = 3, single.row = F,no.space = F,intercept.bottom = FALSE,
+          dep.var.caption="Variable dependiente:",
+          dep.var.labels="Desigualdad de género",
+          covariate.labels=c("Constante","Marco Legal Autonomía","Libertad de Movimiento","Secundaria", "Cuenta Financierta","Voz Política"),
+          column.labels = c("Modelo 1", "Modelo 2","Modelo 3"),
+          notes.label = "Notas:")
+```
+
+
+Ecuacion final
+```{r}
+DesigualdadGenero= 76.101 + (2.935*MLAutonmia) + (0.304*SecCompleta) +(0.45*CuentaF)
+```
+
+Tabla Anova
+```{r}
+tanova=anova(MF1,MF2,MF3)
+stargazer(tanova,type = 'text',summary = F,title = "Table de Análisis de Varianza")
+```
+
+La comparación de modelos usando la tabla de análisis de varianza (anova) propone como hipótesis nula que los modelos no difieren (no se ha reducido el error al pasar de un modelo a otro). Como la comparación es significativa (vea el P), rechazamos igualdad de modelos: el modelo 3 sí reduce el error con menos variables
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

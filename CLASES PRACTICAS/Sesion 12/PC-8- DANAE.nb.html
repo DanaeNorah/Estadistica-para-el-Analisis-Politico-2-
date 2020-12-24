@@ -1750,18 +1750,170 @@ summary {
 
 <!-- rnb-text-begin -->
 <p>PC8 - DANAE NORAH BALLENA VARGAS (20180267)</p>
+<ol style="list-style-type: decimal">
+<li>Descarga de la base de datos:</li>
+</ol>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShyaW8pXG5saW5rPSdodHRwczovL2dpdGh1Yi5jb20vYXJjcnV6MC9wYXF1ZXRlYWRwL2Jsb2IvbWFzdGVyL2RhdGEvcXVpZWJyZV9kZW1vY3JhY2lhLnJkYT9yYXc9dHJ1ZSdcbmRhdGEgPSBpbXBvcnQobGluaylcbmBgYCJ9 -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShyaW8pXG5saW5rPSdodHRwczovL2dpdGh1Yi5jb20vYXJjcnV6MC9wYXF1ZXRlYWRwL2Jsb2IvbWFzdGVyL2RhdGEvcXVpZWJyZV9kZW1vY3JhY2lhLnJkYT9yYXc9dHJ1ZSdcbmRhdGEgPSBpbXBvcnQobGluaylcbnN0cihkYXRhKVxuYGBgIn0= -->
 <pre class="r"><code>library(rio)
 link=&#39;https://github.com/arcruz0/paqueteadp/blob/master/data/quiebre_democracia.rda?raw=true&#39;
-data = import(link)</code></pre>
+data = import(link)
+str(data)</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
+<ol start="2" style="list-style-type: decimal">
+<li>Se pregunta si es posible determinar qué variables explicarían el quiebre a la democracia en los países de América Latina. Para eso se le pide desarrollar tres modelos logísticos</li>
+</ol>
+<p>#2.1) Convetimos la vairbale dependiente en categoica</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZGF0YSRxdWllYnJlX2RlbW9jcmFjaWE9YXMuZmFjdG9yKGRhdGEkcXVpZWJyZV9kZW1vY3JhY2lhKSBcbiAgbGV2ZWxzKGRhdGEkcXVpZWJyZV9kZW1vY3JhY2lhKTwtIGMoXCJObyBRdWllYnJlXCIsIFwiUXVpZWJyZVwiKSBcbnRhYmxlKGRhdGEkcXVpZWJyZV9kZW1vY3JhY2lhKSBcbnN0cihkYXRhJHF1aWVicmVfZGVtb2NyYWNpYSlcbmBgYCJ9 -->
+<pre class="r"><code>data$quiebre_democracia=as.factor(data$quiebre_democracia) 
+  levels(data$quiebre_democracia)&lt;- c(&quot;No Quiebre&quot;, &quot;Quiebre&quot;) 
+table(data$quiebre_democracia) 
+str(data$quiebre_democracia)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>#2.2)Calculamos los tres modelos - MODELO 1:</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuTW9kZWxvMT1nbG0ocXVpZWJyZV9kZW1vY3JhY2lhIH4gY2FsaWRhZF9kZW1vY3JhY2lhLCBkYXRhPWRhdGEsZmFtaWx5ID0gYmlub21pYWwpIFxubGlicmFyeShzdGFyZ2F6ZXIpIFxuc3RhcmdhemVyKE1vZGVsbzEsdHlwZT1cInRleHRcIikgXG5gYGAifQ== -->
+<pre class="r"><code>Modelo1=glm(quiebre_democracia ~ calidad_democracia, data=data,family = binomial) 
+library(stargazer) 
+stargazer(Modelo1,type=&quot;text&quot;) </code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<ul>
+<li>MODELO 2:</li>
+</ul>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuTW9kZWxvMj1nbG0ocXVpZWJyZV9kZW1vY3JhY2lhIH4gY2FsaWRhZF9kZW1vY3JhY2lhICsgZWRhZF9yZWdpbWVuLCBkYXRhPWRhdGEsIGZhbWlseSA9IGJpbm9taWFsKSBcbmxpYnJhcnkoc3RhcmdhemVyKSBcbnN0YXJnYXplcihNb2RlbG8yLHR5cGU9XCJ0ZXh0XCIpIFxuYGBgIn0= -->
+<pre class="r"><code>Modelo2=glm(quiebre_democracia ~ calidad_democracia + edad_regimen, data=data, family = binomial) 
+library(stargazer) 
+stargazer(Modelo2,type=&quot;text&quot;) </code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<ul>
+<li>MODELO 3:</li>
+</ul>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuTW9kZWxvMz1nbG0ocXVpZWJyZV9kZW1vY3JhY2lhIH4gY2FsaWRhZF9kZW1vY3JhY2lhICsgZWRhZF9yZWdpbWVuICsgIHBvZGVyX3ByZXNpZCwgZGF0YT1kYXRhLCBmYW1pbHkgPSBiaW5vbWlhbCkgXG5saWJyYXJ5KHN0YXJnYXplcikgXG5zdGFyZ2F6ZXIoTW9kZWxvMyx0eXBlPVwidGV4dFwiKSBcbmBgYCJ9 -->
+<pre class="r"><code>Modelo3=glm(quiebre_democracia ~ calidad_democracia + edad_regimen +  poder_presid, data=data, family = binomial) 
+library(stargazer) 
+stargazer(Modelo3,type=&quot;text&quot;) </code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<ol start="3" style="list-style-type: decimal">
+<li>Genere una tabla donde se pueda visualizar los tres modelos (3 puntos)</li>
+</ol>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuI2dlbmVyYW1vcyBlbCBzdGFyZ2F6ZXIgbGEgdGFibGEgZGUgY29tcGFyYWNpb24gZGUgbW9kZWxvc1xubGlicmFyeShzdGFyZ2F6ZXIpIFxuc3RhcmdhemVyKE1vZGVsbzEsTW9kZWxvMixNb2RlbG8zLHR5cGU9XCJ0ZXh0XCIpIFxuYGBgIn0= -->
+<pre class="r"><code>#generamos el stargazer la tabla de comparacion de modelos
+library(stargazer) 
+stargazer(Modelo1,Modelo2,Modelo3,type=&quot;text&quot;) </code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<ol start="4" style="list-style-type: decimal">
+<li>De la tabla de comparación de modelos, qué criterio debe analizar para decidir cuál es el mejor modelo. Y bajo ese criterio, ¿cuál sería el mejor modelo?</li>
+</ol>
+<p>RESPUESTA: El criterio para decidir cual es el mejor modelo es fijarnos en el Akaike Inf. Crit. (AIC). Se considera que un modelo es mejor si tiene un Akaike (AIC) menor a los demás. Por lo tanto, en base a este criterio el tercer modelo sería el mejor. Sin embargo, al fijarnos en el p-valor de las variables independientes “edad_regimen” y “poder_presid”, NO son significativas, no aportan al modelo 3 porque su p-valor es incluso mayor a 0.1. Asimismo, no tienen el mismo tamaño de conjunto de datos, observaciones o casos.</p>
+<p>#Evaluando modelo seleccionado Calculemos las probabilidades predecidas de voluntariado:</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucHJlZGljdGVkIDwtIHBsb2dpcyhwcmVkaWN0KE1vZGVsbzIsIGRhdGFbLGMoNCw1LDYsMTApXSkpXG5gYGAifQ== -->
+<pre class="r"><code>predicted &lt;- plogis(predict(Modelo2, data[,c(4,5,6,10)]))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Veamos la matriz de confusión:</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShJbmZvcm1hdGlvblZhbHVlKVxuY29uZnVzaW9uTWF0cml4KGRhdGEkcXVpZWJyZV9kZW1vY3JhY2lhLCBwcmVkaWN0ZWQpXG5gYGAifQ== -->
+<pre class="r"><code>library(InformationValue)
+confusionMatrix(data$quiebre_democracia, predicted)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>#Dos medidas importantes es saber qué tanto acertamos predecir el evento:</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2Vuc2l0aXZpdHkoYWN0dWFscyA9IGFzLm51bWVyaWMoZGF0YSRxdWllYnJlX2RlbW9jcmFjaWEpLHByZWRpY3RlZFNjb3JlcyA9IHByZWRpY3RlZClcbmBgYCJ9 -->
+<pre class="r"><code>sensitivity(actuals = as.numeric(data$quiebre_democracia),predictedScores = predicted)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>#Y qué tanto acertamos predecir la no ocurrencia del evento:</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc3BlY2lmaWNpdHkoYWN0dWFscyA9IGFzLm51bWVyaWMoZGF0YSRxdWllYnJlX2RlbW9jcmFjaWEpLHByZWRpY3RlZFNjb3JlcyA9IHByZWRpY3RlZClcbmBgYCJ9 -->
+<pre class="r"><code>specificity(actuals = as.numeric(data$quiebre_democracia),predictedScores = predicted)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<ol start="5" style="list-style-type: decimal">
+<li>¿Por qué no puedo utilizar el test de razón de verosimilitud con los tres modelos precedentes? ¿qué modelos sí pueden ser comparados con el test de verosimilitud?</li>
+</ol>
+<p>RESPUESTA: Como se explico en la respuesta de la pregutna 4, el modelo 3 emplea variables independientes que no aportan al modelo por tener un p-valor mayor a 0.1 (edad_regimen,poder_preso). Asimismo, no tienen el mismo tamaño de conjunto de datos u observaciones (el modelo 1 y 2 tienen 514 y el modelo 3 tiene 422). Por lo tanto, NO puedo emplear el test de razon de verosimilitud con los tres modelos. Pero, si puedo emplear al modelo 1 y al modelo 2.</p>
+<ol start="6" style="list-style-type: decimal">
+<li>De los modelos que sí pueden ser comparados con el test de razón de verosimilitud ¿cuál es el mejor modelo?</li>
+</ol>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuI3VzYW5kbyBlbCB0ZXN0IGRlIHJhesOzbiBkZSB2ZXJvc2ltaWxpdHVkIChsaWtlbGlob29kIHJhdGlvIHRlc3QgLUxSVCk6XG5saWJyYXJ5KGxtdGVzdClcbmxydGVzdChNb2RlbG8xLE1vZGVsbzIpXG5gYGAifQ== -->
+<pre class="r"><code>#usando el test de razón de verosimilitud (likelihood ratio test -LRT):
+library(lmtest)
+lrtest(Modelo1,Modelo2)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>O alternativamente:</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShwYW5kZXIpXG5wYW5kZXIobHJ0ZXN0KE1vZGVsbzEsTW9kZWxvMiksY2FwdGlvbiA9IFwiTFJUIHBhcmEgbG9zIGRvcyBtb2RlbG9zXCIpXG5gYGAifQ== -->
+<pre class="r"><code>library(pander)
+pander(lrtest(Modelo1,Modelo2),caption = &quot;LRT para los dos modelos&quot;)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>RESPUESTA: De los modelos que sí pueden ser comparados con el test de razón de verosimilitud, el mejor modelo es el MODELO 2. Debido a que pasar del modelo 1 al modelo 2 es significativo (Pr es menor a 0.05), por lo que se rechaza la hipotesis nula de igualdad de modelos. Se concluye que los modelos no son iguales y me quedo con el MODELO 2.</p>
+<ol start="7" style="list-style-type: decimal">
+<li>Del mejor modelo de la pregunta anterior ¿cuáles son los valores marginales de las variables dependientes y cómo es la interpretación?</li>
+</ol>
+<p>#Para ello pedimos efectos marginales.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBpbnRlcnByYWNpb24gdXNhbmRvIG1hcmdpbmFsIGVmZmVjdHM6XG5saWJyYXJ5KG1hcmdpbnMpXG4obW9kZWxvPSBtYXJnaW5zKE1vZGVsbzIpKVxuYGBgIn0= -->
+<pre class="r"><code># interpracion usando marginal effects:
+library(margins)
+(modelo= margins(Modelo2))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<ul>
+<li>Esto sí nos indica cuanto afecta cada variable la probabilidad de ser voluntario.</li>
+</ul>
+<p>Para graficar veamos un resumen:</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuKG1hcmdpbnM9c3VtbWFyeShtb2RlbG8pKVxuYGBgIn0= -->
+<pre class="r"><code>(margins=summary(modelo))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>RESPUESTA: los valores marginales de las variables independientes se ve en el AME de la tabla. Calidad_democracia afecta a nuestro modelo en -0.0168, edad_regimen afecta nuestro modelo en 0.0007. Esto se interpreta: - si aumentamos la calidad de democracia en una unidad, la probabilidad de que haya quiebre democratico disminuye en 1.68%. - si aumentamos la edad de regimen en una unidad, la probabilidad de que haya quienre democratico aumenta en 0.07%.</p>
 <!-- rnb-text-end -->
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIlIgTm90ZWJvb2siDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQpQQzggLSBEQU5BRSBOT1JBSCBCQUxMRU5BIFZBUkdBUyAoMjAxODAyNjcpDQpgYGB7cn0NCmxpYnJhcnkocmlvKQ0KbGluaz0naHR0cHM6Ly9naXRodWIuY29tL2FyY3J1ejAvcGFxdWV0ZWFkcC9ibG9iL21hc3Rlci9kYXRhL3F1aWVicmVfZGVtb2NyYWNpYS5yZGE/cmF3PXRydWUnDQpkYXRhID0gaW1wb3J0KGxpbmspDQpgYGANCg0K</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIlIgTm90ZWJvb2siDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQpQQzggLSBEQU5BRSBOT1JBSCBCQUxMRU5BIFZBUkdBUyAoMjAxODAyNjcpDQoNCjEpCURlc2NhcmdhIGRlIGxhIGJhc2UgZGUgZGF0b3M6DQpgYGB7cn0NCmxpYnJhcnkocmlvKQ0KbGluaz0naHR0cHM6Ly9naXRodWIuY29tL2FyY3J1ejAvcGFxdWV0ZWFkcC9ibG9iL21hc3Rlci9kYXRhL3F1aWVicmVfZGVtb2NyYWNpYS5yZGE/cmF3PXRydWUnDQpkYXRhID0gaW1wb3J0KGxpbmspDQpzdHIoZGF0YSkNCmBgYA0KDQoyKQlTZSBwcmVndW50YSBzaSBlcyBwb3NpYmxlIGRldGVybWluYXIgcXXDqSB2YXJpYWJsZXMgZXhwbGljYXLDrWFuIGVsIHF1aWVicmUgYSBsYSBkZW1vY3JhY2lhIGVuIGxvcyBwYcOtc2VzIGRlIEFtw6lyaWNhIExhdGluYS4gICAgICAgUGFyYSBlc28gc2UgbGUgcGlkZSBkZXNhcnJvbGxhciB0cmVzIG1vZGVsb3MgbG9nw61zdGljb3MNCg0KIzIuMSkgQ29udmV0aW1vcyBsYSB2YWlyYmFsZSBkZXBlbmRpZW50ZSBlbiBjYXRlZ29pY2ENCmBgYHtyfQ0KZGF0YSRxdWllYnJlX2RlbW9jcmFjaWE9YXMuZmFjdG9yKGRhdGEkcXVpZWJyZV9kZW1vY3JhY2lhKSANCiAgbGV2ZWxzKGRhdGEkcXVpZWJyZV9kZW1vY3JhY2lhKTwtIGMoIk5vIFF1aWVicmUiLCAiUXVpZWJyZSIpIA0KdGFibGUoZGF0YSRxdWllYnJlX2RlbW9jcmFjaWEpIA0Kc3RyKGRhdGEkcXVpZWJyZV9kZW1vY3JhY2lhKQ0KYGBgDQojMi4yKUNhbGN1bGFtb3MgbG9zIHRyZXMgbW9kZWxvcw0KLSBNT0RFTE8gMToNCmBgYHtyfQ0KTW9kZWxvMT1nbG0ocXVpZWJyZV9kZW1vY3JhY2lhIH4gY2FsaWRhZF9kZW1vY3JhY2lhLCBkYXRhPWRhdGEsZmFtaWx5ID0gYmlub21pYWwpIA0KbGlicmFyeShzdGFyZ2F6ZXIpIA0Kc3RhcmdhemVyKE1vZGVsbzEsdHlwZT0idGV4dCIpIA0KYGBgDQoNCi0gTU9ERUxPIDI6DQpgYGB7cn0NCk1vZGVsbzI9Z2xtKHF1aWVicmVfZGVtb2NyYWNpYSB+IGNhbGlkYWRfZGVtb2NyYWNpYSArIGVkYWRfcmVnaW1lbiwgZGF0YT1kYXRhLCBmYW1pbHkgPSBiaW5vbWlhbCkgDQpsaWJyYXJ5KHN0YXJnYXplcikgDQpzdGFyZ2F6ZXIoTW9kZWxvMix0eXBlPSJ0ZXh0IikgDQpgYGANCg0KLSBNT0RFTE8gMzoNCmBgYHtyfQ0KTW9kZWxvMz1nbG0ocXVpZWJyZV9kZW1vY3JhY2lhIH4gY2FsaWRhZF9kZW1vY3JhY2lhICsgZWRhZF9yZWdpbWVuICsgIHBvZGVyX3ByZXNpZCwgZGF0YT1kYXRhLCBmYW1pbHkgPSBiaW5vbWlhbCkgDQpsaWJyYXJ5KHN0YXJnYXplcikgDQpzdGFyZ2F6ZXIoTW9kZWxvMyx0eXBlPSJ0ZXh0IikgDQpgYGANCg0KMykJR2VuZXJlIHVuYSB0YWJsYSBkb25kZSBzZSBwdWVkYSB2aXN1YWxpemFyIGxvcyB0cmVzIG1vZGVsb3MgKDMgcHVudG9zKQ0KYGBge3J9DQojZ2VuZXJhbW9zIGVsIHN0YXJnYXplciBsYSB0YWJsYSBkZSBjb21wYXJhY2lvbiBkZSBtb2RlbG9zDQpsaWJyYXJ5KHN0YXJnYXplcikgDQpzdGFyZ2F6ZXIoTW9kZWxvMSxNb2RlbG8yLE1vZGVsbzMsdHlwZT0idGV4dCIpIA0KYGBgDQoNCjQpCURlIGxhIHRhYmxhIGRlIGNvbXBhcmFjacOzbiBkZSBtb2RlbG9zLCBxdcOpIGNyaXRlcmlvIGRlYmUgYW5hbGl6YXIgcGFyYSBkZWNpZGlyIGN1w6FsIGVzIGVsIG1lam9yIG1vZGVsby4gWSBiYWpvIGVzZSBjcml0ZXJpbywgwr9jdcOhbCBzZXLDrWEgZWwgbWVqb3IgbW9kZWxvPyANCiAgDQogIFJFU1BVRVNUQTogRWwgY3JpdGVyaW8gcGFyYSBkZWNpZGlyIGN1YWwgZXMgZWwgbWVqb3IgbW9kZWxvIGVzIGZpamFybm9zIGVuIGVsIEFrYWlrZSBJbmYuIENyaXQuIChBSUMpLiBTZSBjb25zaWRlcmEgcXVlIHVuIA0KICAgICAgICAgICAgIG1vZGVsbyBlcyBtZWpvciBzaSB0aWVuZSB1biBBa2Fpa2UgKEFJQykgbWVub3IgYSBsb3MgZGVtw6FzLiBQb3IgbG8gdGFudG8sIGVuIGJhc2UgYSBlc3RlIGNyaXRlcmlvIGVsIHRlcmNlciBtb2RlbG8NCiAgICAgICAgICAgICBzZXLDrWEgZWwgbWVqb3IuIFNpbiBlbWJhcmdvLCBhbCBmaWphcm5vcyBlbiBlbCBwLXZhbG9yIGRlIGxhcyB2YXJpYWJsZXMgaW5kZXBlbmRpZW50ZXMgImVkYWRfcmVnaW1lbiIgeQ0KICAgICAgICAgICAgICJwb2Rlcl9wcmVzaWQiLCBOTyBzb24gc2lnbmlmaWNhdGl2YXMsIG5vIGFwb3J0YW4gYWwgbW9kZWxvIDMgcG9ycXVlIHN1IHAtdmFsb3IgZXMgaW5jbHVzbyBtYXlvciBhIDAuMS4gQXNpbWlzbW8sIA0KICAgICAgICAgICAgIG5vIHRpZW5lbiBlbCBtaXNtbyB0YW1hw7FvIGRlIGNvbmp1bnRvIGRlIGRhdG9zLCBvYnNlcnZhY2lvbmVzIG8gY2Fzb3MuIA0KDQoNCiNFdmFsdWFuZG8gbW9kZWxvIHNlbGVjY2lvbmFkbw0KQ2FsY3VsZW1vcyBsYXMgcHJvYmFiaWxpZGFkZXMgcHJlZGVjaWRhcyBkZSB2b2x1bnRhcmlhZG86DQpgYGB7cn0NCnByZWRpY3RlZCA8LSBwbG9naXMocHJlZGljdChNb2RlbG8yLCBkYXRhWyxjKDQsNSw2LDEwKV0pKQ0KYGBgDQpWZWFtb3MgbGEgbWF0cml6IGRlIGNvbmZ1c2nDs246DQpgYGB7cn0NCmxpYnJhcnkoSW5mb3JtYXRpb25WYWx1ZSkNCmNvbmZ1c2lvbk1hdHJpeChkYXRhJHF1aWVicmVfZGVtb2NyYWNpYSwgcHJlZGljdGVkKQ0KYGBgDQojRG9zIG1lZGlkYXMgaW1wb3J0YW50ZXMgZXMgc2FiZXIgcXXDqSB0YW50byBhY2VydGFtb3MgcHJlZGVjaXIgZWwgZXZlbnRvOg0KYGBge3J9DQpzZW5zaXRpdml0eShhY3R1YWxzID0gYXMubnVtZXJpYyhkYXRhJHF1aWVicmVfZGVtb2NyYWNpYSkscHJlZGljdGVkU2NvcmVzID0gcHJlZGljdGVkKQ0KYGBgDQoNCiNZIHF1w6kgdGFudG8gYWNlcnRhbW9zIHByZWRlY2lyIGxhIG5vIG9jdXJyZW5jaWEgZGVsIGV2ZW50bzoNCmBgYHtyfQ0Kc3BlY2lmaWNpdHkoYWN0dWFscyA9IGFzLm51bWVyaWMoZGF0YSRxdWllYnJlX2RlbW9jcmFjaWEpLHByZWRpY3RlZFNjb3JlcyA9IHByZWRpY3RlZCkNCmBgYA0KDQoNCjUpCcK/UG9yIHF1w6kgbm8gcHVlZG8gdXRpbGl6YXIgZWwgdGVzdCBkZSByYXrDs24gZGUgdmVyb3NpbWlsaXR1ZCBjb24gbG9zIHRyZXMgbW9kZWxvcyBwcmVjZWRlbnRlcz8gwr9xdcOpIG1vZGVsb3Mgc8OtIHB1ZWRlbiBzZXIgY29tcGFyYWRvcyBjb24gZWwgdGVzdCBkZSB2ZXJvc2ltaWxpdHVkPyANCiAgDQogIFJFU1BVRVNUQTogQ29tbyBzZSBleHBsaWNvIGVuIGxhIHJlc3B1ZXN0YSBkZSBsYSBwcmVndXRuYSA0LCBlbCBtb2RlbG8gMyBlbXBsZWEgdmFyaWFibGVzIGluZGVwZW5kaWVudGVzIHF1ZSBubyBhcG9ydGFuIGFsIA0KICAgICAgICAgICAgIG1vZGVsbyBwb3IgdGVuZXIgdW4gcC12YWxvciBtYXlvciBhIDAuMSAoZWRhZF9yZWdpbWVuLHBvZGVyX3ByZXNvKS4gQXNpbWlzbW8sIG5vIHRpZW5lbiBlbCBtaXNtbyB0YW1hw7FvIGRlIA0KICAgICAgICAgICAgIGNvbmp1bnRvIGRlIGRhdG9zIHUgb2JzZXJ2YWNpb25lcyAoZWwgbW9kZWxvIDEgeSAyIHRpZW5lbiA1MTQgeSBlbCBtb2RlbG8gMyB0aWVuZSA0MjIpLiBQb3IgbG8gdGFudG8sIE5PIHB1ZWRvDQogICAgICAgICAgICAgZW1wbGVhciBlbCB0ZXN0IGRlIHJhem9uIGRlIHZlcm9zaW1pbGl0dWQgY29uIGxvcyB0cmVzIG1vZGVsb3MuIFBlcm8sIHNpIHB1ZWRvIGVtcGxlYXIgYWwgbW9kZWxvIDEgeSAgYWwgbW9kZWxvIDIuDQoNCg0KNikJRGUgbG9zIG1vZGVsb3MgcXVlIHPDrSBwdWVkZW4gc2VyIGNvbXBhcmFkb3MgY29uIGVsIHRlc3QgZGUgcmF6w7NuIGRlIHZlcm9zaW1pbGl0dWQgwr9jdcOhbCBlcyBlbCBtZWpvciBtb2RlbG8/DQpgYGB7cn0NCiN1c2FuZG8gZWwgdGVzdCBkZSByYXrDs24gZGUgdmVyb3NpbWlsaXR1ZCAobGlrZWxpaG9vZCByYXRpbyB0ZXN0IC1MUlQpOg0KbGlicmFyeShsbXRlc3QpDQpscnRlc3QoTW9kZWxvMSxNb2RlbG8yKQ0KYGBgDQpPIGFsdGVybmF0aXZhbWVudGU6DQpgYGB7cn0NCmxpYnJhcnkocGFuZGVyKQ0KcGFuZGVyKGxydGVzdChNb2RlbG8xLE1vZGVsbzIpLGNhcHRpb24gPSAiTFJUIHBhcmEgbG9zIGRvcyBtb2RlbG9zIikNCmBgYA0KUkVTUFVFU1RBOiBEZSBsb3MgbW9kZWxvcyBxdWUgc8OtIHB1ZWRlbiBzZXIgY29tcGFyYWRvcyBjb24gZWwgdGVzdCBkZSByYXrDs24gZGUgdmVyb3NpbWlsaXR1ZCwgZWwgbWVqb3IgbW9kZWxvIGVzIGVsIE1PREVMTyAyLiANCiAgICAgICAgICAgRGViaWRvIGEgcXVlIHBhc2FyIGRlbCBtb2RlbG8gMSBhbCBtb2RlbG8gMiBlcyAgc2lnbmlmaWNhdGl2byAoUHIgZXMgbWVub3IgYSAwLjA1KSwgcG9yIGxvIHF1ZSBzZSByZWNoYXphIGxhIA0KICAgICAgICAgICBoaXBvdGVzaXMgbnVsYSBkZSBpZ3VhbGRhZCBkZSBtb2RlbG9zLiBTZSBjb25jbHV5ZSBxdWUgbG9zIG1vZGVsb3Mgbm8gc29uIGlndWFsZXMgeSBtZSBxdWVkbyBjb24gZWwgTU9ERUxPIDIuDQoNCg0KNykJRGVsIG1lam9yIG1vZGVsbyBkZSBsYSBwcmVndW50YSBhbnRlcmlvciDCv2N1w6FsZXMgc29uIGxvcyB2YWxvcmVzIG1hcmdpbmFsZXMgZGUgbGFzIHZhcmlhYmxlcyBkZXBlbmRpZW50ZXMgeSBjw7NtbyBlcyBsYSBpbnRlcnByZXRhY2nDs24/IA0KDQojUGFyYSBlbGxvIHBlZGltb3MgZWZlY3RvcyBtYXJnaW5hbGVzLg0KYGBge3J9DQojIGludGVycHJhY2lvbiB1c2FuZG8gbWFyZ2luYWwgZWZmZWN0czoNCmxpYnJhcnkobWFyZ2lucykNCihtb2RlbG89IG1hcmdpbnMoTW9kZWxvMikpDQpgYGANCg0KLSBFc3RvIHPDrSBub3MgaW5kaWNhIGN1YW50byBhZmVjdGEgY2FkYSB2YXJpYWJsZSBsYSBwcm9iYWJpbGlkYWQgZGUgc2VyIHZvbHVudGFyaW8uDQoNClBhcmEgZ3JhZmljYXIgdmVhbW9zIHVuIHJlc3VtZW46DQpgYGB7cn0NCihtYXJnaW5zPXN1bW1hcnkobW9kZWxvKSkNCmBgYA0KUkVTUFVFU1RBOiBsb3MgdmFsb3JlcyBtYXJnaW5hbGVzIGRlIGxhcyB2YXJpYWJsZXMgaW5kZXBlbmRpZW50ZXMgc2UgdmUgZW4gZWwgQU1FIGRlIGxhIHRhYmxhLiBDYWxpZGFkX2RlbW9jcmFjaWEgYWZlY3RhIGEgbnVlc3RybyBtb2RlbG8gZW4gLTAuMDE2OCwgZWRhZF9yZWdpbWVuIGFmZWN0YSBudWVzdHJvIG1vZGVsbyBlbiAwLjAwMDcuIA0KRXN0byBzZSBpbnRlcnByZXRhOiANCi0gc2kgYXVtZW50YW1vcyBsYSBjYWxpZGFkIGRlIGRlbW9jcmFjaWEgZW4gdW5hIHVuaWRhZCwgbGEgcHJvYmFiaWxpZGFkIGRlIHF1ZSBoYXlhIHF1aWVicmUgZGVtb2NyYXRpY28gZGlzbWludXllIGVuIDEuNjglLg0KLSBzaSBhdW1lbnRhbW9zIGxhIGVkYWQgZGUgcmVnaW1lbiBlbiB1bmEgdW5pZGFkLCBsYSBwcm9iYWJpbGlkYWQgZGUgcXVlIGhheWEgcXVpZW5yZSBkZW1vY3JhdGljbyBhdW1lbnRhIGVuIDAuMDclLg0KDQoNCg0KDQoNCg0KDQoNCg0KDQoNCg==</div>
 
 
 

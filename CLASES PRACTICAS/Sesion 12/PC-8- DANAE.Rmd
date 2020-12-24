@@ -4,9 +4,134 @@ output: html_notebook
 ---
 
 PC8 - DANAE NORAH BALLENA VARGAS (20180267)
+
+1)	Descarga de la base de datos:
 ```{r}
 library(rio)
 link='https://github.com/arcruz0/paqueteadp/blob/master/data/quiebre_democracia.rda?raw=true'
 data = import(link)
+str(data)
 ```
+
+2)	Se pregunta si es posible determinar qué variables explicarían el quiebre a la democracia en los países de América Latina.       Para eso se le pide desarrollar tres modelos logísticos
+
+#2.1) Convetimos la vairbale dependiente en categoica
+```{r}
+data$quiebre_democracia=as.factor(data$quiebre_democracia) 
+  levels(data$quiebre_democracia)<- c("No Quiebre", "Quiebre") 
+table(data$quiebre_democracia) 
+str(data$quiebre_democracia)
+```
+#2.2)Calculamos los tres modelos
+- MODELO 1:
+```{r}
+Modelo1=glm(quiebre_democracia ~ calidad_democracia, data=data,family = binomial) 
+library(stargazer) 
+stargazer(Modelo1,type="text") 
+```
+
+- MODELO 2:
+```{r}
+Modelo2=glm(quiebre_democracia ~ calidad_democracia + edad_regimen, data=data, family = binomial) 
+library(stargazer) 
+stargazer(Modelo2,type="text") 
+```
+
+- MODELO 3:
+```{r}
+Modelo3=glm(quiebre_democracia ~ calidad_democracia + edad_regimen +  poder_presid, data=data, family = binomial) 
+library(stargazer) 
+stargazer(Modelo3,type="text") 
+```
+
+3)	Genere una tabla donde se pueda visualizar los tres modelos (3 puntos)
+```{r}
+#generamos el stargazer la tabla de comparacion de modelos
+library(stargazer) 
+stargazer(Modelo1,Modelo2,Modelo3,type="text") 
+```
+
+4)	De la tabla de comparación de modelos, qué criterio debe analizar para decidir cuál es el mejor modelo. Y bajo ese criterio, ¿cuál sería el mejor modelo? 
+  
+  RESPUESTA: El criterio para decidir cual es el mejor modelo es fijarnos en el Akaike Inf. Crit. (AIC). Se considera que un 
+             modelo es mejor si tiene un Akaike (AIC) menor a los demás. Por lo tanto, en base a este criterio el tercer modelo
+             sería el mejor. Sin embargo, al fijarnos en el p-valor de las variables independientes "edad_regimen" y
+             "poder_presid", NO son significativas, no aportan al modelo 3 porque su p-valor es incluso mayor a 0.1. Asimismo, 
+             no tienen el mismo tamaño de conjunto de datos, observaciones o casos. 
+
+
+#Evaluando modelo seleccionado
+Calculemos las probabilidades predecidas de voluntariado:
+```{r}
+predicted <- plogis(predict(Modelo2, data[,c(4,5,6,10)]))
+```
+Veamos la matriz de confusión:
+```{r}
+library(InformationValue)
+confusionMatrix(data$quiebre_democracia, predicted)
+```
+#Dos medidas importantes es saber qué tanto acertamos predecir el evento:
+```{r}
+sensitivity(actuals = as.numeric(data$quiebre_democracia),predictedScores = predicted)
+```
+
+#Y qué tanto acertamos predecir la no ocurrencia del evento:
+```{r}
+specificity(actuals = as.numeric(data$quiebre_democracia),predictedScores = predicted)
+```
+
+
+5)	¿Por qué no puedo utilizar el test de razón de verosimilitud con los tres modelos precedentes? ¿qué modelos sí pueden ser comparados con el test de verosimilitud? 
+  
+  RESPUESTA: Como se explico en la respuesta de la pregutna 4, el modelo 3 emplea variables independientes que no aportan al 
+             modelo por tener un p-valor mayor a 0.1 (edad_regimen,poder_preso). Asimismo, no tienen el mismo tamaño de 
+             conjunto de datos u observaciones (el modelo 1 y 2 tienen 514 y el modelo 3 tiene 422). Por lo tanto, NO puedo
+             emplear el test de razon de verosimilitud con los tres modelos. Pero, si puedo emplear al modelo 1 y  al modelo 2.
+
+
+6)	De los modelos que sí pueden ser comparados con el test de razón de verosimilitud ¿cuál es el mejor modelo?
+```{r}
+#usando el test de razón de verosimilitud (likelihood ratio test -LRT):
+library(lmtest)
+lrtest(Modelo1,Modelo2)
+```
+O alternativamente:
+```{r}
+library(pander)
+pander(lrtest(Modelo1,Modelo2),caption = "LRT para los dos modelos")
+```
+RESPUESTA: De los modelos que sí pueden ser comparados con el test de razón de verosimilitud, el mejor modelo es el MODELO 2. 
+           Debido a que pasar del modelo 1 al modelo 2 es  significativo (Pr es menor a 0.05), por lo que se rechaza la 
+           hipotesis nula de igualdad de modelos. Se concluye que los modelos no son iguales y me quedo con el MODELO 2.
+
+
+7)	Del mejor modelo de la pregunta anterior ¿cuáles son los valores marginales de las variables dependientes y cómo es la interpretación? 
+
+#Para ello pedimos efectos marginales.
+```{r}
+# interpracion usando marginal effects:
+library(margins)
+(modelo= margins(Modelo2))
+```
+
+- Esto sí nos indica cuanto afecta cada variable la probabilidad de ser voluntario.
+
+Para graficar veamos un resumen:
+```{r}
+(margins=summary(modelo))
+```
+RESPUESTA: los valores marginales de las variables independientes se ve en el AME de la tabla. Calidad_democracia afecta a nuestro modelo en -0.0168, edad_regimen afecta nuestro modelo en 0.0007. 
+Esto se interpreta: 
+- si aumentamos la calidad de democracia en una unidad, la probabilidad de que haya quiebre democratico disminuye en 1.68%.
+- si aumentamos la edad de regimen en una unidad, la probabilidad de que haya quienre democratico aumenta en 0.07%.
+
+
+
+
+
+
+
+
+
+
 
